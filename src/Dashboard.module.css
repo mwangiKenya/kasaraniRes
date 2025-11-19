@@ -1,0 +1,106 @@
+/* Main container: flex layout */
+.Container {
+    display: flex;
+    min-height: 100vh;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-color: #f5f6fa;
+}
+
+/* Left Sidebar */
+.Sidebar {
+    width: 250px;
+    background-color: #2f3640;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    position: sticky;
+    top: 0;
+    height: 500px;
+    position: fixed;
+    z-index: 100;
+    margin-top: 180px;
+}
+
+/* User info section */
+.UserInfo {
+    margin-bottom: 30px;
+}
+
+.UserInfo p {
+    margin: 5px 0;
+    font-weight: 500;
+}
+
+/* Tasks buttons */
+.Tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.TasksTitle {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+/* Task button */
+.Tasks button {
+    background-color: #353b48;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    transition: 0.2s;
+}
+
+.Tasks button:hover {
+    background-color: #40739e;
+}
+
+.ActiveTask {
+    background-color: #00a8ff !important;
+}
+
+/* Right Content Area */
+.Content {
+    flex-grow: 1;
+    padding: 25px 30px;
+    overflow-y: auto;
+    min-height: 100vh;
+    margin-left: 250px; /* same width as sidebar */
+    padding: 25px 30px;
+    min-height: 100vh;
+}
+
+/* Placeholder text */
+.Placeholder {
+    font-size: 1.1rem;
+    color: #555;
+    text-align: center;
+    margin-top: 50px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .Container {
+        display: block;
+        width: 100%;
+        padding: 0;
+    }
+
+    .Sidebar {
+        width: 80%;
+        height: auto;
+        position: relative;
+        margin: auto;
+    }
+
+    .Content {
+        padding: 0;
+        display: block;
+        margin: 0;
+    }
+}

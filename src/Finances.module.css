@@ -1,0 +1,162 @@
+.ExpensesDiv {
+    width: 90%;
+    max-width: 500px;
+    margin: 4% auto;
+    background: #ffffff;
+    padding: 30px 35px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.08);
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.ExpensesDiv h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.6rem;
+    color: #333;
+}
+
+.ExpensesForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.ExpensesForm label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.InputField {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.2s ease;
+}
+
+.InputField:focus {
+    border-color: #007bff;
+    box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.3);
+}
+
+.SaveButton {
+    padding: 12px 0;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.05rem;
+    margin-top: 10px;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.SaveButton:hover {
+    background: #218838;
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .ExpensesDiv {
+        padding: 25px 20px;
+    }
+
+    .SaveButton {
+        font-size: 1rem;
+    }
+}
+
+
+.FormContainer {
+    max-width: 550px;
+    margin: auto;
+    padding: 25px;
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.08);
+}
+
+.FormTitle {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.FormBox {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.FormGroup {
+    display: flex;
+    flex-direction: column;
+}
+
+.FormLabel {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #444;
+}
+
+.FormInput {
+    padding: 10px 12px;
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: 0.2s;
+}
+
+.FormInput:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.4);
+}
+
+.FormButton {
+    margin-top: 12px;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    background: linear-gradient(135deg, #007bff, #0056d6);
+    color: white;
+    transition: 0.25s ease;
+}
+
+.FormButton:hover {
+    opacity: 0.92;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+    .FormContainer {
+        padding: 20px;
+    }
+
+    .FormTitle {
+        font-size: 1.4rem;
+    }
+
+    .FormInput {
+        font-size: 0.95rem;
+    }
+}
+
+@media screen and(max-width: 768px) {
+    .ExpensesDiv{
+        margin-left: 3%;
+        margin-right: 3%;
+        padding-left: 3%;
+        padding-right: 3%;
+    }
+}

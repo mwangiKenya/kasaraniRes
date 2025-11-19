@@ -1,0 +1,100 @@
+.TenantDiv {
+    max-width: 420px;
+    margin: 5% auto;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.TenantDiv:hover {
+    transform: translateY(-3px);
+}
+
+.TenantHeader {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 0.5rem;
+}
+
+.TenantPoint {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 1.5rem;
+}
+
+/* FORM */
+.TenantForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.TenantInput {
+    padding: 0.85rem 1rem;
+    border: 1px solid #cccccc;
+    border-radius: 10px;
+    font-size: 1rem;
+    background: #f9f9f9;
+    outline: none;
+    transition: 0.3s ease;
+}
+
+.TenantInput:focus {
+    border-color: #007bff;
+    background: #ffffff;
+}
+
+.TenantForm a {
+    text-align: right;
+    font-size: 0.9rem;
+    color: #007bff;
+    text-decoration: none;
+    margin-top: -0.5rem;
+}
+
+.TenantForm a:hover {
+    text-decoration: underline;
+}
+
+/* SUBMIT BUTTON */
+.TenantForm input[type="submit"] {
+    padding: 0.9rem;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #007bff, #0056d6);
+    color: white;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.TenantForm input[type="submit"]:hover {
+    background: linear-gradient(135deg, #0056d6, #003c9f);
+}
+
+/* ----------- RESPONSIVE DESIGN ----------- */
+
+@media (max-width: 600px) {
+    .TenantDiv {
+        margin: 12% 5%;
+        padding: 1.6rem;
+    }
+
+    .TenantHeader {
+        font-size: 1.6rem;
+    }
+
+    .TenantInput {
+        font-size: 0.95rem;
+        padding: 0.75rem 0.9rem;
+    }
+
+    .TenantForm input[type="submit"] {
+        font-size: 1rem;
+        padding: 0.8rem;
+    }
+}

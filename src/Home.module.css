@@ -1,0 +1,317 @@
+/* ===========================
+   GLOBAL STYLING
+=========================== */
+
+body {
+    margin: 0;
+    margin-top: 120px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+h1, h3, p, strong {
+    margin: 0;
+}
+
+button {
+    font-family: inherit;
+}
+
+/* ===========================
+   HERO / TOP SECTION
+=========================== */
+
+.TopMainDiv {
+    position: relative;
+    background-image: url(/drop.jpeg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 12% 5%;
+    text-align: center;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.TopMainDiv::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.45); /* subtle overlay for text readability */
+    z-index: 1;
+}
+
+.TopMainDiv h1,
+.TopMainDiv h3 {
+    position: relative;
+    z-index: 2;
+    text-shadow: 1px 1px 5px rgba(0,0,0,0.6);
+}
+
+.MoreButton {
+    position: relative;
+    z-index: 2;
+    margin-top: 20px;
+    padding: 12px 30px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    background: linear-gradient(90deg, #4cafa5, #6fed75);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.MoreButton:hover {
+    background: linear-gradient(90deg, #4CAF50, #81C784);
+    transform: translateY(-2px);
+}
+
+/* ===========================
+   PLOTS / HOUSE CARDS
+=========================== */
+
+.PlotHolverDiv {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2%;
+    justify-content: center;
+    margin: 40px 5%;
+}
+
+.PlotARooms {
+    background: white;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 15px 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    min-width: 280px;
+    max-width: 450px;
+}
+
+.PlotARooms:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+}
+
+.PlotARooms div:first-child {
+    margin-right: 15px;
+}
+
+.PlotARoomspic {
+    width: 120px;
+    height: 100px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+/* ===========================
+   HOUSES SECTION
+=========================== */
+
+.HousesDiv {
+    text-align: center;
+    margin: 50px 5%;
+    background-color: #ffffff;
+    padding: 30px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.HousesDiv h1 {
+    font-size: 28px;
+    margin-bottom: 15px;
+    color: #4cafa5;
+}
+
+.HousesDiv p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.HousesButton {
+    padding: 12px 28px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #4c95af, #81C784);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.HousesButton:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(90deg, #3c8a9f, #6fb36b);
+}
+
+/* ===========================
+   WATER SECTION
+=========================== */
+
+.WaterDiv {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2%;
+    margin: 50px 5%;
+    padding: 30px 20px;
+    background-color: #64db6a;
+    border-radius: 12px;
+    align-items: center;
+    justify-content: center;
+}
+
+.WaterSubDiv {
+    flex: 1;
+    min-width: 250px;
+}
+
+.WaterSubDiv h1 {
+    font-size: 22px;
+    margin-bottom: 12px;
+    color: #fff;
+}
+
+.WaterSubDiv p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #fff;
+}
+
+/* ===========================
+   SLIDING WATER IMAGES
+=========================== */
+
+.dropWr {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    height: 300px;
+    margin: 20px auto;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.dropW {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    animation: dropSlide 8s infinite;
+    transition: opacity 0.4s ease;
+}
+
+.dropW:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.dropW:nth-child(2) {
+    animation-delay: 4s;
+}
+
+@keyframes dropSlide {
+    0% { transform: translateX(100%); opacity: 0; }
+    10% { transform: translateX(0%); opacity: 1; }
+    45% { transform: translateX(0%); opacity: 1; }
+    55% { transform: translateX(-100%); opacity: 0; }
+    100% { transform: translateX(-100%); opacity: 0; }
+}
+
+/* ===========================
+   WATER US / WHY CHOOSE US
+=========================== */
+
+.WaterUs {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 50px 5%;
+    gap: 20px;
+}
+
+.WaterUsDivs {
+    flex: 1;
+    min-width: 250px;
+    background-color: goldenrod;
+    padding: 20px;
+    border-radius: 12px;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.WaterUsDivs h3 {
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.WaterPoints {
+    text-align: center;
+    font-size: 18px;
+    margin: 20px 0;
+    font-weight: 600;
+    color: #333;
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media screen and (max-width: 768px) {
+
+    .TopMainDiv {
+        padding: 20% 5% 15% 5%;
+    }
+
+    body{
+        margin-top: 100px;
+    }
+
+    .PlotHolverDiv {
+        flex-direction: column;
+        margin: 30px 5%;
+    }
+
+    .PlotARooms {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+        margin-bottom: 10px;
+    }
+
+    .PlotARoomspic {
+        width: 200px;
+        margin-top: 10px;
+        height: 180px;
+        margin-bottom: 15px;
+    }
+
+    .WaterDiv {
+        flex-direction: column;
+        padding: 20px 5%;
+        border-radius: 12px;
+    }
+
+    .WaterUs {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .dropWr {
+        max-width: 100%;
+        height: 220px;
+    }
+}

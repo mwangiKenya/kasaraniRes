@@ -1,0 +1,124 @@
+/* Background wrapper */
+.SignInDiv {
+    background-image: url("/Untitled design.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    padding: 8% 0;
+    text-align: center;
+    position: relative;
+}
+
+/* Transparent dark overlay for readability */
+.SignInDiv::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(2px);
+    z-index: 0;
+}
+
+/* Form styling */
+.SignInDiv form {
+    position: relative;
+    z-index: 1;
+    background: white;
+    width: 90%;
+    max-width: 380px;
+    margin: auto;
+    padding: 30px 25px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.SignInDiv p {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 18px;
+    color: #2a2a2a;
+}
+
+/* Input fields */
+.SignInInputs {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    border: 1px solid #d0d0d0;
+    border-radius: 7px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: 0.2s;
+}
+
+.SignInInputs:focus {
+    border-color: #007bff;
+    box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.4);
+}
+
+/* Remember me + Forgot password row */
+.SignInDiv form .extra-row {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.SignInDiv a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.SignInDiv a:hover {
+    text-decoration: underline;
+}
+
+/* Submit button */
+.SignInLogin {
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background: #ff9800;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    transition: 0.25s ease;
+}
+
+.SignInLogin:hover {
+    background: #e08600;
+    transform: translateY(-2px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .SignInDiv form {
+        padding: 25px 18px;
+    }
+
+    .SignInLogin {
+        font-size: 0.95rem;
+    }
+}
+@media screen and (max-width: 768px) {
+   .SignInDiv{
+    padding-left: 5%;
+    padding-right: 5%;
+   } 
+   .SignInInputs{
+    width: 80%;
+    display: block;
+    margin: auto;
+    margin-bottom: 4%;
+   }
+   .SignInLogin{
+    width: 90%;
+   }
+}
