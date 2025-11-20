@@ -4,7 +4,7 @@ import styles from "./Plots.module.css";
 
 
 
-function PlotMgt( {showError} ) {
+function PlotMgt( {showError, RegPlots} ) {
     
     
     return(
@@ -30,13 +30,14 @@ function PlotMgt( {showError} ) {
                     <tr>
                         <td> Register new plots/ houses </td>
                         <td> Add new plots/houses into the system </td>
-                        <td> <button className={styles.buttona}> Continue </button></td>
+                        <td> <button className={styles.buttona}
+                           onClick={RegPlots}> Continue </button></td>
                     </tr>
                     <tr>
                         <td>Update plot information </td>
                         <td> Change details, eg. rent, availability </td>
                         <td><button className={styles.buttona}
-                           onClick={showError}> Continue </button></td>
+                           onClick={RegPlots}> Continue </button></td>
                     </tr>
                 </table>
             </div>
@@ -136,9 +137,12 @@ function Plots() {
     const showError = (e) => {
         navigate("/ErrorPage");
     }
+    const RegPlots = (e) => {
+        navigate("/RegPlots")
+    }
     return(
         <>
-           <PlotMgt showError = {showError}/>
+           <PlotMgt showError = {showError} RegPlots={RegPlots}/>
            <TenantMgt showError = {showError}/>
            <Alerts showError = {showError}/>
            <hr/>

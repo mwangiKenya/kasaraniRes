@@ -8,6 +8,7 @@ import ErrorPage from "./ErrorPage";
 import Plots from "./Plots";
 import RegWaterUser from "./RegWaterUser";
 import Footer from "./Footer";
+import RegPlots from "./RegPlots";
 
 function Dashboard() {
     const [activeTask, setActiveTask] = useState("Readings"); // Track which task is active
@@ -53,6 +54,12 @@ function Dashboard() {
                     >
                         Register new user
                     </button>
+                    <button
+                        className={activeTask === "RegPlots" ? styles.ActiveTask : ""}
+                        onClick={() => setActiveTask("RegPlots")}
+                    >
+                        Update new house 
+                    </button>
                 </div>
             </div>
 
@@ -68,6 +75,7 @@ function Dashboard() {
                 {activeTask === "ErrorPage" && <ErrorPage />}
                 {activeTask === "Plots" && <Plots />}
                 {activeTask === "RegWaterUser" && <RegWaterUser/>}
+                {activeTask === "RegPlots" && <RegPlots/>}
             </div>
         </div>
         <Footer/>

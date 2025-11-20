@@ -9,7 +9,7 @@ function Footer() {
 
         {/* Company Summary */}
         <div className="footer-section">
-          <h3>Adster Ltd</h3>
+          <h3>KasaraniRes Ltd</h3>
           <p>
             Kasarani Res Ltd is a trusted provider of borehole water supply and rental 
             housing solutions in Kasarani, Nairobi. We are committed to delivering 

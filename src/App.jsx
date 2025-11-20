@@ -13,6 +13,7 @@ import RegWaterUser from "./RegWaterUser";
 import ErrorPage from "./ErrorPage";
 import Finances from "./Finances";
 import Tenant from "./Tenant";
+import RegPlots from "./RegPlots";
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -61,6 +62,7 @@ function App() {
             <Link to="/SignIn" className="MyNavLinks" onClick={() => setMenuOpen(false)}>Admin login</Link>
             <Link to="/Tenant" className="MyNavLinks" onClick={() => setMenuOpen(false)}>Tenant</Link>
             <Link to="/Tenant" className="MyNavLinks" onClick={() => setMenuOpen(false)}>Water User</Link>
+            {/*<Link to ="/RegPlots" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Register plots </Link>*/}
             {/*<Link to="/Help" className="HelpLink" onClick={() => setMenuOpen(false)}>Help</Link>*/}
           </nav>
 
@@ -78,6 +80,7 @@ function App() {
           <Route path="/ErrorPage" element={<ErrorPage />} />
           <Route path="/Finances" element={<Finances />} />
           <Route path="/Tenant" element={<Tenant />} />
+          <Route path="/RegPlots" element = {<RegPlots/>}/>
         </Routes>
       </HashRouter>
 

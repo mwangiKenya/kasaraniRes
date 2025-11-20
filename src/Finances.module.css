@@ -152,7 +152,7 @@
     }
 }
 
-@media screen and(max-width: 768px) {
+@media screen and (max-width: 768px) {
     .ExpensesDiv{
         margin-left: 3%;
         margin-right: 3%;

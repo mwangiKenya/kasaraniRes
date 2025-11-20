@@ -35,7 +35,7 @@ function PlotA() {
         
       <div className={styles.PlotARooms}>
         <div>
-          <img src="/houseb.jpeg" className={styles.PlotARoomspic} alt="Bedseater" />
+          <img src={`${import.meta.env.BASE_URL}houseb.jpeg`} className={styles.PlotARoomspic}/>
         </div>
         <div>
           <strong>Bedseater</strong>
@@ -55,7 +55,8 @@ function PlotA() {
           
         </div>
         <div>
-          <img src="/housea.jpeg" className={styles.PlotARoomspic} alt="One Bedroom" />
+          
+          <img src={`${import.meta.env.BASE_URL}housea.jpeg`} className={styles.PlotARoomspic}/>
         </div>
         <a href="#" className="NavLinks"> See available rooms👉 </a>
       </div>
@@ -85,10 +86,12 @@ function Water() {
       <h1 style={{ marginLeft: "4%" }}>Water supply services</h1>
       <div className={styles.WaterDiv}>
         {/*<div className={styles.WaterSubDiv}>*/}
+          
           <div className={styles.dropWr}>
-            <img src="/drop.jpeg" className={styles.dropW} alt="Water Drop 1" />
-            <img src="/water.jpg" className={styles.dropW} alt="Water Drop 2" />
+              <img src={`${import.meta.env.BASE_URL}drop.jpeg`} className={styles.dropW} alt="Water Drop 1"/>
+              <img src={`${import.meta.env.BASE_URL}water.jpg`} className={styles.dropW} alt="Water Drop 2"/>
           </div>
+
         {/*</div>*/}
         <div className={styles.WaterSubDiv}>
           <h1>Who we are</h1>
@@ -102,9 +105,10 @@ function Water() {
       <strong>
         <p className={styles.WaterPoints}>Pure water, Deep from the earth</p>
         <div className={styles.dropWr}>
-          <img src="/drop.jpeg" className={styles.dropW} alt="Water Drop 1" />
-          <img src="/water.jpg" className={styles.dropW} alt="Water Drop 2" />
+            <img src={`${import.meta.env.BASE_URL}drop.jpeg`} className={styles.dropW} alt="Water Drop 1" />
+            <img src={`${import.meta.env.BASE_URL}water.jpg`} className={styles.dropW} alt="Water Drop 2" />
         </div>
+
         <p className={styles.WaterPoints}>Clean water, Every drop counts</p>
       </strong>
 
