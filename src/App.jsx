@@ -14,6 +14,7 @@ import ErrorPage from "./ErrorPage";
 import Finances from "./Finances";
 import Tenant from "./Tenant";
 import RegPlots from "./RegPlots";
+import WaterReadings from "./WaterReadings";
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -81,6 +82,7 @@ function App() {
           <Route path="/Finances" element={<Finances />} />
           <Route path="/Tenant" element={<Tenant />} />
           <Route path="/RegPlots" element = {<RegPlots/>}/>
+          <Route path="/WaterReadings" element = {<WaterReadings/>}/>
         </Routes>
       </HashRouter>
 

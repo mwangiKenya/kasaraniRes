@@ -59,6 +59,11 @@
   background-color: #218838;
 }
 
+.wateruserInput
+{
+  width: 80%;
+}
+
 /* Responsive for mobile */
 @media screen and (max-width: 768px) {
   .tableContainer {

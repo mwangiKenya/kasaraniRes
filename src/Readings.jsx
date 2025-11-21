@@ -2,8 +2,9 @@ import { useState } from "react";
 import styles from "./Readings.module.css";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
-function Readings() {
+function MyUsers() {
   const navigate = useNavigate();
   const [users, setUsers] = useState([
     { id: 1, name: "Alice", phone: "0712345678", prevs: "567", prevu: "67", reading: "", userr: "" },
@@ -105,6 +106,137 @@ function Readings() {
       </button>
     
     </div>
+  );
+}
+
+function WaterUsers() {
+
+  const [wateruser, setWaterUser] = useState([]);
+  const [inputs, setInputs] = useState([]);
+
+  //Fetch the water user data from the database
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userData = await fetch("http://localhost:5000/read-user");
+        const userres = await userData.json();
+        setWaterUser(userres);
+      }
+      catch (err) {
+        console.error("Error fetching data: ", err);
+      }
+    };
+    fetchData();
+  }, []);
+
+  //Handle the input change
+  const handleInputChange = (id, field, value) => {
+    setInputs(prev => ({
+      ...prev,
+      [id] : {
+        ...prev[id],
+        [field] : value
+      }
+    }));
+  };
+
+
+  //Add the save button
+  const saveReadings = async (id) => {
+  const readings = inputs[id];
+
+  if (!readings?.sup || !readings?.user) {
+    alert("Please fill both readings");
+    return;
+  }
+
+  try {
+    await fetch("https://kasarani.onrender.com/update-readings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id,
+        sup: readings.sup,
+        user: readings.user
+      })
+    });
+
+    toast.success("Readings updated successfully!");
+    //Clear the inputs
+    setInputs(prev => ({
+      ...prev,
+      [id]: { sup: "", user: "" }
+    }));
+  } catch (err) {
+    console.error("Error updating readings:", err);
+  }
+};
+
+  return(
+    <>
+       <div className={styles.tableContainer}>
+        <h2 className={styles.title}>Enter Water Readings</h2>
+        <table className={styles.readingsTable}>
+          <thead>
+            <tr>
+              <th colSpan={2}> User Data </th>
+              <th colSpan={2}> Previus readings </th>
+              <th colSpan={2}> Current readings </th>
+              <th> Action </th>
+            </tr>
+           <tr>
+            <th> Name </th>
+            <th> Contact </th>
+            <th> Sup </th>
+            <th> User </th>
+            <th> Sup  </th>
+            <th> User  </th>
+            <th> Save </th>
+           </tr>
+          </thead>
+
+          <tbody>
+            {wateruser.map((watu) => (
+              <tr key={watu.id}>
+                <td> {watu.name} </td>
+                <td> {watu.phone} </td>
+                <td> {watu.meter} </td>
+                <td> {watu.userr} </td>
+              
+                <td> <input type="number"
+                  className={styles.wateruserInput} 
+                  value={inputs[watu.id]?.sup || ""}
+                  onChange={(e) =>
+                   handleInputChange(watu.id, "sup", e.target.value)
+                  }/> </td>
+                <td> <input type="number"
+                   className={styles.wateruserInput}
+                   value={inputs[watu.id]?.user || ""}
+                   onChange={(e) =>
+                    handleInputChange(watu.id, "user", e.target.value)
+                  }/> </td>
+                  <td>
+                    <button onClick={() => saveReadings(watu.id)}>
+                      Save
+                    </button>
+                  </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+       </div>
+    </>
+  );
+}
+
+function Readings() {
+  return(
+    <>
+        <div>
+          {/*<MyUsers/>*/}
+          <WaterUsers/>
+        </div>
+    </>
   );
 }
 
