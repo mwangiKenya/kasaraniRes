@@ -32,7 +32,7 @@ function Readings() {
                         <th colSpan={2}> Current readings </th>
                         <th colSpan={2}> Computed data </th>
                     </tr>
-                    <tr>
+                    
                         <th> Name </th>
                         <th> Contact </th>
                         <th> Sup </th>
@@ -41,7 +41,7 @@ function Readings() {
                         <th> User  </th>
                         <th> Units used </th>
                         <th> Amount billed </th>
-                    </tr>
+                    
                 </thead>
                 <tbody>
                     {userdata.map((usd) => (

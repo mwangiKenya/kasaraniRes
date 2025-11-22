@@ -118,7 +118,7 @@ function WaterUsers() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userData = await fetch("http://localhost:5000/read-user");
+        const userData = await fetch("https://kasarani.onrender.com/read-user");
         const userres = await userData.json();
         setWaterUser(userres);
       }
