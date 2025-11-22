@@ -34,7 +34,7 @@ function Readings() {
                     </tr>
                                         
                 </thead>
-                <tr>
+                
                     
                         <th> Name </th>
                         <th> Contact </th>
@@ -44,7 +44,7 @@ function Readings() {
                         <th> User  </th>
                         <th> Units used </th>
                         <th> Amount billed </th>
-                </tr>
+                
                 <tbody>
                     {userdata.map((usd) => (
                         <tr key={usd.id}>
