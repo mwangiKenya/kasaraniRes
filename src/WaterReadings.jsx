@@ -35,7 +35,7 @@ function Readings() {
                                         
                 </thead>
                 
-                    
+                    <tr>
                         <th> Name </th>
                         <th> Contact </th>
                         <th> Sup </th>
@@ -44,18 +44,18 @@ function Readings() {
                         <th> User  </th>
                         <th> Units used </th>
                         <th> Amount billed </th>
-                
+                    </tr>
                 <tbody>
                     {userdata.map((usd) => (
                         <tr key={usd.id}>
-                            <td> {usd.name} </td>
-                            <td> {usd.phone} </td>
-                            <td> {usd.meter} </td>
-                            <td> {usd.userr} </td>
-                            <td> {usd.currentSup} </td>
-                            <td> {usd.currentUser} </td>
-                            <td> {usd.units_used} </td>
-                            <td> {usd.amount_billed} </td>
+                            <td data-label = "Name"> {usd.name} </td>
+                            <td data-label = "Contact"> {usd.phone} </td>
+                            <td data-label = "Sup"> {usd.meter} </td>
+                            <td data-label = "User"> {usd.userr} </td>
+                            <td data-label = "Sup"> {usd.currentSup} </td>
+                            <td data-label = "User"> {usd.currentUser} </td>
+                            <td data-label = "Units used"> {usd.units_used} </td>
+                            <td data-label = "Amount billed"> {usd.amount_billed} </td>
                         </tr>
                     ))}
                 </tbody>

@@ -198,24 +198,24 @@ function WaterUsers() {
           <tbody>
             {wateruser.map((watu) => (
               <tr key={watu.id}>
-                <td> {watu.name} </td>
-                <td> {watu.phone} </td>
-                <td> {watu.meter} </td>
-                <td> {watu.userr} </td>
+                <td data-label = "Name"> {watu.name} </td>
+                <td data-label = "Contact"> {watu.phone} </td>
+                <td data-label = "Sup"> {watu.meter} </td>
+                <td data-label = "User"> {watu.userr} </td>
               
-                <td> <input type="number"
+                <td data-label = "Sup"> <input type="number"
                   className={styles.wateruserInput} 
                   value={inputs[watu.id]?.sup || ""}
                   onChange={(e) =>
                    handleInputChange(watu.id, "sup", e.target.value)
                   }/> </td>
-                <td> <input type="number"
+                <td data-label = "User"> <input type="number"
                    className={styles.wateruserInput}
                    value={inputs[watu.id]?.user || ""}
                    onChange={(e) =>
                     handleInputChange(watu.id, "user", e.target.value)
                   }/> </td>
-                  <td>
+                  <td data-label = "Save">
                     <button onClick={() => saveReadings(watu.id)}>
                       Save
                     </button>
