@@ -200,16 +200,16 @@ function WaterUsers() {
               <tr key={watu.id}>
                 <td data-label = "Name"> {watu.name} </td>
                 <td data-label = "Contact"> {watu.phone} </td>
-                <td data-label = "Sup"> {watu.meter} </td>
-                <td data-label = "User"> {watu.userr} </td>
+                <td data-label = "Prev. Sup"> {watu.meter} </td>
+                <td data-label = "Prev. User"> {watu.userr} </td>
               
-                <td data-label = "Sup"> <input type="number"
+                <td data-label = "Cur. Sup"> <input type="number"
                   className={styles.wateruserInput} 
                   value={inputs[watu.id]?.sup || ""}
                   onChange={(e) =>
                    handleInputChange(watu.id, "sup", e.target.value)
                   }/> </td>
-                <td data-label = "User"> <input type="number"
+                <td data-label = "Cur. User"> <input type="number"
                    className={styles.wateruserInput}
                    value={inputs[watu.id]?.user || ""}
                    onChange={(e) =>

@@ -50,10 +50,10 @@ function Readings() {
                         <tr key={usd.id}>
                             <td data-label = "Name"> {usd.name} </td>
                             <td data-label = "Contact"> {usd.phone} </td>
-                            <td data-label = "Sup"> {usd.meter} </td>
-                            <td data-label = "User"> {usd.userr} </td>
-                            <td data-label = "Sup"> {usd.currentSup} </td>
-                            <td data-label = "User"> {usd.currentUser} </td>
+                            <td data-label = "Prev. Sup"> {usd.meter} </td>
+                            <td data-label = "Prev. User"> {usd.userr} </td>
+                            <td data-label = "Cur. Sup"> {usd.currentSup} </td>
+                            <td data-label = "Cur. User"> {usd.currentUser} </td>
                             <td data-label = "Units used"> {usd.units_used} </td>
                             <td data-label = "Amount billed"> {usd.amount_billed} </td>
                         </tr>
