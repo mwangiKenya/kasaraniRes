@@ -12,21 +12,40 @@ function SignIn() {
         setLogin({...login, [e.target.name] : e.target.value});
     }
 
-    const checkLogin = (e) => {
-        e.preventDefault();
-        if(login.email === "" || login.password === "") {
-            toast.error("Please fill out all detail to continue");
+
+    const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+        const res = await fetch("https://kasarani.onrender.com/admin-login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(login)
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            toast.error(data.message);
+            
             return;
         }
-        else{
-        toast.success(`You are logged in as: ${login.email}`);
+
+        toast.success("Login successful!");
         navigate("/Dashboard");
-        }
+
+    } catch (err) {
+        console.error(err);
+        toast.error("Login error");
     }
+};
+
     return(
         <>
             <div className={styles.SignInDiv}>
-                <form autoComplete="off" onSubmit={checkLogin}>
+                <form autoComplete="off" onSubmit={handleLogin}>
                     <p> Login to continue </p>
                     <input type="email"  placeholder="Email Address"
                       className={styles.SignInInputs}
