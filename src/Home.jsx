@@ -20,7 +20,7 @@ function Top() {
       <h1>Welcome to {myPlot.name}. {myPlot.slogan}</h1>
       <h3>Located in {myPlot.location}</h3>
       <a href="mailto:karanires@gmail.com">
-        <button className={styles.MoreButton}>Contact us</button>
+        <button className={styles.MoreButton}>reach out</button>
       </a>
       
     </div>

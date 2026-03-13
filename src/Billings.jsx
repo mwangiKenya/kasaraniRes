@@ -1,0 +1,151 @@
+import React, { useEffect, useState } from "react";
+import styles from "./Billings.module.css";
+import Footer from "./Footer";
+import SendBillingSMS from "./SendBillingSMS";
+import { toast } from "react-toastify";
+
+function Sms() {
+  return (
+    <div>
+      <SendBillingSMS />
+    </div>
+  );
+}
+
+function Billings() {
+  const [billings, setBillings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch all billings from backend
+  useEffect(() => {
+    //fetch("http://127.0.0.1:8000/api/bill/") // API endpoint
+    fetch("https://kasarani-1.onrender.com/api/bill/") 
+      .then((res) => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
+      })
+      .then((data) => {
+        // Add a local field to track changes to paid
+        const billsWithPaid = data.map((b) => ({
+          ...b,
+          paidValue: b.paid || 0,
+        }));
+        setBillings(billsWithPaid);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
+  // Update local paidValue state when user types
+  const handlePaidChange = (id, value) => {
+    // Make sure value is a number
+    const numericValue = parseFloat(value) || 0;
+    setBillings((prev) =>
+      prev.map((b) => (b.id === id ? { ...b, paidValue: numericValue } : b))
+    );
+  };
+
+  // Save updated paid to backend and immediately update row in table
+  const handleSave = async (billing) => {
+    try {
+      const response = await fetch(
+        //`http://127.0.0.1:8000/api/update_paid/`,
+        `https://kasarani-1.onrender.com/api/update_paid/`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: billing.id,
+            paid: billing.paidValue,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast.error(`Error saving: ${data.error || "Unknown error"}`);
+      } else {
+        toast.success("Saved successfully!");
+
+        // Update the row immediately using the returned updated data
+        setBillings((prev) =>
+          prev.map((b) =>
+            b.id === data.id
+              ? {
+                  ...b,
+                  paidValue: data.paid,
+                  bal: data.bal,
+                  status: data.status,
+                }
+              : b
+          )
+        );
+      }
+    } catch (err) {
+      toast.error("Network error: " + err.message);
+    }
+  };
+
+  if (loading) return <div className={styles.mainDiv}>Loading...</div>;
+  if (error) return <div className={styles.mainDiv}>Error: {error}</div>;
+
+  return (
+    <>
+      <div className={styles.mainDiv}>
+        {/*<Sms />*/}
+        <h1>Billings</h1>
+        <table className={styles.billingTable}>
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Units Used</th>
+              <th>Rate</th>
+              <th>Bill</th>
+              <th>Paid</th>
+              <th>Bal</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {billings.map((b) => (
+              <tr key={b.id}>
+                <td>{b.user_id}</td>
+                <td>{b.name}</td>
+                <td>{b.phone}</td>
+                <td>{b.units_used || 0}</td>
+                <td>{b.rate || 0}</td>
+                <td>{b.bill || 0}</td>
+                <td>
+                  <input
+                    type="number"
+                    value={b.paidValue}
+                    onChange={(e) =>
+                      handlePaidChange(b.id, e.target.value)
+                    }
+                    className={styles.BillingsInput}
+                  />
+                </td>
+                <td>{b.bal != null ? b.bal : b.bill - b.paidValue}</td>
+                <td>{b.status || "Unpaid"}</td>
+                <td>
+                  <button onClick={() => handleSave(b)} className={styles.btnSave}>Save</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <Footer />
+    </>
+  );
+}
+
+export default Billings;

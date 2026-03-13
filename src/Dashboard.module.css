@@ -1,106 +1,213 @@
-/* Main container: flex layout */
-.Container {
+/* =======================
+   Dashboard Container
+   ======================= */
+.dashboard {
     display: flex;
     min-height: 100vh;
-    font-family: "Segoe UI", Arial, sans-serif;
-    background-color: #f5f6fa;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    background-color: #f5f7fa;
+    color: #1f2937;
+    overflow: hidden;
+    margin-top: 9%;
 }
 
-/* Left Sidebar */
-.Sidebar {
+/* =======================
+   Sidebar
+   ======================= */
+.sidebar {
     width: 250px;
-    background-color: #2f3640;
-    color: white;
+    background-color: #111827;
+    color: #e5e7eb;
     display: flex;
     flex-direction: column;
-    padding: 20px;
-    position: sticky;
-    top: 0;
-    height: 500px;
-    position: fixed;
-    z-index: 100;
-    margin-top: 180px;
+    padding: 2rem 1.2rem;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    transition: width 0.3s ease;
 }
 
-/* User info section */
-.UserInfo {
-    margin-bottom: 30px;
-}
-
-.UserInfo p {
-    margin: 5px 0;
-    font-weight: 500;
-}
-
-/* Tasks buttons */
-.Tasks {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.TasksTitle {
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-
-/* Task button */
-.Tasks button {
-    background-color: #353b48;
-    border: none;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    text-align: left;
-    transition: 0.2s;
-}
-
-.Tasks button:hover {
-    background-color: #40739e;
-}
-
-.ActiveTask {
-    background-color: #00a8ff !important;
-}
-
-/* Right Content Area */
-.Content {
-    flex-grow: 1;
-    padding: 25px 30px;
-    overflow-y: auto;
-    min-height: 100vh;
-    margin-left: 250px; /* same width as sidebar */
-    padding: 25px 30px;
-    min-height: 100vh;
-}
-
-/* Placeholder text */
-.Placeholder {
-    font-size: 1.1rem;
-    color: #555;
+.logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 3rem;
     text-align: center;
-    margin-top: 50px;
+    letter-spacing: 1px;
+    color: #2563eb;
+    user-select: none;
 }
 
-/* Responsive adjustments */
+/* =======================
+   Navigation
+   ======================= */
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.navItem {
+    background: none;
+    border: none;
+    color: #d1d5db; /* Brighter for better contrast */
+    padding: 0.85rem 1.2rem;
+    text-align: left;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    position: relative;
+
+    /* Controlled transitions only */
+    transition: background-color 0.25s ease,
+                color 0.25s ease,
+                transform 0.25s ease;
+}
+
+.navItem:hover {
+    background-color: #1f2937;
+    color: #ffffff;
+    transform: translateX(3px);
+}
+
+/* Active state */
+.navItem.active {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+/* Active left highlight bar */
+.navItem.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background-color: #60a5fa;
+    border-radius: 2px;
+}
+
+/* =======================
+   Main Content Area
+   ======================= */
+.content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    background-color: #f9fafb;
+    transition: background-color 0.3s ease;
+    scroll-behavior: smooth;
+    color: black;
+}
+
+/* Custom scrollbar */
+.content::-webkit-scrollbar {
+    width: 10px;
+}
+
+.content::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 6px;
+}
+
+.content::-webkit-scrollbar-thumb {
+    background-color: #9ca3af;
+    border-radius: 6px;
+    border: 2px solid #f3f4f6;
+}
+
+/* =======================
+   Responsive Design
+   ======================= */
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 220px;
+        padding: 1.8rem 1rem;
+    }
+}
+
 @media (max-width: 768px) {
-    .Container {
-        display: block;
+    .sidebar {
+        width: 180px;
+        padding: 1.5rem 0.8rem;
+    }
+
+    .navItem {
+        padding: 0.7rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .logo {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .dashboard {
+        flex-direction: column;
+    }
+
+    .sidebar {
         width: 100%;
-        padding: 0;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 1rem 0.5rem;
     }
 
-    .Sidebar {
-        width: 80%;
-        height: auto;
-        position: relative;
-        margin: auto;
+    .nav {
+        flex-direction: row;
+        gap: 0.2rem;
+        overflow-x: auto;
     }
 
-    .Content {
-        padding: 0;
-        display: block;
-        margin: 0;
+    .navItem {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+        white-space: nowrap;
+    }
+
+    .logo {
+        display: none;
+    }
+}
+
+/* =======================
+   Button Interaction Effects
+   ======================= */
+.navItem:active {
+    transform: scale(0.98);
+}
+
+.navItem svg {
+    transition: transform 0.3s ease;
+}
+
+.navItem:hover svg {
+    transform: scale(1.1);
+}
+
+/* =======================
+   Dark Mode Ready
+   ======================= */
+@media (prefers-color-scheme: dark) {
+    .dashboard {
+        background-color: #1e293b;
+        color: #e5e7eb;
+    }
+
+    .content {
+        background-color: #111827;
+    }
+
+    .content::-webkit-scrollbar-track {
+        background: #1f2937;
+    }
+
+    .content::-webkit-scrollbar-thumb {
+        background-color: #374151;
+        border: 2px solid #1f2937;
     }
 }

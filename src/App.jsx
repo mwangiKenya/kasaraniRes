@@ -2,19 +2,16 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { HashRouter, Routes, Route, Link } from "react-router-dom";
 import { useState } from "react";
-
 import Home from "./Home";
-import SignIn from "./SignIng";
-import Readings from "./Readings";
-import Plots from "./Plots";
-import Dashboard from "./Dashboard";
-import WaterData from "./WaterData";
 import RegWaterUser from "./RegWaterUser";
-import ErrorPage from "./ErrorPage";
-import Finances from "./Finances";
-import Tenant from "./Tenant";
-import RegPlots from "./RegPlots";
-import WaterReadings from "./WaterReadings";
+import Billings from "./Billings";
+import Readings from "./Readings";
+import Users from "./Users";
+import Dashboard from "./Dashboard";
+import Analytics from "./Analytics";
+import Login from "./Login";
+import Workers from "./Workers";
+import Profile from "./Profile";
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -60,29 +57,25 @@ function App() {
           {/* 👉 MAIN NAVIGATION */}
           <nav className={`Navigation ${menuOpen ? "ShowMenu" : ""}`}>
             <Link to="/" className="MyNavLinks" onClick={() => setMenuOpen(false)}>Home</Link>
-            <Link to="/SignIn" className="MyNavLinks" onClick={() => setMenuOpen(false)}>Admin login</Link>
-            <Link to="/Tenant" className="MyNavLinks" onClick={() => setMenuOpen(false)}>Tenant</Link>
-            <Link to="/Tenant" className="MyNavLinks" onClick={() => setMenuOpen(false)}>Water User</Link>
-            {/*<Link to ="/RegPlots" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Register plots </Link>*/}
-            {/*<Link to="/Help" className="HelpLink" onClick={() => setMenuOpen(false)}>Help</Link>*/}
+            <Link to = "/Login" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Admin </Link>
+            <Link to = "/Workers" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Users </Link>
+            <Link to = "/Profile" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Profiles </Link>
           </nav>
 
-          <hr />
+          {/*<hr />*/}
         </div>
 
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/SignIn" element={<SignIn />} />
-          <Route path="/Readings" element={<Readings />} />
-          <Route path="/Plots" element={<Plots />} />
-          <Route path="/Dashboard" element={<Dashboard />} />
-          <Route path="/WaterData" element={<WaterData />} />
           <Route path="/RegWaterUser" element={<RegWaterUser />} />
-          <Route path="/ErrorPage" element={<ErrorPage />} />
-          <Route path="/Finances" element={<Finances />} />
-          <Route path="/Tenant" element={<Tenant />} />
-          <Route path="/RegPlots" element = {<RegPlots/>}/>
-          <Route path="/WaterReadings" element = {<WaterReadings/>}/>
+          <Route path="/Billings" element={<Billings/>} />
+          <Route path="/Readings" element = {<Readings/>}/>
+          <Route path="/Users" element = {<Users/>}/>
+          <Route path="/Dashboard" element = {<Dashboard/>}/>
+          <Route path="/Analytics" element = {<Analytics/>}/>
+          <Route path="/Login" element = {<Login/>}/>
+          <Route path="/Workers" element = {<Workers/>}/>
+          <Route path="/Profile" element = {<Profile/>}/>
         </Routes>
       </HashRouter>
 

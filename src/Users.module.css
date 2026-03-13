@@ -1,0 +1,132 @@
+/* Container adjustments for scrollable table */
+.mainDiv {
+  padding: 30px;
+  max-width: 1200px;
+  margin: 5% auto;
+  background-color: var(--bg-color);
+  border-radius: 15px;
+  box-shadow: 0 8px 20px var(--shadow-color);
+  text-align: center;
+  overflow-x: auto; /* enable horizontal scroll */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mainDiv:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px var(--shadow-color);
+}
+
+/* Table adjustments */
+.userTable {
+  width: 90%;
+  min-width: 900px; /* ensures table layout doesn't collapse */
+  border-collapse: collapse;
+  margin-top: 25px;
+  font-size: 0.95rem;
+}
+
+.userTable th,
+.userTable td {
+  border: 1px solid #e0e0e0;
+  padding: 12px 10px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+  white-space: nowrap; /* prevents content wrapping */
+  color: black;
+}
+
+.userTable th {
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 600;
+  position: sticky;
+  top: 0; /* sticky header */
+  z-index: 2;
+}
+
+.userTable tr:nth-child(even) {
+  background-color: #f7f7f7;
+}
+
+.userTable tr:hover {
+  background-color: #e6f4ea;
+}
+
+/* Button styling (contained inside cell) */
+.btnUpdate,
+.btnDelete {
+  min-width: 70px;
+  display: inline-block;
+  text-align: center;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btnUpdate {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.btnUpdate:hover {
+  background-color: var(--hover-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+.btnDelete {
+  background-color: var(--secondary-color);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.btnDelete:hover {
+  background-color: var(--hover-secondary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .mainDiv {
+    margin: 5% 2%;
+    padding: 20px;
+  }
+  
+  .userTable {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .btnUpdate,
+  .btnDelete {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mainDiv {
+    padding: 15px;
+  }
+  
+  .userTable th,
+  .userTable td {
+    padding: 6px 8px;
+    font-size: 0.75rem;
+  }
+
+  .btnUpdate,
+  .btnDelete {
+    min-width: 60px;
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+}

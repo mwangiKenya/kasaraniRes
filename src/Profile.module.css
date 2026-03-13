@@ -1,0 +1,70 @@
+.majordiv
+{
+  margin-top: 15%;
+}
+.container {
+  width: 60%;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+}
+.inputContainer
+{
+  margin: auto;
+  text-align: center;
+}
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 14px;
+  margin-bottom: 25px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transition: 0.3s ease;
+  margin-left: 2%;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.card h2 {
+  margin-bottom: 15px;
+  border-bottom: 2px solid #4CAF50;
+  padding-bottom: 8px;
+}
+
+.card p {
+  margin: 8px 0;
+  font-size: 0.95rem;
+}
+
+.paid {
+  color: #16a34a;
+  font-weight: bold;
+}
+
+.unpaid {
+  color: #dc2626;
+  font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .card p {
+    font-size: 0.85rem;
+  }
+}

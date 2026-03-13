@@ -1,79 +1,139 @@
+/* =======================
+   Container
+   ======================= */
 .tableContainer {
   max-width: 1000px;
   margin: 40px auto;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  transition: box-shadow 0.3s ease;
+  overflow-x: auto; /* Allows horizontal scroll on small screens */
+}
+
+.tableContainer:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
 }
 
 .title {
   text-align: center;
-  margin-bottom: 20px;
-  color: #333;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 2rem;
 }
 
+/* =======================
+   Table Styles
+   ======================= */
 .readingsTable {
   width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
 }
 
 .readingsTable th,
 .readingsTable td {
-  border: 1px solid #ddd;
-  padding: 12px;
+  padding: 12px 15px;
   text-align: center;
+  vertical-align: middle;
+  color: black;
 }
 
 .readingsTable th {
-  background-color: #007bff;
-  color: white;
+  background-color: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .readingsTable tr:nth-child(even) {
-  background-color: #f2f2f2;
+  background-color: #f3f4f6;
 }
 
-.readingInput {
-  width: 80%;
-  padding: 6px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.readingsTable tr:hover {
+  background-color: #e0f2fe;
+  transition: background-color 0.25s ease;
+  cursor: pointer;
 }
 
-.saveBtn {
-  display: inline-block;
-  margin: 10px 10px 0 0;
-  padding: 10px 25px;
-  background-color: #28a745;
-  color: white;
+/* =======================
+   Inputs
+   ======================= */
+.wateruserInput {
+  width: 70px;
+  max-width: 100%;
+  padding: 5px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  text-align: center;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.wateruserInput:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 5px rgba(37,99,235,0.5);
+  outline: none;
+}
+
+/* =======================
+   Save Buttons
+   ======================= */
+.saveButton {
+  background-color: #22c55e;
   border: none;
   border-radius: 6px;
-  font-size: 16px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: white;
   cursor: pointer;
-  transition: 0.3s;
+  transition: all 0.2s ease;
+  width: 100%;
+  max-width: 100px;
+  box-sizing: border-box;
 }
 
-.saveBtn:hover {
-  background-color: #218838;
+.saveButton:hover {
+  background-color: #16a34a;
+  transform: scale(1.05);
 }
 
-.wateruserInput
-{
-  width: 80%;
+/* =======================
+   Action column fixes
+   ======================= */
+.readingsTable td:last-child {
+  width: 120px; /* Fixed width for action buttons */
+  text-align: center;
+  white-space: nowrap;
 }
 
-/* Responsive for mobile */
+/* Save All Button */
+div > .saveButton {
+  padding: 10px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 20px;
+  max-width: 200px;
+}
+
+/* =======================
+   Responsive Table
+   ======================= */
 @media screen and (max-width: 768px) {
   .tableContainer {
-    margin: 10px;
-    padding: 10px;
+    margin: 15px;
+    padding: 1rem;
   }
 
   .readingsTable {
+    display: block;
     width: 100%;
-    border: none;
   }
 
   thead {
@@ -83,34 +143,47 @@
   tr {
     display: block;
     margin-bottom: 15px;
-    border: 1px solid #ccc;
+    background: #f9fafb;
     border-radius: 8px;
     padding: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   }
 
   td {
     display: flex;
     justify-content: space-between;
-    padding: 6px 8px;
-    border: none;
-    border-bottom: 1px solid #eee;
-    width: 80%;
-    margin: auto;
-    margin-bottom: 2%;
+    padding: 8px 10px;
+    text-align: right;
+    border-bottom: 1px solid #e5e7eb;
+    width: 100%;
   }
 
   td::before {
     content: attr(data-label);
-    font-weight: bold;
+    font-weight: 600;
     text-transform: capitalize;
+    color: #374151;
   }
 
-  .readingInput {
-    width: 60%;
+  .wateruserInput {
+    width: 50px;
   }
 
-  .saveBtn {
+  .readingsTable td:last-child > .saveButton {
     width: 100%;
-    margin-top: 10px;
+    max-width: none;
+    margin-top: 5px;
   }
+
+  div > .saveButton {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+/* =======================
+   Smooth transitions
+   ======================= */
+* {
+  transition: all 0.25s ease;
 }

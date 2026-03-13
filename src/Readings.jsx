@@ -1,180 +1,184 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Readings.module.css";
 import { toast } from "react-toastify";
+import Footer from "./Footer";
 
-function WaterUsers() {
-  const [wateruser, setWaterUser] = useState([]);
-  const [inputs, setInputs] = useState([]);
-  const [file, setFile] = useState(null);
+// Set your backend URL (local dev or production)
+//const BACKEND_URL = "http://127.0.0.1:8000/api"; // change to production URL when deployed
+const BACKEND_URL = "https://kasarani-1.onrender.com/api"; // change to production URL when deployed
 
-  // Fetch water users from backend
+function Readings() {
+  const [waterUsers, setWaterUsers] = useState([]);
+  const [editedRows, setEditedRows] = useState({});
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch("https://kasarani.onrender.com/read-user");
-        const data = await res.json();
-        setWaterUser(data);
-      } catch (err) {
-        console.error("Error fetching data:", err);
-      }
-    };
     fetchData();
   }, []);
 
+  const fetchData = async () => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/read_data/`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setWaterUsers(data);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      toast.error(`Failed to fetch data: ${err.message}`);
+    }
+  };
+
   const handleInputChange = (id, field, value) => {
-    setInputs(prev => ({
+    setEditedRows(prev => ({
       ...prev,
       [id]: { ...prev[id], [field]: value }
     }));
+    setWaterUsers(prev => 
+      prev.map(row => row.id === id ? { ...row, [field]: value } : row)
+    );
   };
 
-  // Save single row readings manually
-  const saveReadings = async (id) => {
-    const readings = inputs[id];
-    if (!readings?.sup || !readings?.user) {
-      toast.error("Please fill both readings");
+  const saveSingleRow = async (id) => {
+    const rowData = editedRows[id];
+    if (!rowData) {
+      toast.info("No changes to save for this user");
       return;
     }
 
     try {
-      await fetch("https://kasarani.onrender.com/update-readings", {
+      const res = await fetch(`${BACKEND_URL}/update-readings/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id,
-          sup: readings.sup,
-          user: readings.user
-        })
+        body: JSON.stringify([{ id, ...rowData }])
       });
-      toast.success("Readings updated successfully!");
-      setInputs(prev => ({ ...prev, [id]: { sup: "", user: "" } }));
+      if (res.ok) {
+        toast.success("Row updated successfully!");
+        setEditedRows(prev => {
+          const updated = { ...prev };
+          delete updated[id];
+          return updated;
+        });
+        fetchData();
+      } else {
+        const errorData = await res.json();
+        toast.error(errorData.error || "Failed to update row");
+      }
     } catch (err) {
-      console.error("Error updating readings:", err);
-      toast.error("Failed to update readings");
+      console.error(err);
+      toast.error("Error updating row");
     }
   };
 
-  // Handle Excel export
-  const handleExport = () => {
-    fetch("https://kasarani.onrender.com/export-waterusers")
-      .then(res => res.blob())
-      .then(blob => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "waterusers.xlsx";
-        a.click();
-      })
-      .catch(err => {
-        console.error("Error exporting Excel:", err);
-        toast.error("Failed to export Excel");
-      });
-  };
+  const saveAllRows = async () => {
+    const updates = Object.entries(editedRows).map(([id, data]) => ({
+      id: parseInt(id),
+      ...data
+    }));
 
-  // Handle file selection
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
-
-  // Handle Excel upload
-  const handleUpload = async () => {
-    if (!file) {
-      toast.error("Please select a file first");
+    if (updates.length === 0) {
+      toast.info("No changes to save");
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
-
     try {
-      const res = await fetch("https://kasarani.onrender.com/import-waterusers", {
+      const res = await fetch(`${BACKEND_URL}/update-readings/`, {
         method: "POST",
-        body: formData
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates)
       });
       if (res.ok) {
-        toast.success("Excel uploaded successfully!");
-        setFile(null);
-        // Refresh the water users data
-        const refreshed = await fetch("https://kasarani.onrender.com/read-user");
-        setWaterUser(await refreshed.json());
+        toast.success("Readings data updated successfully!");
+        setEditedRows({});
+        fetchData();
       } else {
-        toast.error("Failed to upload Excel");
+        const errorData = await res.json();
+        toast.error(errorData.error || "Failed to update rows");
       }
     } catch (err) {
-      console.error("Error uploading Excel:", err);
-      toast.error("Error uploading Excel");
+      console.error(err);
+      toast.error("Error updating rows");
     }
   };
 
   return (
+    <>
     <div className={styles.tableContainer}>
-      <h2 className={styles.title}>Enter Water Readings</h2>
+      <h2 className={styles.title}>Water Readings</h2>
+      
 
       <table className={styles.readingsTable}>
         <thead>
           <tr>
-            <th colSpan={2}>User Data</th>
-            <th colSpan={2}>Previous Readings</th>
-            <th colSpan={2}>Current Readings</th>
-            <th>Action</th>
-          </tr>
-          <tr>
             <th>Name</th>
-            <th>Contact</th>
-            <th>Sup</th>
-            <th>User</th>
-            <th>Sup</th>
-            <th>User</th>
-            <th>Save</th>
+            <th>Phone</th>
+            <th>Prev User</th>
+            <th>Prev Sup</th>
+            <th>Cur User</th>
+            <th>Cur Sup</th>
+            <th>Rate</th>
+            {/*<th>Units Used</th>*/}
+            <th>Action</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
-          {wateruser.map((watu) => (
-            <tr key={watu.id}>
-              <td data-label="Name">{watu.name}</td>
-              <td data-label="Contact">{watu.phone}</td>
-              <td data-label="Prev. Sup">{watu.meter}</td>
-              <td data-label="Prev. User">{watu.userr}</td>
-              <td data-label="Cur. Sup">
+          {waterUsers.map(row => (
+            <tr key={row.id}>
+              <td>{row.name}</td>
+              <td>{row.phone}</td>
+              <td>
                 <input
                   type="number"
                   className={styles.wateruserInput}
-                  value={inputs[watu.id]?.sup || ""}
-                  onChange={(e) =>
-                    handleInputChange(watu.id, "sup", e.target.value)
-                  }
+                  value={row.prev_user || ""}
+                  onChange={(e) => handleInputChange(row.id, "prev_user", parseInt(e.target.value))}
                 />
               </td>
-              <td data-label="Cur. User">
+              <td>
                 <input
                   type="number"
                   className={styles.wateruserInput}
-                  value={inputs[watu.id]?.user || ""}
-                  onChange={(e) =>
-                    handleInputChange(watu.id, "user", e.target.value)
-                  }
+                  value={row.prev_sup || ""}
+                  onChange={(e) => handleInputChange(row.id, "prev_sup", parseInt(e.target.value))}
                 />
               </td>
-              <td data-label="Save">
-                <button onClick={() => saveReadings(watu.id)}>Save</button>
+              <td>
+                <input
+                  type="number"
+                  className={styles.wateruserInput}
+                  value={row.cur_user || ""}
+                  onChange={(e) => handleInputChange(row.id, "cur_user", parseInt(e.target.value))}
+                />
               </td>
+              <td>
+                <input
+                  type="number"
+                  className={styles.wateruserInput}
+                  value={row.cur_sup || ""}
+                  onChange={(e) => handleInputChange(row.id, "cur_sup", parseInt(e.target.value))}
+                />
+              </td>
+              <td>{row.rate}</td>
+              {/*<td>{row.units_used !== null ? row.units_used : "-"}</td>*/}
+              <td>
+                <button onClick={() => saveSingleRow(row.id)} className={styles.saveButton}>Save</button>
+              </td>
+              <td>
+              {(row.cur_user !== null && row.cur_sup !== null && (((row.cur_user - row.cur_sup) >= 0 && (row.cur_user - row.cur_sup <= 3)) || ((row.cur_sup - row.cur_user) >= 0 && (row.cur_sup - row.cur_user <= 3))))
+                ? "Good"
+                : "Leakage"}
+            </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Excel workflow */}
       <div style={{ marginTop: "20px" }}>
-        <button onClick={handleExport}>Download Excel</button>
-        <div style={{ marginTop: "10px" }}>
-          <input type="file" accept=".xlsx" onChange={handleFileChange} />
-          <button onClick={handleUpload} style={{ marginLeft: "10px" }}>
-            Upload Excel
-          </button>
-        </div>
+        <button onClick={saveAllRows} className={styles.saveButton}>Save All Changes</button>
       </div>
     </div>
+    <Footer/>
+    </>
   );
 }
 
-export default WaterUsers;
+export default Readings;

@@ -1,0 +1,145 @@
+/* Import modern font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary-color: #4CAF50;
+  --secondary-color: #2E7D32;
+  --hover-color: #45A049;
+  --text-color: #333;
+  --bg-color: #f9f9f9;
+  --input-border: #ccc;
+  --shadow-color: rgba(0,0,0,0.15);
+}
+
+body {
+  font-family: 'Inter', Arial, sans-serif;
+  color: var(--text-color);
+  background-color: #f0f2f5;
+  margin: 0;
+  padding: 0;
+}
+
+/* Main container */
+.mainDiv {
+  padding: 30px;
+  max-width: 1100px;
+  margin: 5% auto;
+  background-color: var(--bg-color);
+  border-radius: 15px;
+  box-shadow: 0 8px 20px var(--shadow-color);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mainDiv:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px var(--shadow-color);
+}
+
+/* Table styling */
+.billingTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 25px;
+  font-size: 0.95rem;
+  overflow-x: auto;
+}
+
+.billingTable th,
+.billingTable td {
+  border: 1px solid #e0e0e0;
+  padding: 12px 15px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+  color: black;
+}
+
+.billingTable th {
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 600;
+}
+
+.billingTable tr:nth-child(even) {
+  background-color: #f7f7f7;
+}
+
+.billingTable tr:hover {
+  background-color: #e6f4ea;
+}
+
+.billingTable td input {
+  width: 100%;       /* Fill the cell available width */
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--input-border);
+  box-sizing: border-box; /* IMPORTANT: Ensures padding doesn't increase width */
+  margin: 0;         /* Remove your previous 1% 3% 1% 1% margin which pushes it out */
+  min-width: 80px;   /* Ensures it never gets too small to read */
+}
+
+/* Remove or update the specific BillingsInput class if it's adding extra padding */
+.BillingsInput {
+  padding: 8px 10px; /* Consolidate with the rule above */
+}
+
+.billingTable td input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px var(--primary-color);
+}
+
+/* Button styling */
+.btnSave {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.btnSave:hover {
+  background-color: var(--hover-color);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .mainDiv {
+    margin: 5% 2%;
+    padding: 20px;
+  }
+  
+  .billingTable td input {
+    width: 80%;
+  }
+}
+
+@media (max-width: 768px) {
+  .billingTable th,
+  .billingTable td {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+  }
+
+  .btnSave {
+    padding: 6px 14px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .billingTable {
+    font-size: 0.8rem;
+  }
+
+  .billingTable td input {
+    width: 100%;
+  }
+}

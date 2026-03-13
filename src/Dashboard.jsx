@@ -1,93 +1,102 @@
 import { useState } from "react";
 import styles from "./Dashboard.module.css";
 
-// Import your task components
 import Readings from "./Readings";
-import Finances from "./Finances";
-import ErrorPage from "./ErrorPage";
-import Plots from "./Plots";
+import Billings from "./Billings";
 import RegWaterUser from "./RegWaterUser";
-import Footer from "./Footer";
-import RegPlots from "./RegPlots";
-import WaterReadings from "./WaterReadings";
+import Users from "./Users";
+import Analytics from "./Analytics";
+import SendBillingSMS from "./SendBillingSMS";
+import Profile from './Profile';
+
+
+function Sms() {
+  return (
+    <div>
+      <SendBillingSMS />
+    </div>
+  );
+}
 
 function Dashboard() {
-    const [activeTask, setActiveTask] = useState("Readings"); // Track which task is active
+    const [activeView, setActiveView] = useState("readings");
+
+    const renderContent = () => {
+        switch (activeView) {
+            case "readings":
+                return <Readings />;
+            case "billings":
+                return <Billings />;
+            case "register":
+                return <RegWaterUser />;
+            case "users":
+                return <Users />;
+            case "analytics":
+                return <Analytics/>
+            case "profile":
+                return <Profile/>
+            default:
+                return <Readings />;
+        }
+    };
 
     return (
-        <>
-        <div className={styles.Container}>
-            {/* Left Sidebar */}
-            <div className={styles.Sidebar}>
-                {/*<div className={styles.UserInfo}>
-                    <p>KasaraniRes Ltd, Nairobi</p>
-                </div>*/}
+        <div className={styles.dashboard}>
+            {/* Sidebar */}
+            <aside className={styles.sidebar}>
+                <h2 className={styles.logo}>Admin Dashboard</h2>
 
-                <div className={styles.Tasks}>
-                    <p className={styles.TasksTitle}>Select a task to proceed </p>
+                <nav className={styles.nav}>
                     <button
-                        className={activeTask === "Readings" ? styles.ActiveTask : ""}
-                        onClick={() => setActiveTask("Readings")}
+                        className={`${styles.navItem} ${activeView === "readings" ? styles.active : ""}`}
+                        onClick={() => setActiveView("readings")}
                     >
-                        Update Water Readings
+                        Readings
                     </button>
-                    <button
-                        className={activeTask === "WaterReadings" ? styles.ActiveTask : ""}
-                        onClick={() => setActiveTask("WaterReadings")}
-                    >
-                        See water readings 
-                    </button>
-                    <button
-                        className={activeTask === "Finances" ? styles.ActiveTask : ""}
-                        onClick={() => setActiveTask("Finances")}
-                    >
-                        Financial Dashboard
-                    </button>
-                    <button
-                        className={activeTask === "ErrorPage" ? styles.ActiveTask : ""}
-                        onClick={() => setActiveTask("ErrorPage")}
-                    >
-                        Water Data
-                    </button>
-                    <button
-                        className={activeTask === "Plots" ? styles.ActiveTask : ""}
-                        onClick={() => setActiveTask("Plots")}
-                    >
-                        Plot Management
-                    </button>
-                    <button
-                        className={activeTask === "RegWaterUser" ? styles.ActiveTask : ""}
-                        onClick={() => setActiveTask("RegWaterUser")}
-                    >
-                        Register new user
-                    </button>
-                    <button
-                        className={activeTask === "RegPlots" ? styles.ActiveTask : ""}
-                        onClick={() => setActiveTask("RegPlots")}
-                    >
-                        Update new house 
-                    </button>
-                </div>
-            </div>
 
-            {/* Right Content Area */}
-            <div className={styles.Content}>
-                {activeTask === "" && (
-                    <p className={styles.Placeholder}>
-                        Please select a task from the left to begin.
-                    </p>
-                )}
-                {activeTask === "Readings" && <Readings />}
-                {activeTask === "Finances" && <Finances />}
-                {activeTask === "ErrorPage" && <ErrorPage />}
-                {activeTask === "Plots" && <Plots />}
-                {activeTask === "RegWaterUser" && <RegWaterUser/>}
-                {activeTask === "RegPlots" && <RegPlots/>}
-                {activeTask === "WaterReadings" && <WaterReadings/>}
-            </div>
+                    <button
+                        className={`${styles.navItem} ${activeView === "billings" ? styles.active : ""}`}
+                        onClick={() => setActiveView("billings")}
+                    >
+                        Billings
+                    </button>
+
+                    <button
+                        className={`${styles.navItem} ${activeView === "register" ? styles.active : ""}`}
+                        onClick={() => setActiveView("register")}
+                    >
+                        Register New Customer
+                    </button>
+
+                    <button
+                        className={`${styles.navItem} ${activeView === "users" ? styles.active : ""}`}
+                        onClick={() => setActiveView("users")}
+                    >
+                        Registered Customers 
+                    </button>
+
+                    <button
+                        className={`${styles.navItem} ${activeView === "analytics" ? styles.active : ""}`}
+                        onClick={() => setActiveView("analytics")}
+                    >
+                        Analytics
+                    </button>
+
+                    <button
+                        className={`${styles.navItem} ${activeView === "profile" ? styles.active : ""}`}
+                        onClick={() => setActiveView("profile")}
+                    >
+                        Profiles
+                    </button>
+                    <Sms/>
+                </nav>
+            </aside>
+
+            {/* Main Content */}
+            <main className={styles.content}>
+                {renderContent()}
+            </main>
         </div>
-        <Footer/>
-        </>
     );
 }
 
