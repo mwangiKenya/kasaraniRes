@@ -52,7 +52,7 @@ function Workers() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        
+         {/*
         <label>Role</label>
         <select
           value={role}
@@ -65,6 +65,7 @@ function Workers() {
           <option value="technician">Technician</option>
           <option value="accountant">Accountant</option>
         </select>
+        */}
 
         <button type="submit">Login</button>
       </form>
