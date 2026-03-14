@@ -11,7 +11,7 @@ function SendBillingSMS() {
     try {
       const response = await fetch(
         //"http://localhost:8000/api/send-billing-sms/",
-        "https://kasarani-1.onrender.com/api/send-billing-sms/",
+        "https://python-back-2.onrender.com/api/send-billing-sms/",
         {
           method: "POST",
           headers: {

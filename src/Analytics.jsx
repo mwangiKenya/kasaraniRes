@@ -9,7 +9,7 @@ function DownloadExcelButton() {
   const downloadExcel = async () => {
     try {
       {/*const response = await fetch("http://localhost:8000/api/export-readings/",*/} 
-      const response = await fetch("https://kasarani-1.onrender.com/api/export-readings", {
+      const response = await fetch("https://python-back-2.onrender.com/api/export-readings", {
         method: "GET",
       });
 
@@ -47,7 +47,7 @@ function BillingsFile() {
   const downloadExcel = async () => {
     try {
       {/*const response = await fetch("http://localhost:8000/api/export-billings/", */}
-      const response = await fetch("https://kasarani-1.onrender.com/api/export-billings/", {
+      const response = await fetch("https://python-back-2.onrender.com/api/export-billings/", {
         method: "GET",
       });
 
@@ -85,7 +85,7 @@ function CustomersFile() {
   const downloadExcel = async () => {
     try {
       {/*const response = await fetch("http://localhost:8000/api/export-users/", */}
-      const response = await fetch("https://kasarani-1.onrender.com/api/export-users/", {
+      const response = await fetch("https://python-back-2.onrender.com/api/export-users/", {
         method: "GET",
       });
 
@@ -128,7 +128,7 @@ function Analytics(){
     //THIS USEEFFECT READS THE TOTAL UNITS USED FROM THE READINGS TABLE
     useEffect(() => {
         //fetch("http://127.0.0.1:8000/api/total_units")
-        fetch("https://kasarani-1.onrender.com/api/total_units")
+        fetch("https://python-back-2.onrender.com/api/total_units")
         .then((res) => {
             if (!res.ok) throw new error ("Network error")
                 return res.json();
@@ -144,7 +144,7 @@ function Analytics(){
     //THIS USE EFFECT READS THE TOTAL AMOUNT BILLED FROM THE BILLINGS TABLE
     useEffect(() => {
         //fetch("http://127.0.0.1:8000/api/total_bill")
-        fetch("https://kasarani-1.onrender.com/api/total_bill")
+        fetch("https://python-back-2.onrender.com/api/total_bill")
         .then((res) => {
             if (!res.ok) throw new error ("Network error")
                 return res.json();
@@ -160,7 +160,7 @@ function Analytics(){
     //THIS USE EFFECT READS THE TOTAL AMOUNT PAID FROM THE BILLINGS TABLE
     useEffect(() => {
         //fetch("http://127.0.0.1:8000/api/total_paid")
-        fetch("https://kasarani-1.onrender.com/api/total_paid")
+        fetch("https://python-back-2.onrender.com/api/total_paid")
         .then((res) => {
             if (!res.ok) throw new error ("Network error")
                 return res.json();
@@ -177,7 +177,7 @@ function Analytics(){
     //FETCH THE TOTAL NUMBER OF CUSTOMERS FROM THE DATABASE
     useEffect(() => {
         //fetch("http://127.0.0.1:8000/api/total_cust")
-        fetch("https://kasarani-1.onrender.com/api/total_cust")
+        fetch("https://python-back-2.onrender.com/api/total_cust")
         .then((res) => {
             if (!res.ok) throw new error ("Network error")
                 return res.json();
@@ -193,7 +193,7 @@ function Analytics(){
     //READ THE AVERAGE OF UNTIS USED AND DISPLAY THEM
     useEffect(() => {
         //fetch("http://127.0.0.1:8000/api/avg_units")
-        fetch("https://kasarani-1.onrender.com/api/avg_units")
+        fetch("https://python-back-2.onrender.com/api/avg_units")
         .then((res) => {
             if (!res.ok) throw new error ("Network error")
                 return res.json();

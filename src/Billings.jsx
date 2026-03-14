@@ -20,7 +20,7 @@ function Billings() {
   // Fetch all billings from backend
   useEffect(() => {
     //fetch("http://127.0.0.1:8000/api/bill/") // API endpoint
-    fetch("https://kasarani-1.onrender.com/api/bill/") 
+    fetch("https://python-back-2.onrender.com/api/bill/") 
       .then((res) => {
         if (!res.ok) throw new Error("Network response was not ok");
         return res.json();
@@ -54,7 +54,7 @@ function Billings() {
     try {
       const response = await fetch(
         //`http://127.0.0.1:8000/api/update_paid/`,
-        `https://kasarani-1.onrender.com/api/update_paid/`,
+        `https://python-back-2.onrender.com/api/update_paid/`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

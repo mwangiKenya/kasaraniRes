@@ -5,7 +5,7 @@ import Footer from "./Footer";
 
 // Set your backend URL (local dev or production)
 //const BACKEND_URL = "http://127.0.0.1:8000/api"; // change to production URL when deployed
-const BACKEND_URL = "https://kasarani-1.onrender.com/api"; // change to production URL when deployed
+const BACKEND_URL = "https://python-back-2.onrender.com/api"; // change to production URL when deployed
 
 function Readings() {
   const [waterUsers, setWaterUsers] = useState([]);
