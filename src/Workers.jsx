@@ -24,7 +24,7 @@ function Workers() {
     if (response.ok) {
       localStorage.setItem("token", data.token);
       localStorage.setItem("role", data.role);
-      navigate("/Readings");
+      navigate("/ReaderDashboard");
     } else {
       setError(data.error);
     }

@@ -140,16 +140,93 @@ function Water() {
   );
 }
 
+
+function WaterLanding() {
+  return (
+    <div className={styles.LandingMain}>
+      {/* Hero Section */}
+      <section className={styles.HeroSection}>
+        <div className={styles.HeroContent}>
+          <h1 className={styles.HeroTitle}>Pure & Reliable Water Supply</h1>
+          <p className={styles.HeroSubtitle}>
+            Serving Kasarani  with high-quality, fresh water for your home and business.
+          </p>
+          <a href="mailto:kasaranires@gmail.com">
+            <button className={styles.HeroButton}>Get in Touch</button>
+          </a>
+        </div>
+        <div className={styles.HeroImages}>
+          <img src={`${import.meta.env.BASE_URL}my-water.png`} alt="Water Drop" />
+          <img src={`${import.meta.env.BASE_URL}drop.jpeg`} alt="Water Supply" />
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section className={styles.AboutSection}>
+        <h2 className={styles.SectionTitle}>Who We Are</h2>
+        <p className={styles.SectionText}>
+          We supply clean, fresh water across Kasarani and the Santon area. 
+          Our team ensures every drop counts, delivering safe, reliable water 
+          to homes and businesses. Join our community of happy customers!
+        </p>
+      </section>
+
+      {/* Why Choose Us Section */}
+      <section className={styles.WhySection}>
+        <h2 className={styles.SectionTitle}>Why Choose Us</h2>
+        <div className={styles.WhyCards}>
+          <div className={styles.Card}>
+            <h3>Experienced Team</h3>
+            <p>
+              Our team is highly dedicated and experienced in water supply, 
+              distribution, and customer support. We combine technical expertise 
+              with community understanding for reliable service.
+            </p>
+          </div>
+          <div className={styles.Card}>
+            <h3>Integrity</h3>
+            <p>
+              We operate with honesty, transparency, and accountability. 
+              Integrity is at the heart of building trust with our customers.
+            </p>
+          </div>
+          <div className={styles.Card}>
+            <h3>24/7 Service</h3>
+            <p>
+              Water supply issues can happen anytime. We ensure consistent 
+              service with round-the-clock support for our clients.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action Section */}
+      <section className={styles.CTASection}>
+        <h2 className={styles.CTATitle}>Ready to Get Fresh Water?</h2>
+        <p className={styles.CTASubtitle}>
+          Contact us today and experience the best water supply in Kasarani.
+        </p>
+        <a href="mailto:kasaranires@gmail.com">
+          <button className={styles.CTAButton}>Contact Now</button>
+        </a>
+      </section>
+    </div>
+  );
+}
+
+
+
 function Home() {
 
     
   return (
     <>
-      <Top />
+      {/*<Top />
       <PlotA />
       <Houses />
       <Water />
-      <Footer />
+      <Footer />*/}
+      <WaterLanding/>
     </>
   );
 }

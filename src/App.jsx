@@ -12,6 +12,7 @@ import Analytics from "./Analytics";
 import Login from "./Login";
 import Workers from "./Workers";
 import Profile from "./Profile";
+import ReaderDashboard from "./ReaderDashboard";
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -30,7 +31,7 @@ function App() {
           <div className="AppTopDiv">
 
             <div>
-              <img src="Adster ltd.png" className="MyLogo" />
+              <img src="my-water.png" className="MyLogo" />
             </div>
 
             <div>
@@ -59,7 +60,7 @@ function App() {
             <Link to="/" className="MyNavLinks" onClick={() => setMenuOpen(false)}>Home</Link>
             <Link to = "/Login" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Admin </Link>
             <Link to = "/Workers" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Users </Link>
-            <Link to = "/Profile" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Profiles </Link>
+            {/*<Link to = "/ReaderDashboard" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Reader </Link>*/}
           </nav>
 
           {/*<hr />*/}
@@ -76,6 +77,7 @@ function App() {
           <Route path="/Login" element = {<Login/>}/>
           <Route path="/Workers" element = {<Workers/>}/>
           <Route path="/Profile" element = {<Profile/>}/>
+          <Route path="/ReaderDashboard" element = {<ReaderDashboard/>}/>
         </Routes>
       </HashRouter>
 

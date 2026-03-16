@@ -315,3 +315,195 @@ button {
         height: 220px;
     }
 }
+
+
+/*========================================================================
+New Home page design css styles*/
+/* General Reset & Fonts */
+.LandingMain {
+  font-family: 'Roboto', sans-serif;
+  color: #1c1c1c;
+  line-height: 1.6;
+}
+
+/* Hero Section */
+.HeroSection {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 80px 5%;
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.HeroContent {
+  max-width: 600px;
+  animation: fadeInLeft 1.2s ease forwards;
+}
+
+.HeroTitle {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  background: linear-gradient(90deg, #fff, #dff9ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.HeroSubtitle {
+  font-size: 1.25rem;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.HeroButton {
+  padding: 12px 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  background: #fff;
+  color: #0072ff;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.HeroButton:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.HeroImages img {
+  width: 300px;
+  margin-left: 20px;
+  border-radius: 20px;
+  animation: float 4s ease-in-out infinite;
+}
+
+/* About Section */
+.AboutSection {
+  text-align: center;
+  padding: 60px 5%;
+  background: #f5faff;
+}
+
+.SectionTitle {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #0072ff;
+  position: relative;
+  display: inline-block;
+}
+
+.SectionText {
+  max-width: 700px;
+  margin: 0 auto;
+  font-size: 1.1rem;
+  opacity: 0.85;
+  line-height: 1.8;
+}
+
+/* Why Choose Us */
+.WhySection {
+  padding: 60px 5%;
+}
+
+.WhyCards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.Card {
+  background: #ffffff;
+  padding: 30px 20px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  max-width: 300px;
+  flex: 1 1 300px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.Card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+.Card h3 {
+  margin-bottom: 15px;
+  color: #0072ff;
+}
+
+.Card p {
+  opacity: 0.8;
+  font-size: 1rem;
+}
+
+/* Call to Action */
+.CTASection {
+  text-align: center;
+  padding: 80px 5%;
+  background: linear-gradient(135deg, #0072ff, #00c6ff);
+  color: #fff;
+}
+
+.CTATitle {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+.CTASubtitle {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.CTAButton {
+  padding: 15px 40px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  background: #fff;
+  color: #0072ff;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.CTAButton:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes fadeInLeft {
+  0% { opacity: 0; transform: translateX(-50px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .HeroSection {
+    flex-direction: column;
+    text-align: center;
+  }
+  .HeroImages img {
+    margin: 20px 0 0 0;
+    width: 250px;
+  }
+  .WhyCards {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
