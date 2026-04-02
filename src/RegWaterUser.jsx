@@ -5,7 +5,6 @@ import { toast } from "react-toastify";
 function RegWaterUser() {
     const [reg, setReg] = useState({
         fname: "",
-        sname: "",
         phone: "",
         metre_num: "",
         zone: "",
@@ -22,7 +21,7 @@ function RegWaterUser() {
         e.preventDefault();
 
         // Simple validation
-        if (!reg.fname || !reg.sname || !reg.phone || !reg.metre_num || !reg.zone || !reg.rate) {
+        if (!reg.fname || !reg.phone || !reg.metre_num || !reg.zone || !reg.rate) {
             toast.error("Please fill all the details to register user.");
             return;
         }
@@ -56,7 +55,7 @@ function RegWaterUser() {
             <form className={styles.RegWaterUserForm} onSubmit={handleSubmit} autoComplete="off">
                 <input
                     type="text"
-                    placeholder="First name"
+                    placeholder="User name"
                     value={reg.fname}
                     name="fname"
                     onChange={handleChange}
