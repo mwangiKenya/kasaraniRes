@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./Logs.module.css";
 import { toast } from "react-toastify";
 
-const BACKEND_URL = "https://python-back-2.onrender.com/api"; // change if needed
+const BACKEND_URL = "https://python-back-2.onrender.com/api"; 
 
 function Logs() {
   const [logs, setLogs] = useState([]);
@@ -14,7 +14,7 @@ function Logs() {
 
   const fetchLogs = async () => {
     try {
-      const res = await fetch(`${BACKEND_URL}/logs/`); // make sure your endpoint exists
+      const res = await fetch(`${BACKEND_URL}/logs/`); 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setLogs(data);
@@ -49,7 +49,7 @@ function Logs() {
                 logs.map((log) => (
                   <tr key={log.id} className={styles.row}>
                     <td>{log.id}</td>
-                    <td>{log.reading}</td>
+                    <td>{log.reading_id}</td>
                     <td>{log.field_changed}</td>
                     <td>{log.old_val}</td>
                     <td>{log.new_val}</td>
