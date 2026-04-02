@@ -1,0 +1,95 @@
+.container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  font-family: 'Inter', sans-serif;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #1f2937;
+  text-align: center;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.2rem;
+  color: #6b7280;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.logsTable {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+
+.logsTable th,
+.logsTable td {
+  padding: 14px 18px;
+  text-align: center;
+}
+
+.logsTable th {
+  background-color: #4f46e5;
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.logsTable tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background 0.2s ease;
+}
+
+.logsTable tbody tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.logsTable tbody tr:hover {
+  background-color: #eef2ff;
+  cursor: pointer;
+}
+
+.logsTable td {
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.noData {
+  text-align: center;
+  padding: 20px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .logsTable th,
+  .logsTable td {
+    padding: 10px 8px;
+    font-size: 0.85rem;
+  }
+
+  .container {
+    margin: 20px;
+    padding: 15px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+}

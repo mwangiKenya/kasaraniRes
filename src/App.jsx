@@ -13,6 +13,7 @@ import Login from "./Login";
 import Workers from "./Workers";
 import Profile from "./Profile";
 import ReaderDashboard from "./ReaderDashboard";
+import Logs from "./Logs";
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -78,6 +79,7 @@ function App() {
           <Route path="/Workers" element = {<Workers/>}/>
           <Route path="/Profile" element = {<Profile/>}/>
           <Route path="/ReaderDashboard" element = {<ReaderDashboard/>}/>
+          <Route path="/Logs" element = {<Logs/>}/>
         </Routes>
       </HashRouter>
 

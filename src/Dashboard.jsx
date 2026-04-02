@@ -8,6 +8,7 @@ import Users from "./Users";
 import Analytics from "./Analytics";
 import SendBillingSMS from "./SendBillingSMS";
 import Profile from './Profile';
+import Logs from "./Logs";
 
 
 function Sms() {
@@ -35,6 +36,8 @@ function Dashboard() {
                 return <Analytics/>
             case "profile":
                 return <Profile/>
+            case "logs":
+                return <Logs/>
             default:
                 return <Readings />;
         }
@@ -87,6 +90,13 @@ function Dashboard() {
                         onClick={() => setActiveView("profile")}
                     >
                         Profiles
+                    </button>
+
+                    <button
+                        className={`${styles.navItem} ${activeView === "logs" ? styles.active : ""}`}
+                        onClick={() => setActiveView("logs")}
+                    >
+                        Logs
                     </button>
                     <Sms/>
                 </nav>
