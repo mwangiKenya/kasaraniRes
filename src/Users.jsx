@@ -69,7 +69,7 @@ function Users() {
           <tr>
             <th>ID</th>
             <th>First Name</th>
-            <th>Last Name</th>
+            {/*<th>Last Name</th>*/}
             <th>Phone</th>
             <th>Metre num</th>
             <th>Zone</th>
@@ -84,7 +84,7 @@ function Users() {
             <tr key={c.id}>
               <td>{c.id}</td>
               <td>{c.fname}</td>
-              <td>{c.sname}</td>
+              {/*<td>{c.sname}</td>*/}
               <td>{c.phone}</td>
               <td>{c.metre_num}</td>
               <td>{c.zone}</td>

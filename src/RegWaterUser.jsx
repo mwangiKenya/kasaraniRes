@@ -39,7 +39,7 @@ function RegWaterUser() {
 
             if (res.ok) {
                 toast.success(`${reg.fname} has been registered successfully.`);
-                setReg({ fname: "", sname: "", phone: "", metre_num: "", zone: "", rate: ""});
+                setReg({ fname: "", phone: "", metre_num: "", zone: "", rate: ""});
             } else {
                 const data = await res.json();
                 toast.error(data.detail || "Failed. Check user details and try again.");
@@ -62,14 +62,14 @@ function RegWaterUser() {
                     onChange={handleChange}
                     className={styles.RegWaterUserInput}
                 />
-                <input
+                {/*<input
                     type="text"
                     placeholder="Last name"
                     value={reg.sname}
                     name="sname"
                     onChange={handleChange}
                     className={styles.RegWaterUserInput}
-                />
+                />*/}
                 <input
                     type="tel"
                     placeholder="Phone number"
