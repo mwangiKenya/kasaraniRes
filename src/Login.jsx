@@ -6,32 +6,40 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
-    //const response = await fetch("http://127.0.0.1:8000/api/login/", {
-    const response = await fetch("https://python-back-2.onrender.com/api/login/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
+    try {
+      const response = await fetch("https://python-back-2.onrender.com/api/login/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (response.ok) {
-      localStorage.setItem("token", data.token);
-      navigate("/Dashboard");
-    } else {
-      setError(data.error);
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        navigate("/Dashboard");
+      } else {
+        setError(data.error || "Invalid login credentials");
+      }
+    } catch (err) {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="login-container">
       <form onSubmit={handleLogin} className="login-form">
-        <h2>Admin Login </h2>
+        <h2>Admin Login</h2>
+
         {error && <p className="error">{error}</p>}
 
         <label>Username</label>
@@ -40,6 +48,7 @@ function Login() {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
+          disabled={loading}
         />
 
         <label>Password</label>
@@ -48,9 +57,18 @@ function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          disabled={loading}
         />
 
-        <button type="submit">Login</button>
+        <button type="submit" disabled={loading}>
+          {loading ? (
+            <>
+              <span className="spinner"></span> Signing you in...
+            </>
+          ) : (
+            "Login"
+          )}
+        </button>
       </form>
     </div>
   );
