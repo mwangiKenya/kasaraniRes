@@ -17,6 +17,7 @@ function Logs() {
       const res = await fetch(`${BACKEND_URL}/logs/`); 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
+      console.log("API DATA:", data);
       setLogs(data);
     } catch (err) {
       console.error("Error fetching logs:", err);
