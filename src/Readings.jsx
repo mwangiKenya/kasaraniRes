@@ -37,6 +37,7 @@ function Readings() {
     );
   };
 
+  {/*
   const saveSingleRow = async (id) => {
     const rowData = editedRows[id];
     if (!rowData) {
@@ -45,7 +46,7 @@ function Readings() {
     }
 
     try {
-      const res = await fetch(`${BACKEND_URL}/update-readings/`, {
+      const res = await fetch(`${BACKEND_URL}/submit_new_reading/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify([{ id, ...rowData }])
@@ -67,6 +68,41 @@ function Readings() {
       toast.error("Error updating row");
     }
   };
+  */}
+  const saveSingleRow = async (row) => {
+  try {
+    const res = await fetch(`${BACKEND_URL}/submit_new_reading/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id: row.user,
+        cur_user: row.cur_user,
+        cur_sup: row.cur_sup
+      })
+    });
+
+    if (res.ok) {
+      toast.success("New reading saved!");
+
+      // Clear current readings after saving
+      setWaterUsers(prev =>
+        prev.map(r =>
+          r.id === row.id
+            ? { ...r, cur_user: "", cur_sup: "" }
+            : r
+        )
+      );
+
+      fetchData(); // reload updated data
+    } else {
+      const errorData = await res.json();
+      toast.error(errorData.error || "Failed to save");
+    }
+  } catch (err) {
+    console.error(err);
+    toast.error("Error saving reading");
+  }
+};
 
   const saveAllRows = async () => {
     const updates = Object.entries(editedRows).map(([id, data]) => ({
@@ -160,7 +196,7 @@ function Readings() {
               <td>{row.rate}</td>
               {/*<td>{row.units_used !== null ? row.units_used : "-"}</td>*/}
               <td>
-                <button onClick={() => saveSingleRow(row.id)} className={styles.saveButton}>Save</button>
+                <button onClick={() => saveSingleRow(row)} className={styles.saveButton}>Save</button>
               </td>
               <td>
               {(row.cur_user !== null && row.cur_sup !== null && (((row.cur_user - row.cur_sup) >= 0 && (row.cur_user - row.cur_sup <= 3)) || ((row.cur_sup - row.cur_user) >= 0 && (row.cur_sup - row.cur_user <= 3))))
