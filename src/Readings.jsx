@@ -75,7 +75,7 @@ function Readings() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        user_id: row.user,
+        user_id: row.id,
         cur_user: row.cur_user,
         cur_sup: row.cur_sup
       })
