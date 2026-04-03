@@ -59,7 +59,7 @@ function Readings() {
     try {
       // Always send user_id (FK) and numeric values
       const payload = {
-        user_id: row.user_id, // ForeignKey to read_users table
+        user_id: row.user, // ForeignKey to read_users table
         cur_user: Number(row.cur_user),
         cur_sup: Number(row.cur_sup)
       };
