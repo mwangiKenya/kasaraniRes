@@ -5,28 +5,44 @@ function Workers() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("");
   const [error, setError] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
 
-    //const response = await fetch("http://127.0.0.1:8000/api/users_login/", {
-    const response = await fetch("https://python-back-2.onrender.com/api/users_login/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password, role }),
-    });
+    try {
+      const response = await fetch("https://python-back-2.onrender.com/api/users_login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password })
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (response.ok) {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("role", data.role);
-      navigate("/ReaderDashboard");
-    } else {
-      setError(data.error);
+      if (response.ok) {
+        // Save data
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("role", data.role);
+        localStorage.setItem("username", data.username);
+
+        // ✅ Role-based navigation
+        const routes = {
+          reader: "/ReaderDashboard",
+          billing: "/BillingDashboard",
+          //admin: "/AdminDashboard"
+        };
+
+        navigate(routes[data.role] || "/");
+
+      } else {
+        setError(data.error || "Login failed");
+      }
+
+    } catch (err) {
+      setError("Server error. Try again.");
     }
   };
 
@@ -52,20 +68,6 @@ function Workers() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-         {/*
-        <label>Role</label>
-        <select
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          required
-        >
-          <option value="">Select Role</option>
-          <option value="admin">Admin</option>
-          <option value="staff">reader</option>
-          <option value="technician">Technician</option>
-          <option value="accountant">Accountant</option>
-        </select>
-        */}
 
         <button type="submit">Login</button>
       </form>
