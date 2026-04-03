@@ -77,7 +77,7 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch("https://python-back-2.onrender.com/api/login/", {
+      const response = await fetch("https://python-back-2.onrender.com/api/login_user/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
