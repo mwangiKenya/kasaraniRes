@@ -92,7 +92,7 @@ function Login() {
         setError(data.error || "Invalid login credentials");
       }
     } catch (err) {
-      setError("Network error. Please try again.");
+      setError("Failed to login. Please try again");
     } finally {
       setLoading(false);
     }
