@@ -166,7 +166,7 @@ function Readings() {
                   type="number"
                   className={styles.wateruserInput}
                   value={row.prev_user || ""}
-                  readOnly
+                  
                   onChange={(e) => handleInputChange(row.id, "prev_user", parseInt(e.target.value))}
                 />
               </td>
@@ -175,7 +175,7 @@ function Readings() {
                   type="number"
                   className={styles.wateruserInput}
                   value={row.prev_sup || ""}
-                  readOnly
+                  
                   onChange={(e) => handleInputChange(row.id, "prev_sup", parseInt(e.target.value))}
                 />
               </td>
