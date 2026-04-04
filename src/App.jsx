@@ -63,6 +63,8 @@ function App() {
             <Link to = "/Login" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Admin </Link>
             <Link to = "/Workers" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Users </Link>
             {/*<Link to = "/ReaderDashboard" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Reader </Link>*/}
+            <Link to = "/Users" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Users </Link>
+            <Link to = "/Readings" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Readings </Link>
           </nav>
 
           {/*<hr />*/}
