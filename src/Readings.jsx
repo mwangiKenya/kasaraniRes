@@ -39,19 +39,20 @@ function Readings() {
 
   // ----------------- HANDLE INPUT CHANGE -----------------
   const handleInputChange = (id, field, value) => {
-    // Convert empty string to 0 to prevent IntegerField errors
-    const numericValue = value === "" ? 0 : Number(value);
+  const numericValue = value === "" ? 0 : Number(value);
 
-    // Update editedRows to track changes
-    setEditedRows(prev => ({
-      ...prev,
-      [id]: { ...prev[id], [field]: numericValue }
-    }));
+  // Update editedRows safely
+  setEditedRows(prev => ({
+    ...prev,
+    [id]: { ...(prev[id] || {}), [field]: numericValue }
+  }));
 
-    // Update waterUsers table immediately for visual feedback
-    setWaterUsers(prev =>
-      prev.map(row => row.id === id ? { ...row, [field]: numericValue } : row)
-    );
+  // Update only the row being edited
+  setWaterUsers(prev =>
+    prev.map(row =>
+      row.id === id ? { ...row, [field]: numericValue } : row
+    )
+  );
   };
 
   // ----------------- SAVE SINGLE ROW -----------------
