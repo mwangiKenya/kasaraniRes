@@ -50,7 +50,7 @@ function Logs() {
                 logs.map((log) => (
                   <tr key={log.id} className={styles.row}>
                     <td>{log.id}</td>
-                    <td>{log.reading_id}</td>
+                    <td>{log.reading}</td>
                     <td>{log.field_changed}</td>
                     <td>{log.old_val}</td>
                     <td>{log.new_val}</td>
