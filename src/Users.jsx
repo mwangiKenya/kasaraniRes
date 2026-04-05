@@ -19,7 +19,7 @@ function Users() {
       .then((data) => setCustomers(data))
       .catch((err) => setError(err.message));
   };
-
+  {/*
   // Delete customer
   const handleDelete = (id) => {
     if (!window.confirm("Are you sure you want to delete this customer?")) return;
@@ -59,7 +59,7 @@ function Users() {
       })
       .catch((err) => setError(err.message));
   };
-
+*/}
   return (
     <div className={styles.mainDiv}>
       <h1>Registered Customers</h1>
@@ -90,12 +90,12 @@ function Users() {
               <td>{c.zone}</td>
               <td>{c.rate}</td>
               <td>{c.created_on}</td>
-              <td>
+              {/*<td>
                 <button onClick={() => handleUpdate(c.id)} className={styles.btnUpdate}>Update</button>
               </td>
               <td>
                 <button onClick={() => handleDelete(c.id)} className={styles.btnDelete}>Delete</button>
-              </td>
+              </td>*/}
             </tr>
           ))}
         </tbody>
