@@ -150,8 +150,6 @@ function Readings() {
               <th>Cur User</th>
               <th>Cur Sup</th>
               <th>Rate</th>
-              <th>Action</th>
-              <th>Status</th>
             </tr>
           </thead>
           <tbody>
@@ -196,21 +194,6 @@ function Readings() {
                   />
                 </td>
                 <td>{row.rate}</td>
-                <td>
-                  <button
-                    className={styles.saveButton}
-                    onClick={() => saveSingleRow(row)}
-                  >
-                    Save
-                  </button>
-                </td>
-                <td>
-                  {(row.cur_user !== null &&
-                    row.cur_sup !== null &&
-                    Math.abs(row.cur_user - row.cur_sup) <= 3)
-                    ? "Good"
-                    : "Leakage"}
-                </td>
               </tr>
             ))}
           </tbody>
