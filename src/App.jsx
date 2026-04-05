@@ -15,6 +15,7 @@ import Profile from "./Profile";
 import ReaderDashboard from "./ReaderDashboard";
 import Logs from "./Logs";
 import BillingDashboard from "./BillingDashboard";
+import RegWorker from "./RegWorker";
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -85,6 +86,7 @@ function App() {
           <Route path="/ReaderDashboard" element = {<ReaderDashboard/>}/>
           <Route path="/Logs" element = {<Logs/>}/>
           <Route path="/BillingDashboard" element = {<BillingDashboard/>}/>
+          <Route path="/RegWorker" element = {<RegWorker/>}/>
         </Routes>
       </HashRouter>
 

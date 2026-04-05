@@ -9,6 +9,7 @@ import Analytics from "./Analytics";
 import SendBillingSMS from "./SendBillingSMS";
 import Profile from './Profile';
 import Logs from "./Logs";
+import RegWorker from "./RegWorker";
 
 
 function Sms() {
@@ -38,6 +39,8 @@ function Dashboard() {
                 return <Profile/>
             case "logs":
                 return <Logs/>
+            case "regw":
+                return <RegWorker/>
             default:
                 return <Readings />;
         }
@@ -97,6 +100,12 @@ function Dashboard() {
                         onClick={() => setActiveView("logs")}
                     >
                         Logs
+                    </button>
+                    <button
+                        className={`${styles.navItem} ${activeView === "regw" ? styles.active : ""}`}
+                        onClick={() => setActiveView("regw")}
+                    >
+                        Register workers
                     </button>
                     <Sms/>
                 </nav>
