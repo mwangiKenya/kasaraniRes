@@ -105,7 +105,7 @@ function Dashboard() {
                         className={`${styles.navItem} ${activeView === "regw" ? styles.active : ""}`}
                         onClick={() => setActiveView("regw")}
                     >
-                        Register workers
+                        Register employees
                     </button>
                     <Sms/>
                 </nav>
