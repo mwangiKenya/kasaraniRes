@@ -144,7 +144,7 @@ function Analytics(){
     //THIS USE EFFECT READS THE TOTAL AMOUNT BILLED FROM THE BILLINGS TABLE
     useEffect(() => {
         //fetch("http://127.0.0.1:8000/api/total_bill")
-        fetch("https://python-back-2.onrender.com/api/total_bill")
+        fetch("https://python-back-2.onrender.com/api/total_bill/")
         .then((res) => {
             if (!res.ok) throw new error ("Network error")
                 return res.json();
