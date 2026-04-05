@@ -128,7 +128,7 @@ function Analytics(){
     //THIS USEEFFECT READS THE TOTAL UNITS USED FROM THE READINGS TABLE
     useEffect(() => {
         //fetch("http://127.0.0.1:8000/api/total_units")
-        fetch("https://python-back-2.onrender.com/api/total_units")
+        fetch("https://python-back-2.onrender.com/api/total_units/")
         .then((res) => {
             if (!res.ok) throw new error ("Network error")
                 return res.json();
@@ -177,7 +177,7 @@ function Analytics(){
     //FETCH THE TOTAL NUMBER OF CUSTOMERS FROM THE DATABASE
     useEffect(() => {
         //fetch("http://127.0.0.1:8000/api/total_cust")
-        fetch("https://python-back-2.onrender.com/api/total_cust")
+        fetch("https://python-back-2.onrender.com/api/total_cust/")
         .then((res) => {
             if (!res.ok) throw new error ("Network error")
                 return res.json();
