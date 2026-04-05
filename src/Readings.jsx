@@ -59,7 +59,7 @@ function Readings() {
     try {
       // Always send user_id (FK) and numeric values
       const payload = {
-        user_id: row.user, // ForeignKey to read_users table
+        user_id: row.user_id || row.id, // ForeignKey to read_users table
         cur_user: Number(row.cur_user),
         cur_sup: Number(row.cur_sup)
       };
@@ -103,7 +103,7 @@ function Readings() {
   // ----------------- SAVE ALL ROWS -----------------
   const saveAllRows = async () => {
     const updates = Object.entries(editedRows).map(([id, data]) => ({
-      user_id: data.user_id,
+      user_id: data.user_id || id,
       cur_user: Number(data.cur_user),
       cur_sup: Number(data.cur_sup)
     }));
@@ -114,7 +114,7 @@ function Readings() {
     }
 
     try {
-      const res = await fetch(`${BACKEND_URL}/update-readings/`, {
+      const res = await fetch(`${BACKEND_URL}/submit_new_reading/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updates)
