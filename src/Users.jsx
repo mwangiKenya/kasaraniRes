@@ -75,8 +75,8 @@ function Users() {
             <th>Zone</th>
             <th>Rate</th>
             <th>Registered on</th>
-            <th>Update</th>
-            <th>Delete</th>
+            {/*<th>Update</th>
+            <th>Delete</th>*/}
           </tr>
         </thead>
         <tbody>
