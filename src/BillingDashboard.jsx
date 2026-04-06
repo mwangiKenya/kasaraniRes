@@ -4,17 +4,8 @@ import styles from "./Dashboard.module.css";
 import Readings from "./Readings";
 import Billings from "./Billings";
 import Analytics from "./Analytics";
-import SendBillingSMS from "./SendBillingSMS";
 import Logs from "./Logs";
 
-
-function Sms() {
-  return (
-    <div>
-      <SendBillingSMS />
-    </div>
-  );
-}
 
 function BillingDashboard() {
     const [activeView, setActiveView] = useState("readings");
