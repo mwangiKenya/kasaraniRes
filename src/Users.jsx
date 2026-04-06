@@ -19,7 +19,7 @@ function Users() {
       .then((data) => setCustomers(data))
       .catch((err) => setError(err.message));
   };
-  {/*
+  
   // Delete customer
   const handleDelete = (id) => {
     if (!window.confirm("Are you sure you want to delete this customer?")) return;
@@ -59,7 +59,7 @@ function Users() {
       })
       .catch((err) => setError(err.message));
   };
-*/}
+
   return (
     <div className={styles.mainDiv}>
       <h1>Registered Customers</h1>
