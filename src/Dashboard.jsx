@@ -5,7 +5,6 @@ import Billings from "./Billings";
 import RegWaterUser from "./RegWaterUser";
 import Users from "./Users";
 import Analytics from "./Analytics";
-import Profile from './Profile';
 import Logs from "./Logs";
 import RegWorker from "./RegWorker";
 import EmployeesList from "./EmployeesList";
@@ -25,8 +24,6 @@ function Dashboard() {
                 return <Users />;
             case "analytics":
                 return <Analytics/>
-            case "profile":
-                return <Profile/>
             case "logs":
                 return <Logs/>
             case "regw":
@@ -78,13 +75,6 @@ function Dashboard() {
                         onClick={() => setActiveView("analytics")}
                     >
                         Analytics
-                    </button>
-
-                    <button
-                        className={`${styles.navItem} ${activeView === "profile" ? styles.active : ""}`}
-                        onClick={() => setActiveView("profile")}
-                    >
-                        Profiles
                     </button>
 
                     <button
