@@ -6,17 +6,8 @@ import Billings from "./Billings";
 import RegWaterUser from "./RegWaterUser";
 import Users from "./Users";
 import Analytics from "./Analytics";
-import SendBillingSMS from "./SendBillingSMS";
 import Profile from './Profile';
 
-
-function Sms() {
-  return (
-    <div>
-      <SendBillingSMS />
-    </div>
-  );
-}
 
 function ReaderDashboard() {
     const [activeView, setActiveView] = useState("readings");
