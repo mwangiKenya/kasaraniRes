@@ -1,16 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Billings.module.css";
 import Footer from "./Footer";
-import SendBillingSMS from "./SendBillingSMS";
 import { toast } from "react-toastify";
 
-function Sms() {
-  return (
-    <div>
-      <SendBillingSMS />
-    </div>
-  );
-}
 
 function Billings() {
   const [billings, setBillings] = useState([]);
