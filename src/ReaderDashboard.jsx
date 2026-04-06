@@ -54,13 +54,6 @@ function ReaderDashboard() {
                         Readings
                     </button>
 
-                    {/*<button
-                        className={`${styles.navItem} ${activeView === "billings" ? styles.active : ""}`}
-                        onClick={() => setActiveView("billings")}
-                    >
-                        Billings
-                    </button>*/}
-
                     <button
                         className={`${styles.navItem} ${activeView === "register" ? styles.active : ""}`}
                         onClick={() => setActiveView("register")}
@@ -75,20 +68,12 @@ function ReaderDashboard() {
                         Registered Customers 
                     </button>
 
-                    {/*<button
-                        className={`${styles.navItem} ${activeView === "analytics" ? styles.active : ""}`}
-                        onClick={() => setActiveView("analytics")}
-                    >
-                        Analytics
-                    </button>*/}
-
                     <button
                         className={`${styles.navItem} ${activeView === "profile" ? styles.active : ""}`}
                         onClick={() => setActiveView("profile")}
                     >
                         Profiles
                     </button>
-                    {/*<Sms/>*/}
                 </nav>
             </aside>
 

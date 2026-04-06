@@ -19,47 +19,7 @@ function Users() {
       .then((data) => setCustomers(data))
       .catch((err) => setError(err.message));
   };
-  {/*
-  // Delete customer
-  const handleDelete = (id) => {
-    if (!window.confirm("Are you sure you want to delete this customer?")) return;
-
-    //fetch(`http://127.0.0.1:8000/api/water_user/${id}/`, {
-    fetch(`https://python-back-2.onrender.com/api/water_user/${id}/`, {
-      method: "DELETE",
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to delete");
-        // Remove customer from state
-        setCustomers(customers.filter((c) => c.id !== id));
-      })
-      .catch((err) => setError(err.message));
-  };
-
-  // Update customer
-  const handleUpdate = (id) => {
-    const customer = customers.find((c) => c.id === id);
-    const newPhone = prompt("Enter new phone number:", customer.phone);
-    if (!newPhone) return;
-
-    //fetch(`http://127.0.0.1:8000/api/water_user/${id}/`, {
-    fetch(`https://python-back-2.onrender.com/api/water_user/${id}/`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...customer, phone: newPhone }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to update");
-        return res.json();
-      })
-      .then((updatedCustomer) => {
-        setCustomers(
-          customers.map((c) => (c.id === id ? updatedCustomer : c))
-        );
-      })
-      .catch((err) => setError(err.message));
-  };
-*/}
+  
   return (
     <div className={styles.mainDiv}>
       <h1>Registered Customers</h1>
@@ -90,12 +50,7 @@ function Users() {
               <td>{c.zone}</td>
               <td>{c.rate}</td>
               <td>{c.created_on}</td>
-              {/*<td>
-                <button onClick={() => handleUpdate(c.id)} className={styles.btnUpdate}>Update</button>
-              </td>
-              <td>
-                <button onClick={() => handleDelete(c.id)} className={styles.btnDelete}>Delete</button>
-              </td>*/}
+              
             </tr>
           ))}
         </tbody>

@@ -11,7 +11,6 @@ import Dashboard from "./Dashboard";
 import Analytics from "./Analytics";
 import Login from "./Login";
 import Workers from "./Workers";
-import Profile from "./Profile";
 import ReaderDashboard from "./ReaderDashboard";
 import Logs from "./Logs";
 import BillingDashboard from "./BillingDashboard";
@@ -64,10 +63,6 @@ function App() {
             <Link to="/" className="MyNavLinks" onClick={() => setMenuOpen(false)}>Home</Link>
             <Link to = "/Login" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Admin </Link>
             <Link to = "/Workers" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Users </Link>
-            {/*<Link to = "/ReaderDashboard" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Reader </Link>*/}
-            {/*<Link to = "/Users" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Users </Link>
-            <Link to = "/Readings" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Readings </Link>
-            <Link to = "/RegWaterUser" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Reg user </Link>*/}
           </nav>
 
           {/*<hr />*/}
@@ -83,7 +78,6 @@ function App() {
           <Route path="/Analytics" element = {<Analytics/>}/>
           <Route path="/Login" element = {<Login/>}/>
           <Route path="/Workers" element = {<Workers/>}/>
-          <Route path="/Profile" element = {<Profile/>}/>
           <Route path="/ReaderDashboard" element = {<ReaderDashboard/>}/>
           <Route path="/Logs" element = {<Logs/>}/>
           <Route path="/BillingDashboard" element = {<BillingDashboard/>}/>

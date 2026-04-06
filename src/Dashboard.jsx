@@ -1,25 +1,14 @@
 import { useState } from "react";
 import styles from "./Dashboard.module.css";
-
 import Readings from "./Readings";
 import Billings from "./Billings";
 import RegWaterUser from "./RegWaterUser";
 import Users from "./Users";
 import Analytics from "./Analytics";
-import SendBillingSMS from "./SendBillingSMS";
 import Profile from './Profile';
 import Logs from "./Logs";
 import RegWorker from "./RegWorker";
 import EmployeesList from "./EmployeesList";
-
-
-function Sms() {
-  return (
-    <div>
-      <SendBillingSMS />
-    </div>
-  );
-}
 
 function Dashboard() {
     const [activeView, setActiveView] = useState("readings");
@@ -117,7 +106,6 @@ function Dashboard() {
                     >
                         See employees
                     </button>
-                    <Sms/>
                 </nav>
             </aside>
 
