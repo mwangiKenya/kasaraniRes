@@ -3,7 +3,8 @@ import axios from "axios";
 import styles from "./RegWorker.module.css";
 import { toast } from "react-toastify";
 
-const BACKEND_URL = "https://python-back-2.onrender.com/api"; // change to your backend URL
+const BACKEND_URL = "https://python-back-2.onrender.com/api"; 
+//const BACKEND_URL = "http://127.0.0.1:8000/api";
 
 function RegWorker() {
   const [username, setUsername] = useState("");

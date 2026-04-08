@@ -3,8 +3,8 @@ import styles from "./Readings.module.css";
 import { toast } from "react-toastify";
 import Footer from "./Footer";
 
-// Backend URL (change to your production URL if deployed)
 const BACKEND_URL = "https://python-back-2.onrender.com/api";
+//const BACKEND_URL = "http://127.0.0.1:8000/api";
 
 function Readings() {
   const [waterUsers, setWaterUsers] = useState([]);

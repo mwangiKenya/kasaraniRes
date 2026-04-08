@@ -5,11 +5,13 @@ import React, {useEffect, useState} from "react";
 //ADD A FUNCTION TO ENABLE THE USER TO DOWNLOAD READINGS EXCEL
 //THIS DOWNLOADS THE READINGS DATA FILE
 // src/components/DownloadExcelButton.jsx
+{/*
 function DownloadExcelButton() {
   const downloadExcel = async () => {
     try {
-      {/*const response = await fetch("http://localhost:8000/api/export-readings/",*/} 
-      const response = await fetch("https://python-back-2.onrender.com/api/export-readings", {
+      const response = await fetch("https://python-back-2.onrender.com/api/export-readings",
+      //const response = await fetch("http://localhost:8000/api/export-readings/", 
+       {
         method: "GET",
       });
 
@@ -39,15 +41,17 @@ function DownloadExcelButton() {
     </button>
   );
 }
-
+*/}
 
 //=============================================================
 //=================================================================
+{/*
 function BillingsFile() {
   const downloadExcel = async () => {
     try {
-      {/*const response = await fetch("http://localhost:8000/api/export-billings/", */}
-      const response = await fetch("https://python-back-2.onrender.com/api/export-billings/", {
+      {/*const response = await fetch("https://python-back-2.onrender.com/api/export-billings/", 
+      const response = await fetch("http://localhost:8000/api/export-billings/",
+       {
         method: "GET",
       });
 
@@ -77,15 +81,17 @@ function BillingsFile() {
     </button>
   );
 }
-
+*/}
 
 //=============================================================
 //=================================================================
+{/*
 function CustomersFile() {
   const downloadExcel = async () => {
     try {
-      {/*const response = await fetch("http://localhost:8000/api/export-users/", */}
-      const response = await fetch("https://python-back-2.onrender.com/api/export-users/", {
+      {/*const response = await fetch("https://python-back-2.onrender.com/api/export-users/",
+      const response = await fetch("http://localhost:8000/api/export-users/",
+       {
         method: "GET",
       });
 
@@ -115,7 +121,7 @@ function CustomersFile() {
     </button>
   );
 }
-
+*/}
 function Analytics(){
     const [units_used, setUnitsUsed] = useState([]);
     const [bills, setBills] = useState([]);
@@ -259,12 +265,13 @@ function Analytics(){
                 </div>
                 
             </div>
+            {/*
             <div className={styles.buttonsDiv}>
                 <p className={styles.filesTitle}> Excel files download </p>
                 <DownloadExcelButton/>
                 <BillingsFile/>
                 <CustomersFile/>
-            </div>
+            </div>*/}
         </>
     );
 }

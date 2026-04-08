@@ -6,8 +6,6 @@ import Billings from "./Billings";
 import RegWaterUser from "./RegWaterUser";
 import Users from "./Users";
 import Analytics from "./Analytics";
-import Profile from './Profile';
-
 
 function ReaderDashboard() {
     const [activeView, setActiveView] = useState("readings");
@@ -24,8 +22,6 @@ function ReaderDashboard() {
                 return <Users />;
             case "analytics":
                 return <Analytics/>
-            case "profile":
-                return <Profile/>
             default:
                 return <Readings />;
         }
@@ -57,13 +53,6 @@ function ReaderDashboard() {
                         onClick={() => setActiveView("users")}
                     >
                         Registered Customers 
-                    </button>
-
-                    <button
-                        className={`${styles.navItem} ${activeView === "profile" ? styles.active : ""}`}
-                        onClick={() => setActiveView("profile")}
-                    >
-                        Profiles
                     </button>
                 </nav>
             </aside>

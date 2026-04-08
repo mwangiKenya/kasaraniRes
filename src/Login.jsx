@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -9,9 +8,56 @@ function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // ✅ CAPTCHA STATES
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [captchaVerified, setCaptchaVerified] = useState(false);
+
+  // ✅ CAPTCHA DATA (replace with your own images in /public/images/)
+  const captchaImages = [
+  { id: 1, src: new URL("/images/car.jpeg", import.meta.url).href, correct: true },
+  { id: 2, src: new URL("/images/tree.jpeg", import.meta.url).href, correct: false },
+  { id: 3, src: new URL("/images/tree.jpeg", import.meta.url).href, correct: false },
+  { id: 4, src: new URL("/images/car.jpeg", import.meta.url).href, correct: true },
+];
+
+  // ✅ HANDLE IMAGE CLICK
+  const toggleImage = (id) => {
+    setSelectedImages((prev) =>
+      prev.includes(id)
+        ? prev.filter((img) => img !== id)
+        : [...prev, id]
+    );
+  };
+
+  // ✅ VERIFY CAPTCHA
+  const verifyCaptcha = () => {
+    const correctIds = captchaImages
+      .filter((img) => img.correct)
+      .map((img) => img.id);
+
+    const isCorrect =
+      correctIds.length === selectedImages.length &&
+      correctIds.every((id) => selectedImages.includes(id));
+
+    if (isCorrect) {
+      setCaptchaVerified(true);
+      setError("");
+    } else {
+      setCaptchaVerified(false);
+      setError("Captcha failed. Try again.");
+    }
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+
+    // ✅ BLOCK LOGIN IF CAPTCHA NOT VERIFIED
+    if (!captchaVerified) {
+      setError("Please complete the captcha");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -27,7 +73,7 @@ function Login() {
         localStorage.setItem("token", data.token);
         navigate("/Dashboard");
       } else {
-        setError(data.error || "Invalid login credentials");
+        setError(data.error || "Invalid login credentials");xj
       }
     } catch (err) {
       setError("Failed to login. Please try again");
@@ -60,6 +106,53 @@ function Login() {
           required
           disabled={loading}
         />
+
+        {/* ✅ CAPTCHA UI */}
+        <div className="captcha-box" style={{ marginTop: "15px" }}>
+        <p> Verify Login </p>
+          <p>Select all images with <strong>cars</strong></p>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(2, 1fr)",
+              gap: "10px",
+            }}
+          >
+            {captchaImages.map((img) => (
+              <img
+                key={img.id}
+                src={img.src}
+                alt=""
+                onClick={() => toggleImage(img.id)}
+                style={{
+                  width: "100%",
+                  height: "100px",
+                  objectFit: "cover",
+                  border: selectedImages.includes(img.id)
+                    ? "3px solid green"
+                    : "2px solid #ccc",
+                  cursor: "pointer",
+                }}
+              />
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={verifyCaptcha}
+            style={{ marginTop: "10px" }}
+            disabled={loading}
+          >
+            Verify
+          </button>
+
+          {captchaVerified && (
+            <p style={{ color: "green", marginTop: "5px" }}>
+              ✔ Verified
+            </p>
+          )}
+        </div>
 
         <button type="submit" disabled={loading}>
           {loading ? (

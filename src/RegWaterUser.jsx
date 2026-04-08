@@ -27,8 +27,9 @@ function RegWaterUser() {
         }
 
         try {
-            //const res = await fetch("http://127.0.0.1:8000/api/new_user/", { // <-- Django endpoint
             const res = await fetch("https://python-back-2.onrender.com/api/new_user/", { // <-- Django endpoint
+            //const res = await fetch("http://127.0.0.1:8000/api/new_user/", { // <-- Django endpoint
+            
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
