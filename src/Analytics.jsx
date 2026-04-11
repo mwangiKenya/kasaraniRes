@@ -1,279 +1,213 @@
 import styles from "./Analytics.module.css";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 
+function Analytics() {
+  const [units_used, setUnitsUsed] = useState(0);
+  const [bills, setBills] = useState(0);
+  const [customers, setCustomers] = useState(0);
+  const [units, setUnits] = useState(0);
+  const [paid, setPaid] = useState(0);
+  const [error, setError] = useState("");
 
-//ADD A FUNCTION TO ENABLE THE USER TO DOWNLOAD READINGS EXCEL
-//THIS DOWNLOADS THE READINGS DATA FILE
-// src/components/DownloadExcelButton.jsx
-{/*
-function DownloadExcelButton() {
-  const downloadExcel = async () => {
-    try {
-      const response = await fetch("https://python-back-2.onrender.com/api/export-readings",
-      //const response = await fetch("http://localhost:8000/api/export-readings/", 
-       {
-        method: "GET",
-      });
+  // ================= FETCH DATA =================
 
-      if (!response.ok) {
-        throw new Error("Failed to download Excel file");
-      }
+  useEffect(() => {
+    fetch("https://python-back-2.onrender.com/api/total_units/")
+      .then((res) => {
+        if (!res.ok) throw new Error("Network error");
+        return res.json();
+      })
+      .then((data) => setUnitsUsed(data.total_units || 0))
+      .catch((err) => setError(err.message));
+  }, []);
 
-      // Convert response to blob
-      const blob = await response.blob();
+  useEffect(() => {
+    fetch("https://python-back-2.onrender.com/api/total_bill/")
+      .then((res) => {
+        if (!res.ok) throw new Error("Network error");
+        return res.json();
+      })
+      .then((data) => setBills(data.total_bill || 0))
+      .catch((err) => setError(err.message));
+  }, []);
 
-      // Create a temporary URL and trigger download
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "readings.xlsx"; // File name
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    } catch (error) {
-      console.error("Download failed:", error);
-    }
+  useEffect(() => {
+    fetch("https://python-back-2.onrender.com/api/total_paid")
+      .then((res) => {
+        if (!res.ok) throw new Error("Network error");
+        return res.json();
+      })
+      .then((data) => setPaid(data.total_paid || 0))
+      .catch((err) => setError(err.message));
+  }, []);
+
+  useEffect(() => {
+    fetch("https://python-back-2.onrender.com/api/total_cust/")
+      .then((res) => {
+        if (!res.ok) throw new Error("Network error");
+        return res.json();
+      })
+      .then((data) => setCustomers(data.total_cust || 0))
+      .catch((err) => setError(err.message));
+  }, []);
+
+  useEffect(() => {
+    fetch("https://python-back-2.onrender.com/api/avg_units")
+      .then((res) => {
+        if (!res.ok) throw new Error("Network error");
+        return res.json();
+      })
+      .then((data) => setUnits(data.avg_units || 0))
+      .catch((err) => setError(err.message));
+  }, []);
+
+  // ================= DERIVED METRICS =================
+
+  const balance = bills - paid;
+  const efficiency = bills > 0 ? ((paid / bills) * 100).toFixed(1) : 0;
+  const avgBillPerCustomer =
+    customers > 0 ? (bills / customers).toFixed(2) : 0;
+  const avgPaidPerCustomer =
+    customers > 0 ? (paid / customers).toFixed(2) : 0;
+  const unpaid = balance;
+
+  // ================= LOCAL TREND =================
+
+  useEffect(() => {
+    localStorage.setItem("prevBills", bills);
+  }, [bills]);
+
+  const prevBills = Number(localStorage.getItem("prevBills")) || 0;
+  const billChange = bills - prevBills;
+
+  // ================= INSIGHTS =================
+
+  const getInsight = () => {
+    if (efficiency < 50) return "⚠️ Poor collection rate";
+    if (efficiency < 80) return "⚠️ Moderate collection";
+    return "✅ Good collection performance";
   };
 
-  return (
-    <button onClick={downloadExcel} className={styles.fileButton}>
-      Download Readings Excel
-    </button>
-  );
-}
-*/}
+  // ================= ALERTS =================
 
-//=============================================================
-//=================================================================
-{/*
-function BillingsFile() {
-  const downloadExcel = async () => {
-    try {
-      {/*const response = await fetch("https://python-back-2.onrender.com/api/export-billings/", 
-      const response = await fetch("http://localhost:8000/api/export-billings/",
-       {
-        method: "GET",
-      });
+  const alerts = [];
+  if (balance > 10000) alerts.push("High unpaid balance!");
+  if (efficiency < 60) alerts.push("Low collection rate!");
+  if (customers === 0) alerts.push("No customers found!");
 
-      if (!response.ok) {
-        throw new Error("Failed to download Excel file");
-      }
-
-      // Convert response to blob
-      const blob = await response.blob();
-
-      // Create a temporary URL and trigger download
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "billings.xlsx"; // File name
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    } catch (error) {
-      console.error("Download failed:", error);
-    }
-  };
+  // ================= UI =================
 
   return (
-    <button onClick={downloadExcel} className={styles.fileButton}>
-      Download Billings Excel
-    </button>
-  );
-}
-*/}
+    <div className={styles.container}>
+      <h1 className={styles.title}>Water Sales Analytics</h1>
+      <p className={styles.subtitle}>
+        Smart insights for monitoring system performance
+      </p>
 
-//=============================================================
-//=================================================================
-{/*
-function CustomersFile() {
-  const downloadExcel = async () => {
-    try {
-      {/*const response = await fetch("https://python-back-2.onrender.com/api/export-users/",
-      const response = await fetch("http://localhost:8000/api/export-users/",
-       {
-        method: "GET",
-      });
+      {error && <p className={styles.error}>⚠️ {error}</p>}
 
-      if (!response.ok) {
-        throw new Error("Failed to download Excel file");
-      }
+      {/* KPI SECTION */}
+      <div className={styles.grid}>
+        <div className={styles.card}>
+          <h3>Customers</h3>
+          <p>{customers}</p>
+        </div>
 
-      // Convert response to blob
-      const blob = await response.blob();
+        <div className={styles.card}>
+          <h3>Units Used</h3>
+          <p>{units_used}</p>
+        </div>
 
-      // Create a temporary URL and trigger download
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "customers.xlsx"; // File name
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    } catch (error) {
-      console.error("Download failed:", error);
-    }
-  };
+        <div className={styles.card}>
+          <h3>Total Bills</h3>
+          <p>Ksh {bills}</p>
+        </div>
 
-  return (
-    <button onClick={downloadExcel} className={styles.fileButton}>
-      Download Customers Excel
-    </button>
-  );
-}
-*/}
-function Analytics(){
-    const [units_used, setUnitsUsed] = useState([]);
-    const [bills, setBills] = useState([]);
-    const [customers, setCustomers] = useState([]);
-    const [units, setUnits] = useState([]);
-    const [error, setError] = useState();
-    const [paid, setPaid] = useState([]);
+        <div className={styles.card}>
+          <h3>Total Paid</h3>
+          <p className={styles.green}>Ksh {paid}</p>
+        </div>
 
-    //FETCH THE DATA FROM THE DATABASE
-    //THIS USEEFFECT READS THE TOTAL UNITS USED FROM THE READINGS TABLE
-    useEffect(() => {
-        //fetch("http://127.0.0.1:8000/api/total_units")
-        fetch("https://python-back-2.onrender.com/api/total_units/")
-        .then((res) => {
-            if (!res.ok) throw new error ("Network error")
-                return res.json();
-        })
-        .then((data) => {
-            setUnitsUsed(data.total_units);
-        })
-        .catch((err) => {
-            setError(err.message);
-        });
-    }, [])
+        <div className={styles.card}>
+          <h3>Balance</h3>
+          <p className={balance > 0 ? styles.red : styles.green}>
+            Ksh {balance}
+          </p>
+        </div>
 
-    //THIS USE EFFECT READS THE TOTAL AMOUNT BILLED FROM THE BILLINGS TABLE
-    useEffect(() => {
-        //fetch("http://127.0.0.1:8000/api/total_bill")
-        fetch("https://python-back-2.onrender.com/api/total_bill/")
-        .then((res) => {
-            if (!res.ok) throw new error ("Network error")
-                return res.json();
-        })
-        .then((data) => {
-            setBills(data.total_bill);
-        })
-        .catch((err) => {
-            setError(err.message);
-        });
-    }, [])
+        <div className={styles.card}>
+          <h3>Average Units</h3>
+          <p>{units}</p>
+        </div>
+      </div>
 
-    //THIS USE EFFECT READS THE TOTAL AMOUNT PAID FROM THE BILLINGS TABLE
-    useEffect(() => {
-        //fetch("http://127.0.0.1:8000/api/total_paid")
-        fetch("https://python-back-2.onrender.com/api/total_paid")
-        .then((res) => {
-            if (!res.ok) throw new error ("Network error")
-                return res.json();
-        })
-        .then((data) => {
-            setPaid(data.total_paid);
-        })
-        .catch((err) => {
-            setError(err.message);
-        });
-    }, [])
+      {/* FINANCIAL INSIGHTS */}
+      <div className={styles.section}>
+        <h2>Financial Insights</h2>
 
+        <div className={styles.grid}>
+          <div className={styles.card}>
+            <h3>Collection Efficiency</h3>
+            <p>{efficiency}%</p>
 
-    //FETCH THE TOTAL NUMBER OF CUSTOMERS FROM THE DATABASE
-    useEffect(() => {
-        //fetch("http://127.0.0.1:8000/api/total_cust")
-        fetch("https://python-back-2.onrender.com/api/total_cust/")
-        .then((res) => {
-            if (!res.ok) throw new error ("Network error")
-                return res.json();
-        })
-        .then((data) => {
-            setCustomers(data.total_cust);
-        })
-        .catch((err) => {
-            setError(err.message);
-        });
-    }, [])
-
-    //READ THE AVERAGE OF UNTIS USED AND DISPLAY THEM
-    useEffect(() => {
-        //fetch("http://127.0.0.1:8000/api/avg_units")
-        fetch("https://python-back-2.onrender.com/api/avg_units")
-        .then((res) => {
-            if (!res.ok) throw new error ("Network error")
-                return res.json();
-        })
-        .then((data) => {
-            setUnits(data.avg_units);
-        })
-        .catch((err) => {
-            setError(err.message);
-        });
-    }, [])
-
-    const bal = Number(bills) - Number(paid)
-
-
-    return(
-        <>
-            <div className={styles.MainDiv}>
-                <h1 className={styles.titleOne}> Water Sale Analytics </h1>
-                <p className={styles.pointOne}> Data analysis for the previous and current data, for decision making. </p>
-                <p className={styles.filesTitle}> Computed data </p>
-
-                {/*THE DIV PARTS FOR ANALYTICS SUMMARY */}
-                <div className={styles.SumDiv}>
-                    <div className={styles.sumSubDiv}>
-                        <h2> Customers 🙍‍♂️ </h2>
-                        <p> 
-                            <strong className={styles.myStrong}>{customers} Customers </strong>
-                        </p>
-                    </div>
-                    <div className={styles.sumSubDiv}>
-                        <h2> Units Used </h2>
-                      <p> 
-                           <strong className={styles.myStrong}> {units_used} Units </strong>
-                      </p>
-                    </div>
-                    <div className={styles.sumSubDiv}>
-                        <h2> Total Bills </h2>
-                        <p> 
-                             <strong className={styles.myStrong}>Ksh. {bills} </strong>    
-                         </p>
-                    </div>
-                    <div className={styles.sumSubDiv}>
-                        <h2> Total Paid </h2>
-                        <p> 
-                             <strong className={styles.myStrong}>Ksh. {paid} </strong>    
-                         </p>
-                    </div>
-                    <div className={styles.sumSubDiv}>
-                        <h2> Balance  </h2>
-                        <p> 
-                             <strong className={styles.myStrong}>Ksh. {bal} </strong>    
-                         </p>
-                    </div>
-                    
-                    <div className={styles.sumSubDiv}>
-                        <h2> Average Units </h2>
-                        <p> 
-                             <strong className={styles.myStrong}> {units} Units </strong>
-                        </p>
-                        
-                    </div>
-                </div>
-                
+            <div className={styles.progressBar}>
+              <div
+                className={styles.progressFill}
+                style={{ width: `${efficiency}%` }}
+              ></div>
             </div>
-            {/*
-            <div className={styles.buttonsDiv}>
-                <p className={styles.filesTitle}> Excel files download </p>
-                <DownloadExcelButton/>
-                <BillingsFile/>
-                <CustomersFile/>
-            </div>*/}
-        </>
-    );
+          </div>
+
+          <div className={styles.card}>
+            <h3>Avg Bill / Customer</h3>
+            <p>Ksh {avgBillPerCustomer}</p>
+          </div>
+
+          <div className={styles.card}>
+            <h3>Avg Payment / Customer</h3>
+            <p>Ksh {avgPaidPerCustomer}</p>
+          </div>
+
+          <div className={styles.card}>
+            <h3>Unpaid Revenue</h3>
+            <p className={styles.red}>Ksh {unpaid}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* INSIGHT MESSAGE */}
+      <div className={styles.insightBox}>
+        <h3>System Insight</h3>
+        <p>{getInsight()}</p>
+      </div>
+
+      {/* TREND */}
+      <div className={styles.section}>
+        <h2>Trend Indicator</h2>
+        <p>
+          Bills Change:{" "}
+          <span className={billChange >= 0 ? styles.green : styles.red}>
+            {billChange >= 0 ? "📈 +" : "📉 "}
+            {billChange}
+          </span>
+        </p>
+      </div>
+
+      {/* ALERTS */}
+      <div className={styles.section}>
+        <h2>Alerts</h2>
+        {alerts.length === 0 ? (
+          <p>✅ No issues detected</p>
+        ) : (
+          alerts.map((a, i) => (
+            <p key={i} className={styles.alert}>
+              ⚠️ {a}
+            </p>
+          ))
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default Analytics;

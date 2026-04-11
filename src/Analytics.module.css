@@ -182,3 +182,78 @@
     padding: 8px 12px;
   }
 }
+
+
+
+.container {
+  padding: 20px;
+  background: #f5f7fb;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.subtitle {
+  color: gray;
+  margin-bottom: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card h3 {
+  margin-bottom: 10px;
+}
+
+.section {
+  margin-top: 30px;
+}
+
+.green {
+  color: green;
+}
+
+.red {
+  color: red;
+}
+
+.error {
+  color: red;
+}
+
+.alert {
+  color: orange;
+}
+
+.insightBox {
+  margin-top: 20px;
+  padding: 15px;
+  background: #fff3cd;
+  border-radius: 10px;
+}
+
+.progressBar {
+  width: 100%;
+  height: 10px;
+  background: #ddd;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.progressFill {
+  height: 100%;
+  background: green;
+  border-radius: 10px;
+}
