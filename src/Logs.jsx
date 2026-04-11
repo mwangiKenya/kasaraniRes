@@ -39,10 +39,15 @@ function Logs() {
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Reading ID</th>
+                <th>Username</th>
+                <th>role</th>
+                <th>Action</th>
+                <th>table_name</th>
+                <th>Record_id</th>
                 <th>Field Changed</th>
                 <th>Old Value</th>
                 <th>New Value</th>
+                <th>Description</th>
                 <th>Changed At</th>
               </tr>
             </thead>
@@ -51,10 +56,15 @@ function Logs() {
                 logs.map((log) => (
                   <tr key={log.id} className={styles.row}>
                     <td>{log.id}</td>
-                    <td>{log.reading}</td>
+                    <td>{log.username}</td>
+                    <td>{log.role}</td>
+                    <td>{log.action}</td>
+                    <td>{log.table_name}</td>
+                    <td>{log.record_id}</td>
                     <td>{log.field_changed}</td>
                     <td>{log.old_val}</td>
                     <td>{log.new_val}</td>
+                    <td>{log.description}</td>
                     <td>{new Date(log.changed_at).toLocaleString()}</td>
                   </tr>
                 ))
