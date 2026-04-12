@@ -160,6 +160,20 @@ function EmployeesList() {
                 </ol>
               </div>
             </div>
+            <div className={styles.ActualRoleHolder}>
+              <h3>Role assignment</h3>
+              <p>Assigning a worker a different role will grant him/her the access to the 
+                new dashboard as per the role assigned.
+              </p>
+              <p> A person cannot access two dashboards at the same time. ie: cannot have two roles</p>
+              <p> To have access to the normal dashboard, the admin should grant him/her the original 
+                role.
+              </p>
+              <strong>
+                <p> Assign a woker a different role to perform a certain duty in a different dashboard.</p>
+                <p>Admin has access to everythin. Assigning a worker this role, will grant hime the access.</p>
+              </strong>
+            </div>
           </div>
         </div>
       )}
