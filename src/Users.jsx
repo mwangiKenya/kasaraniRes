@@ -35,8 +35,8 @@ function Users() {
             <th>Zone</th>
             <th>Rate</th>
             <th>Registered on</th>
-            {/*<th>Update</th>
-            <th>Delete</th>*/}
+            {/*<th>Update</th>*/}
+            <th>Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -50,6 +50,7 @@ function Users() {
               <td>{c.zone}</td>
               <td>{c.rate}</td>
               <td>{c.created_on}</td>
+              <td><button>Delete</button></td>
               
             </tr>
           ))}
