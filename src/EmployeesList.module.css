@@ -49,31 +49,87 @@
   }
 }
 
-.AccessControl
-{
-  margin-top: 2%;
-  padding: 1% 3% 1% 3%;
-  border: none;
-  border-radius: 5px;
-  box-shadow: 3px 4px 5px rgba(202, 187, 187, 0.372);
-  background-color: whitesmoke;
+/* Container for the entire component */
+.AccessControl {
+  margin: 2rem auto;
+  padding: 2rem;
+  max-width: 900px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  font-family: 'Inter', -apple-system, sans-serif;
 }
-.SubAccessControl
-{
-  display: flex;
-}
-.ActualRoleHolder
-{
+
+.AccessControl h3 {
+  color: #1a202c;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
   text-align: center;
-  margin-left: 2%;
-  margin-right: 2%;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: 0.7s ease;
 }
-.ActualRoleHolder:hover
-{
-  transform: scale(1.05);
+
+/* Flex layout for the cards */
+.SubAccessControl {
+  display: flex;
+  gap: 1.5rem; /* Modern alternative to margins */
+  justify-content: center;
+  flex-wrap: wrap; /* Responsive: wraps on small screens */
+}
+
+/* Individual Role Card */
+.ActualRoleHolder, 
+.SubAccessControl > div {
+  flex: 1;
+  min-width: 280px;
+  padding: 1.5rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  text-align: left; /* Better readability for lists */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #4a5568; /* Solid gray for text */
+}
+
+/* Specific styling for Titles inside cards */
+.SubAccessControl h3 {
+  font-size: 1.1rem;
+  color: #2d3748;
+  margin-bottom: 1rem;
+  text-align: left;
+  border-bottom: 2px solid #edf2f7;
+  padding-bottom: 0.5rem;
+}
+
+/* List styling */
+ol {
+  padding-left: 1.2rem;
+  line-height: 1.6;
+}
+
+li {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+/* Hover Effects */
+.ActualRoleHolder:hover,
+.SubAccessControl > div:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-color: #3b82f6; /* Subtle blue highlight */
+}
+
+/* Optional: Bullet points instead of numbers for a cleaner look */
+ol {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+li::before {
+  content: "•";
+  color: #3b82f6;
+  font-weight: bold;
+  display: inline-block; 
+  width: 1em;
+  margin-left: -1em;
 }
