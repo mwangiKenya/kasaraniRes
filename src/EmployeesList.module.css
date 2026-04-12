@@ -133,3 +133,25 @@ li::before {
   width: 1em;
   margin-left: -1em;
 }
+
+.DenyPoint {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  background-color: #fef2f2; /* Very light red */
+  color: #991b1b; /* Dark red for readability */
+  border-left: 5px solid #dc2626; /* Bright red accent */
+  border-radius: 6px;
+  font-size: 0.95rem;
+  margin: 1.5rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.DenyPoint strong {
+  background-color: #fee2e2;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #b91c1c;
+}

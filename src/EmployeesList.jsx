@@ -171,8 +171,11 @@ function EmployeesList() {
               </p>
               <strong>
                 <p> Assign a woker a different role to perform a certain duty in a different dashboard.</p>
-                <p>Admin has access to everythin. Assigning a worker this role, will grant hime the access.</p>
+                <p>Admin has access to everything. Assigning a worker this role, will grant him/her the access.</p>
               </strong>
+              <p className={styles.DenyPoint}>
+                To deny an access, set the role as <strong>none</strong>
+              </p>
             </div>
           </div>
         </div>
