@@ -59,6 +59,9 @@ function BillingDashboard() {
                     >
                         Logs
                     </button>
+                    <button>
+                        Request access to another page
+                    </button>
                 </nav>
             </aside>
 

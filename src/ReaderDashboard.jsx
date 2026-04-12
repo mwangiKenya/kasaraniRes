@@ -2,10 +2,8 @@ import { useState } from "react";
 import styles from "./Dashboard.module.css";
 
 import Readings from "./Readings";
-import Billings from "./Billings";
 import RegWaterUser from "./RegWaterUser";
 import Users from "./Users";
-import Analytics from "./Analytics";
 
 function ReaderDashboard() {
     const [activeView, setActiveView] = useState("readings");
@@ -14,14 +12,10 @@ function ReaderDashboard() {
         switch (activeView) {
             case "readings":
                 return <Readings />;
-            case "billings":
-                return <Billings />;
             case "register":
                 return <RegWaterUser />;
             case "users":
                 return <Users />;
-            case "analytics":
-                return <Analytics/>
             default:
                 return <Readings />;
         }
@@ -53,6 +47,9 @@ function ReaderDashboard() {
                         onClick={() => setActiveView("users")}
                     >
                         Registered Customers 
+                    </button>
+                    <button>
+                        Request access to another page
                     </button>
                 </nav>
             </aside>

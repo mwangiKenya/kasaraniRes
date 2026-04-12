@@ -139,6 +139,28 @@ function EmployeesList() {
             </tbody>
 
           </table>
+          <div className={styles.AccessControl}>
+            <h3> Access granted </h3>
+            <div className={styles.SubAccessControl}>
+              <div className={styles.ActualRoleHolder}>
+                <h3>Billing officer</h3>
+                <ol>
+                  <li>Water readings table </li>
+                  <li>Billings page</li>
+                  <li>Analytics page</li>
+                  <li>Logs page</li>
+                </ol>
+              </div>
+              <div>
+                <h3>Metre reader</h3>
+                <ol>
+                  <li>Water readings table</li>
+                  <li>Customer registration page</li>
+                  <li>Registred customers page</li>
+                </ol>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
