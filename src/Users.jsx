@@ -19,6 +19,31 @@ function Users() {
       .then((data) => setCustomers(data))
       .catch((err) => setError(err.message));
   };
+
+  const deleteCustomer = async (id) => {
+  const confirmDelete = window.confirm("Are you sure you want to delete this user?");
+  if (!confirmDelete) return;
+
+  try {
+    const response = await fetch(
+      `https://python-back-2.onrender.com/api/delete_user/${id}/`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to delete user");
+    }
+
+    // Remove deleted user from UI without refreshing
+    setCustomers(customers.filter((c) => c.id !== id));
+
+  } catch (error) {
+    console.error(error);
+    alert("Error deleting user");
+  }
+  };
   
   return (
     <div className={styles.mainDiv}>
@@ -50,7 +75,9 @@ function Users() {
               <td>{c.zone}</td>
               <td>{c.rate}</td>
               <td>{c.created_on}</td>
-              <td><button>Delete</button></td>
+              <td>
+                <button onClick={() => deleteCustomer(c.id)}>Delete</button>
+              </td>
               
             </tr>
           ))}
