@@ -9,6 +9,7 @@ const BACKEND_URL = "https://python-back-2.onrender.com/api";
 function Readings() {
   const [waterUsers, setWaterUsers] = useState([]);
   const [editedRows, setEditedRows] = useState({});
+  const [customers, setCustomers] = useState(0);
 
   // ----------------- FETCH DATA -----------------
   useEffect(() => {
@@ -135,11 +136,22 @@ function Readings() {
     }
   };
 
+  useEffect(() => {
+    fetch("https://python-back-2.onrender.com/api/total_cust/")
+      .then((res) => {
+        if (!res.ok) throw new Error("Network error");
+        return res.json();
+      })
+      .then((data) => setCustomers(data.total_cust || 0))
+      .catch((err) => setError(err.message));
+  }, []);
+
   // ----------------- RENDER -----------------
   return (
     <>
       <div className={styles.tableContainer}>
         <h2 className={styles.title}>Water Readings</h2>
+        <p>Total Customers Registered for billing : <strong>{customers}</strong></p>
 
         <table className={styles.readingsTable}>
           <thead>
