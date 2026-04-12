@@ -4,11 +4,12 @@ import styles from "./EmployeesList.module.css";
 import { toast } from "react-toastify";
 
 const BACKEND_URL = "https://python-back-2.onrender.com/api";
-//const BACKEND_URL = "http://127.0.0.1:8000/api";
 
 function EmployeesList() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [editingId, setEditingId] = useState(null);
+  const [editData, setEditData] = useState({ username: "", role: "" });
 
   useEffect(() => {
     fetchEmployees();
@@ -17,7 +18,7 @@ function EmployeesList() {
   const fetchEmployees = async () => {
     try {
       const response = await axios.get(`${BACKEND_URL}/list_employees/`);
-      setEmployees(response.data); // assuming backend returns a JSON array
+      setEmployees(response.data);
       setLoading(false);
     } catch (error) {
       console.error(error);
@@ -26,9 +27,55 @@ function EmployeesList() {
     }
   };
 
+  // ✅ DELETE
+  const deleteEmployee = async (id) => {
+    if (!window.confirm("Delete this employee?")) return;
+
+    try {
+      await axios.delete(`${BACKEND_URL}/delete_employee/${id}/`);
+
+      setEmployees(employees.filter((emp) => emp.id !== id));
+      toast.success("Employee deleted");
+    } catch (error) {
+      console.error(error);
+      toast.error("Delete failed");
+    }
+  };
+
+  // ✅ START EDIT
+  const startEdit = (emp) => {
+    setEditingId(emp.id);
+    setEditData({ username: emp.username, role: emp.role });
+  };
+
+  // ✅ HANDLE CHANGE
+  const handleChange = (e) => {
+    setEditData({ ...editData, [e.target.name]: e.target.value });
+  };
+
+  // ✅ SAVE UPDATE
+  const saveUpdate = async (id) => {
+    try {
+      await axios.put(`${BACKEND_URL}/update_employee/${id}/`, editData);
+
+      setEmployees(
+        employees.map((emp) =>
+          emp.id === id ? { ...emp, ...editData } : emp
+        )
+      );
+
+      setEditingId(null);
+      toast.success("Employee updated");
+    } catch (error) {
+      console.error(error);
+      toast.error("Update failed");
+    }
+  };
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>All Employees</h2>
+
       {loading ? (
         <p>Loading...</p>
       ) : (
@@ -39,17 +86,58 @@ function EmployeesList() {
                 <th>ID</th>
                 <th>Username</th>
                 <th>Role</th>
+                <th>Actions</th>
               </tr>
             </thead>
+
             <tbody>
               {employees.map((emp) => (
                 <tr key={emp.id}>
                   <td>{emp.id}</td>
-                  <td>{emp.username}</td>
-                  <td>{emp.role}</td>
+
+                  <td>
+                    {editingId === emp.id ? (
+                      <input
+                        name="username"
+                        value={editData.username}
+                        onChange={handleChange}
+                      />
+                    ) : (
+                      emp.username
+                    )}
+                  </td>
+
+                  <td>
+                    {editingId === emp.id ? (
+                      <input
+                        name="role"
+                        value={editData.role}
+                        onChange={handleChange}
+                      />
+                    ) : (
+                      emp.role
+                    )}
+                  </td>
+
+                  <td>
+                    {editingId === emp.id ? (
+                      <>
+                        <button onClick={() => saveUpdate(emp.id)}>Save</button>
+                        <button onClick={() => setEditingId(null)}>Cancel</button>
+                      </>
+                    ) : (
+                      <>
+                        <button onClick={() => startEdit(emp)}>Edit</button>
+                        <button onClick={() => deleteEmployee(emp.id)}>
+                          Delete
+                        </button>
+                      </>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
+
           </table>
         </div>
       )}
