@@ -9,7 +9,7 @@ const BACKEND_URL = "https://python-back-2.onrender.com/api";
 function RegWorker() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("employee"); // default role
+  const [role, setRole] = useState(""); // default role
 
   const handleSubmit = async (e) => {
     e.preventDefault();
