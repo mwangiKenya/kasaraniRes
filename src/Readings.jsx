@@ -25,6 +25,7 @@ function Readings() {
       // Ensure numeric fields are numbers (React inputs expect numbers)
       const parsedData = data.map(user => ({
         ...user,
+        metre_num : user.metre_num ?? 0,
         prev_user: user.prev_user ?? 0,
         prev_sup: user.prev_sup ?? 0,
         cur_user: user.cur_user ?? 0,
