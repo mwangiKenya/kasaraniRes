@@ -10,7 +10,7 @@ import RegWorker from "./RegWorker";
 import EmployeesList from "./EmployeesList";
 
 function Dashboard() {
-    const [activeView, setActiveView] = useState("readings");
+    const [activeView, setActiveView] = useState("analytics");
 
     const renderContent = () => {
         switch (activeView) {
