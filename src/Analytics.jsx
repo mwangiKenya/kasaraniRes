@@ -168,10 +168,10 @@ function Analytics() {
             <p>Ksh {avgPaidPerCustomer}</p>
           </div>
 
-          <div className={styles.card}>
+          {/*<div className={styles.card}>
             <h3>Unpaid Revenue</h3>
             <p className={styles.red}>Ksh {unpaid}</p>
-          </div>
+          </div>*/}
         </div>
       </div>
 
