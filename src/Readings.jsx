@@ -10,6 +10,7 @@ function Readings() {
   const [waterUsers, setWaterUsers] = useState([]);
   const [editedRows, setEditedRows] = useState({});
   const [customers, setCustomers] = useState(0);
+  const [excelFile, setExcelFile] = useState(null);
 
   // ----------------- FETCH DATA -----------------
   useEffect(() => {
@@ -155,7 +156,37 @@ function Readings() {
       .catch((err) => setError(err.message));
   }, []);
   
+  const downloadExcel = () => {
+  window.open(`${BACKEND_URL}/download_readings_template/`);
+   };
 
+  const uploadExcel = async () => {
+  if (!excelFile) {
+    toast.error("Please select a file first");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", excelFile);
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/upload_readings_excel/`, {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      toast.success(data.message);
+      fetchData(); // refresh table
+    } else {
+      toast.error(data.error);
+    }
+  } catch (err) {
+    toast.error("Upload failed");
+  }
+  };
   // ----------------- RENDER -----------------
   return (
     <>
@@ -176,10 +207,20 @@ function Readings() {
           </ul>
         </div>
         <div className={styles.dataUpload}>
-            <button> Download excel sheet </button>
-            <input type="file" /> upload excel sheet
-            <button> Submit data file </button>
-        </div>
+            <button onClick={downloadExcel}>
+              Download Excel Sheet
+            </button>
+
+            <input
+              type="file"
+              accept=".xlsx,.xls"
+              onChange={(e) => setExcelFile(e.target.files[0])}
+            />
+
+            <button onClick={uploadExcel}>
+              Submit Data File
+            </button>
+          </div>
 
         <table className={styles.readingsTable}>
           <thead>
