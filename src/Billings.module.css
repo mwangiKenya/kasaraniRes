@@ -22,7 +22,8 @@ body {
 /* Main container */
 .mainDiv {
   padding: 30px;
-  
+  width: 100%;
+  overflow-x: auto;
   margin: 5% auto;
   background-color: var(--bg-color);
   border-radius: 15px;
