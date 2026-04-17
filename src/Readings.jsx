@@ -158,8 +158,11 @@ function Readings() {
       <div className={styles.tableContainer}>
         <h2 className={styles.title}>Water Readings</h2>
         <p>Total Customers Registered for billing : <strong>{customers}</strong></p>
-        <button> Download excel sheet </button>
-        <input type="file" /> upload excel sheet
+        <div className={styles.dataUpload}>
+            <button> Download excel sheet </button>
+            <input type="file" /> upload excel sheet
+            <button> Submit data file </button>
+        </div>
 
         <table className={styles.readingsTable}>
           <thead>
