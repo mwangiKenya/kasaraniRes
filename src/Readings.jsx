@@ -28,8 +28,8 @@ function Readings() {
         metre_num : user.metre_num ?? 0,
         prev_user: user.prev_user ?? 0,
         prev_sup: user.prev_sup ?? 0,
-        cur_user: user.cur_user ?? 0,
-        cur_sup: user.cur_sup ?? 0,
+        cur_user: user.cur_user,
+        cur_sup: user.cur_sup,
       }));
 
       setWaterUsers(parsedData);
@@ -41,7 +41,7 @@ function Readings() {
 
   // ----------------- HANDLE INPUT CHANGE -----------------
   const handleInputChange = (id, field, value) => {
-  const numericValue = value === "" ? 0 : Number(value);
+  const numericValue = value === "" ? null : Number(value);
 
   // Update editedRows safely
   setEditedRows(prev => ({
@@ -59,7 +59,9 @@ function Readings() {
 
   // ----------------- SAVE SINGLE ROW -----------------
   const saveSingleRow = async (row) => {
-    if (row.prev_sup > row.cur_sup || row.prev_user > row.cur_user){
+    if (
+      row.cur_user !== null &&
+      row.cur_sup !== null &&(row.prev_sup > row.cur_sup || row.prev_user > row.cur_user)){
       toast.info('Current readings must be greater than previus');
       return; //Stop execution
     }
@@ -225,7 +227,7 @@ function Readings() {
                   <input
                     type="number"
                     className={styles.wateruserInput}
-                    value={row.cur_user}
+                    value={row.cur_user ?? ""}
                     onChange={(e) =>
                       handleInputChange(row.id, "cur_user", e.target.value)
                     }
@@ -235,7 +237,7 @@ function Readings() {
                   <input
                     type="number"
                     className={styles.wateruserInput}
-                    value={row.cur_sup}
+                    value={row.cur_sup ?? ""}
                     onChange={(e) =>
                       handleInputChange(row.id, "cur_sup", e.target.value)
                     }
@@ -252,8 +254,9 @@ function Readings() {
                   </button>
                 </td>
                 <td>
-                  {(row.cur_user !== null &&
-                    row.cur_sup !== null &&
+                  {(row.cur_user != null &&
+                    row.cur_sup != null &&
+                    row.cur_user !== 0 &&
                     Math.abs(((row.cur_user - row.cur_sup) / row.cur_user) * 100) <= 5)
                     ? "Good"
                     : "Leakage"}
