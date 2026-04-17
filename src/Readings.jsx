@@ -229,7 +229,7 @@ function Readings() {
                 <td>
                   {(row.cur_user !== null &&
                     row.cur_sup !== null &&
-                    Math.abs(row.cur_user - row.cur_sup) <= 3)
+                    Math.abs((row.cur_user / row.cur_sup) * 100) <= 5)
                     ? "Good"
                     : "Leakage"}
                 </td>
