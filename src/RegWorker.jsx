@@ -29,7 +29,7 @@ function RegWorker() {
         toast.success("Employee registered successfully!");
         setUsername("");
         setPassword("");
-        setRole("employee");
+        setRole("");
       } else {
         toast.error("Failed to register employee");
       }

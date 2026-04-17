@@ -43,6 +43,13 @@ function Dashboard() {
 
                 <nav className={styles.nav}>
                     <button
+                        className={`${styles.navItem} ${activeView === "analytics" ? styles.active : ""}`}
+                        onClick={() => setActiveView("analytics")}
+                    >
+                        Analytics
+                    </button>
+                    
+                    <button
                         className={`${styles.navItem} ${activeView === "readings" ? styles.active : ""}`}
                         onClick={() => setActiveView("readings")}
                     >
@@ -70,12 +77,7 @@ function Dashboard() {
                         Registered Customers 
                     </button>
 
-                    <button
-                        className={`${styles.navItem} ${activeView === "analytics" ? styles.active : ""}`}
-                        onClick={() => setActiveView("analytics")}
-                    >
-                        Analytics
-                    </button>
+                    
 
                     <button
                         className={`${styles.navItem} ${activeView === "logs" ? styles.active : ""}`}
