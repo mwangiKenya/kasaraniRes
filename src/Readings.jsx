@@ -159,6 +159,18 @@ function Readings() {
         <h2 className={styles.title}>Water Readings</h2>
         <p>Total Customers Registered for billing : <strong>{customers}</strong></p>
         <div className={styles.dataUpload}>
+          <h3>Readings update </h3>
+          <ul>
+            <li>Click <strong> Download excel sheet </strong> to get the formated sheet of readings table, </li>
+            <li>Fill in the required data, The current readings, and save the file</li>
+            <li>Click <strong>upload excel sheet</strong> and select the file,</li>
+            <li>Click <strong>Submit data file</strong> to submit the data</li>
+            <h3>Or,</h3>
+            <li>Update the data in the table below</li>
+            <li>Click save or Save all to submit the data </li>
+          </ul>
+        </div>
+        <div className={styles.dataUpload}>
             <button> Download excel sheet </button>
             <input type="file" /> upload excel sheet
             <button> Submit data file </button>
