@@ -44,6 +44,35 @@ function Users() {
     alert("Error deleting user");
   }
   };
+
+  const updateCustomer = async (id, updatedData) => {
+  try {
+    const response = await fetch(
+      `https://python-back-2.onrender.com/api/update_user/${id}/`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(updatedData)
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Update failed");
+    }
+
+    alert("User updated successfully");
+
+    fetchCustomers(); // refresh table
+
+  } catch (error) {
+    console.error(error);
+    alert("Error updating user");
+  }
+  };
   
   return (
     <div className={styles.mainDiv}>
@@ -67,19 +96,87 @@ function Users() {
         <tbody>
           {customers.map((c) => (
             <tr key={c.id}>
-              <td>{c.id}</td>
-              <td>{c.fname}</td>
-              {/*<td>{c.sname}</td>*/}
-              <td>{c.phone}</td>
-              <td>{c.metre_num}</td>
-              <td>{c.zone}</td>
-              <td>{c.rate}</td>
-              <td>{c.created_on}</td>
-              <td>
-                <button onClick={() => deleteCustomer(c.id)}>Delete</button>
-              </td>
-              
-            </tr>
+                <td>{c.id}</td>
+
+                <td>
+                  <input
+                    value={c.fname}
+                    onChange={(e) =>
+                      setCustomers(prev =>
+                        prev.map(u =>
+                          u.id === c.id ? { ...u, fname: e.target.value } : u
+                        )
+                      )
+                    }
+                  />
+                </td>
+
+                <td>
+                  <input
+                    value={c.phone}
+                    onChange={(e) =>
+                      setCustomers(prev =>
+                        prev.map(u =>
+                          u.id === c.id ? { ...u, phone: e.target.value } : u
+                        )
+                      )
+                    }
+                  />
+                </td>
+
+                <td>
+                  <input
+                    value={c.metre_num}
+                    onChange={(e) =>
+                      setCustomers(prev =>
+                        prev.map(u =>
+                          u.id === c.id ? { ...u, metre_num: e.target.value } : u
+                        )
+                      )
+                    }
+                  />
+                </td>
+
+                <td>
+                  <input
+                    value={c.zone}
+                    onChange={(e) =>
+                      setCustomers(prev =>
+                        prev.map(u =>
+                          u.id === c.id ? { ...u, zone: e.target.value } : u
+                        )
+                      )
+                    }
+                  />
+                </td>
+
+                <td>
+                  <input
+                    value={c.rate}
+                    onChange={(e) =>
+                      setCustomers(prev =>
+                        prev.map(u =>
+                          u.id === c.id ? { ...u, rate: e.target.value } : u
+                        )
+                      )
+                    }
+                  />
+                </td>
+
+                <td>{c.created_on}</td>
+
+                <td>
+                  <button onClick={() => updateCustomer(c.id, c)}>
+                    Update
+                  </button>
+                </td>
+
+                <td>
+                  <button onClick={() => deleteCustomer(c.id)}>
+                    Delete
+                  </button>
+                </td>
+              </tr>
           ))}
         </tbody>
       </table>
