@@ -93,7 +93,11 @@ function Readings() {
         });
 
         fetchData(); // Refresh table with updated values
-      } else {
+      }
+      else if (prev_sup > cur_sup || prev_user > cur_user){
+        toast.info('Current readings must be greater than previus');
+      }
+      else {
         const errorData = await res.json();
         toast.error(errorData.error || "Failed to save");
       }
@@ -146,6 +150,7 @@ function Readings() {
       .then((data) => setCustomers(data.total_cust || 0))
       .catch((err) => setError(err.message));
   }, []);
+  
 
   // ----------------- RENDER -----------------
   return (
