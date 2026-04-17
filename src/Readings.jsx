@@ -157,6 +157,7 @@ function Readings() {
         <table className={styles.readingsTable}>
           <thead>
             <tr>
+              <th>ID</th>
               <th>Name</th>
               <th>Phone</th>
               <th>Meter no</th>
@@ -174,6 +175,7 @@ function Readings() {
           <tbody>
             {waterUsers.map(row => (
               <tr key={row.id}>
+                <td>{row.id}</td>
                 <td>{row.name}</td>
                 <td>{row.phone}</td>
                 <td>{row.metre_num}</td>
