@@ -162,8 +162,10 @@ function Readings() {
               <th>Meter no</th>
               <th>Prev User</th>
               <th>Prev Sup</th>
+              <th>Prev Date</th>
               <th>Cur User</th>
               <th>Cur Sup</th>
+              <th>Cur Date</th>
               <th>Rate</th>
               <th>Action</th>
               <th>Status</th>
@@ -191,6 +193,7 @@ function Readings() {
                     readOnly
                   />
                 </td>
+                <td>{row.prev_date}</td>
                 <td>
                   <input
                     type="number"
@@ -211,6 +214,7 @@ function Readings() {
                     }
                   />
                 </td>
+                <td>{row.cur_date}</td>
                 <td>{row.rate}</td>
                 <td>
                   <button
