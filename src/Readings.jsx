@@ -159,6 +159,7 @@ function Readings() {
         <h2 className={styles.title}>Water Readings</h2>
         <p>Total Customers Registered for billing : <strong>{customers}</strong></p>
         <button> Download excel sheet </button>
+        <input type="file" /> upload excel sheet
 
         <table className={styles.readingsTable}>
           <thead>
