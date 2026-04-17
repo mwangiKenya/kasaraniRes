@@ -158,6 +158,7 @@ function Readings() {
             <tr>
               <th>Name</th>
               <th>Phone</th>
+              <th>Meter no</th>
               <th>Prev User</th>
               <th>Prev Sup</th>
               <th>Cur User</th>
@@ -172,6 +173,7 @@ function Readings() {
               <tr key={row.id}>
                 <td>{row.name}</td>
                 <td>{row.phone}</td>
+                <td>{row.metre_num}</td>
                 <td>
                   <input
                     type="number"
