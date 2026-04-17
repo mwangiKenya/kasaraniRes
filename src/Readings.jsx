@@ -68,9 +68,9 @@ function Readings() {
     try {
       // Always send user_id (FK) and numeric values
       const payload = {
-        user_id: row.user_id || row.id, // ForeignKey to read_users table
-        cur_user: Number(row.cur_user),
-        cur_sup: Number(row.cur_sup)
+        user_id: row.user_id || row.id,
+        cur_user: row.cur_user === null ? null : Number(row.cur_user),
+        cur_sup: row.cur_sup === null ? null : Number(row.cur_sup)
       };
 
       const res = await fetch(`${BACKEND_URL}/submit_new_reading/`, {
@@ -86,7 +86,7 @@ function Readings() {
         setWaterUsers(prev =>
           prev.map(r =>
             r.id === row.id
-              ? { ...r, cur_user: 0, cur_sup: 0 }
+              ? { ...r, cur_user: null, cur_sup: null }
               : r
           )
         );
@@ -115,8 +115,8 @@ function Readings() {
   const saveAllRows = async () => {
     const updates = Object.entries(editedRows).map(([id, data]) => ({
       user_id: data.user_id || id,
-      cur_user: Number(data.cur_user),
-      cur_sup: Number(data.cur_sup)
+      cur_user: data.cur_user === null ? null : Number(data.cur_user),
+      cur_sup: data.cur_sup === null ? null : Number(data.cur_sup)
     }));
 
     if (updates.length === 0) {
@@ -254,12 +254,13 @@ function Readings() {
                   </button>
                 </td>
                 <td>
-                  {(row.cur_user != null &&
-                    row.cur_sup != null &&
-                    row.cur_user !== 0 &&
-                    Math.abs(((row.cur_user - row.cur_sup) / row.cur_user) * 100) <= 5)
-                    ? "Good"
-                    : "Leakage"}
+                  {row.cur_user == null || row.cur_sup == null
+                    ? "No Reading"
+                    : row.cur_user === 0
+                      ? "Invalid"
+                      : Math.abs(((row.cur_user - row.cur_sup) / row.cur_user) * 100) <= 5
+                        ? "Good"
+                        : "Leakage"}
                 </td>
               </tr>
             ))}
