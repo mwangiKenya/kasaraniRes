@@ -59,6 +59,10 @@ function Readings() {
 
   // ----------------- SAVE SINGLE ROW -----------------
   const saveSingleRow = async (row) => {
+    if (row.prev_sup > row.cur_sup || row.prev_user > row.cur_user){
+      toast.info('Current readings must be greater than previus');
+      return; //Stop execution
+    }
     try {
       // Always send user_id (FK) and numeric values
       const payload = {
@@ -94,9 +98,7 @@ function Readings() {
 
         fetchData(); // Refresh table with updated values
       }
-      else if (prev_sup > cur_sup || prev_user > cur_user){
-        toast.info('Current readings must be greater than previus');
-      }
+      
       else {
         const errorData = await res.json();
         toast.error(errorData.error || "Failed to save");
@@ -159,8 +161,9 @@ function Readings() {
         <h2 className={styles.title}>Water Readings</h2>
         <p>Total Customers Registered for billing : <strong>{customers}</strong></p>
         <div className={styles.dataUpload}>
-          <h3>Readings update </h3>
+          
           <ul>
+            <h3>Readings update; </h3>
             <li>Click <strong> Download excel sheet </strong> to get the formated sheet of readings table, </li>
             <li>Fill in the required data, The current readings, and save the file</li>
             <li>Click <strong>upload excel sheet</strong> and select the file,</li>
