@@ -109,7 +109,7 @@ function Billings() {
           <tbody>
             {billings.map((b) => (
               <tr key={b.id}>
-                <td>{b.user_id}</td>
+                <td>{b.id}</td>
                 <td>{b.name}</td>
                 <td>{b.phone}</td>
                 <td>{b.units_used || 0}</td>
