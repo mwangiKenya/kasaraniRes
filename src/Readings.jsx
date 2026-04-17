@@ -44,13 +44,17 @@ function Readings() {
   const handleInputChange = (id, field, value) => {
   const numericValue = value === "" ? null : Number(value);
 
-  // Update editedRows safely
+  const row = waterUsers.find(r => r.id === id);
+
   setEditedRows(prev => ({
     ...prev,
-    [id]: { ...(prev[id] || {}), [field]: numericValue }
+    [id]: {
+      ...(prev[id] || {}),
+      user_id: row.user_id,   // ✅ FIX
+      [field]: numericValue
+    }
   }));
 
-  // Update only the row being edited
   setWaterUsers(prev =>
     prev.map(row =>
       row.id === id ? { ...row, [field]: numericValue } : row
