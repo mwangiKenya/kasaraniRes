@@ -94,7 +94,7 @@ function Billings() {
         <table className={styles.billingTable}>
           <thead>
             <tr>
-              <th>User ID</th>
+              <th>Bill ID</th>
               <th>Name</th>
               <th>Phone</th>
               <th>Units Used</th>

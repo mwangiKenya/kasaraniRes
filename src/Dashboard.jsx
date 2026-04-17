@@ -31,7 +31,7 @@ function Dashboard() {
             case "emp":
                 return <EmployeesList/>
             default:
-                return <Readings />;
+                return <Analytics/>;
         }
     };
 
@@ -48,7 +48,7 @@ function Dashboard() {
                     >
                         Analytics
                     </button>
-                    
+
                     <button
                         className={`${styles.navItem} ${activeView === "readings" ? styles.active : ""}`}
                         onClick={() => setActiveView("readings")}
