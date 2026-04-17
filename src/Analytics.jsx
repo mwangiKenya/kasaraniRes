@@ -192,20 +192,20 @@ function Analytics() {
           </span>
         </p>
       </div>
-
-      {/* ALERTS */}
+     
+      {/* ALERTS 
       <div className={styles.section}>
         <h2>Alerts</h2>
         {alerts.length === 0 ? (
-          <p>✅ No issues detected</p>
+          <p> No issues detected</p>
         ) : (
           alerts.map((a, i) => (
             <p key={i} className={styles.alert}>
-              ⚠️ {a}
+               {a}
             </p>
           ))
         )}
-      </div>
+      </div>*/}
     </div>
   );
 }
