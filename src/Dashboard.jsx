@@ -14,6 +14,8 @@ function Dashboard() {
 
     const renderContent = () => {
         switch (activeView) {
+            case "analytics":
+                return <Analytics/>
             case "readings":
                 return <Readings />;
             case "billings":
@@ -22,8 +24,6 @@ function Dashboard() {
                 return <RegWaterUser />;
             case "users":
                 return <Users />;
-            case "analytics":
-                return <Analytics/>
             case "logs":
                 return <Logs/>
             case "regw":
