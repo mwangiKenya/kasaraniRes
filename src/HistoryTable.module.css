@@ -81,6 +81,27 @@
   color: #16a34a;
   font-weight: 600;
 }
+.controls {
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.search {
+  padding: 10px 14px;
+  width: 280px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  outline: none;
+  font-size: 14px;
+  transition: 0.2s;
+  background: #fff;
+}
+
+.search:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+}
 
 /* Responsive */
 @media (max-width: 768px) {

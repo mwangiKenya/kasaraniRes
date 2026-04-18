@@ -3,28 +3,39 @@ import styles from "./HistoryTable.module.css";
 
 const HistoryTable = () => {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+
+  const fetchData = (query = "") => {
+    fetch(`https://python-back-2.onrender.com/hist_data/?name=${query}`)
+      .then((res) => res.json())
+      .then((data) => setData(data))
+      .catch((err) => console.error(err));
+  };
 
   useEffect(() => {
-    fetch("https://python-back-2.onrender.com/api/hist_data/")
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching history:", err);
-        setLoading(false);
-      });
+    fetchData();
   }, []);
 
-  if (loading) {
-    return <div className={styles.loader}>Loading history...</div>;
-  }
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearch(value);
+    fetchData(value);
+  };
 
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Change History</h2>
+
+      {/* SEARCH BAR */}
+      <div className={styles.controls}>
+        <input
+          type="text"
+          placeholder="Search customer name..."
+          value={search}
+          onChange={handleSearch}
+          className={styles.search}
+        />
+      </div>
 
       <div className={styles.tableWrapper}>
         <table className={styles.table}>
@@ -34,7 +45,7 @@ const HistoryTable = () => {
               <th>Field</th>
               <th>Old Value</th>
               <th>New Value</th>
-              <th>Date Changed</th>
+              <th>Date</th>
             </tr>
           </thead>
 
