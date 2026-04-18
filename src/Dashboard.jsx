@@ -8,6 +8,7 @@ import Analytics from "./Analytics";
 import Logs from "./Logs";
 import RegWorker from "./RegWorker";
 import EmployeesList from "./EmployeesList";
+import HistoryTable from "./HistoryTable";
 
 function Dashboard() {
     const [activeView, setActiveView] = useState("analytics");
@@ -30,6 +31,8 @@ function Dashboard() {
                 return <RegWorker/>
             case "emp":
                 return <EmployeesList/>
+            case "hist":
+                return <HistoryTable/>
             default:
                 return <Analytics/>;
         }
@@ -85,6 +88,14 @@ function Dashboard() {
                     >
                         Logs
                     </button>
+
+                    <button
+                        className={`${styles.navItem} ${activeView === "hist" ? styles.active : ""}`}
+                        onClick={() => setActiveView("hist")}
+                    >
+                        Readings History
+                    </button>
+
                     <button
                         className={`${styles.navItem} ${activeView === "regw" ? styles.active : ""}`}
                         onClick={() => setActiveView("regw")}

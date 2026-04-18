@@ -16,6 +16,7 @@ import Logs from "./Logs";
 import BillingDashboard from "./BillingDashboard";
 import RegWorker from "./RegWorker";
 import EmployeesList from "./EmployeesList";
+import HistoryTable from "./HistoryTable";
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -83,6 +84,7 @@ function App() {
           <Route path="/BillingDashboard" element = {<BillingDashboard/>}/>
           <Route path="/RegWorker" element = {<RegWorker/>}/>
           <Route path="/EmployeesList" element = {<EmployeesList/>}/>
+          <Route path="/HistoryTable" element = {<HistoryTable/>}/>
         </Routes>
       </HashRouter>
 
