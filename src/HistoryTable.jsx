@@ -24,7 +24,7 @@ const HistoryTable = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>Change History</h2>
+      <h2 className={styles.title}>Meter Reading History</h2>
 
       {/* SEARCH BAR */}
       <div className={styles.controls}>
