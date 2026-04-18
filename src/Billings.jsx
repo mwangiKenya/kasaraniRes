@@ -9,7 +9,6 @@ function Billings() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editedBillings, setEditedBillings] = useState({});
-  const [search, setSearch] = useState("");
 
   // Fetch all billings from backend
   useEffect(() => {
@@ -130,12 +129,6 @@ function Billings() {
     }
   };
 
-  const handleSearch = (e) => {
-    const value = e.target.value;
-    setSearch(value);
-    fetchData(value);
-  };
-
   if (loading) return <div className={styles.mainDiv}>Loading...</div>;
   if (error) return <div className={styles.mainDiv}>Error: {error}</div>;
 
@@ -144,16 +137,6 @@ function Billings() {
       <div className={styles.mainDiv}>
         {/*<Sms />*/}
         <h1>Billings</h1>
-              {/* SEARCH BAR */}
-              <div className={styles.controls}>
-                <input
-                  type="text"
-                  placeholder="Search payment status..."
-                  value={search}
-                  onChange={handleSearch}
-                  className={styles.search}
-                />
-              </div>
         <table className={styles.billingTable}>
           <thead>
             <tr>
@@ -198,10 +181,10 @@ function Billings() {
           </tbody>
         </table>
         <div style={{ marginBottom: "15px" }}>
-            <button onClick={handleSaveAll} className={styles.btnSave}>
-              Save All Changes
-            </button>
-          </div>
+          <button onClick={handleSaveAll} className={styles.btnSave}>
+            Save All Changes
+          </button>
+        </div>
       </div>
       <Footer />
     </>
