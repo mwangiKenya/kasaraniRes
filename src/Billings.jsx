@@ -8,6 +8,7 @@ function Billings() {
   const [billings, setBillings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [editedBillings, setEditedBillings] = useState({});
 
   // Fetch all billings from backend
   useEffect(() => {
@@ -34,11 +35,56 @@ function Billings() {
 
   // Update local paidValue state when user types
   const handlePaidChange = (id, value) => {
-    // Make sure value is a number
-    const numericValue = parseFloat(value) || 0;
-    setBillings((prev) =>
-      prev.map((b) => (b.id === id ? { ...b, paidValue: numericValue } : b))
+  const numericValue = parseFloat(value) || 0;
+
+  setBillings((prev) =>
+    prev.map((b) =>
+      b.id === id ? { ...b, paidValue: numericValue } : b
+    )
+  );
+
+  setEditedBillings((prev) => ({
+    ...prev,
+    [id]: {
+      id,
+      paid: numericValue,
+    },
+  }));
+  };
+
+  const handleSaveAll = async () => {
+  const updates = Object.values(editedBillings);
+
+  if (updates.length === 0) {
+    toast.info("No changes to save");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "https://python-back-2.onrender.com/api/update_paid/",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      }
     );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      toast.error(data.error || "Failed to update");
+      return;
+    }
+
+    toast.success("All payments updated!");
+
+    // refresh data
+    setEditedBillings({});
+    window.location.reload(); // simple refresh (or refetch API)
+  } catch (err) {
+    toast.error("Network error: " + err.message);
+  }
   };
 
   // Save updated paid to backend and immediately update row in table
@@ -134,6 +180,11 @@ function Billings() {
             ))}
           </tbody>
         </table>
+        <div style={{ marginBottom: "15px" }}>
+            <button onClick={handleSaveAll} className={styles.btnSave}>
+              Save All Changes
+            </button>
+          </div>
       </div>
       <Footer />
     </>
