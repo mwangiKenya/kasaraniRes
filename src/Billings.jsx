@@ -148,7 +148,7 @@ function Billings() {
               <div className={styles.controls}>
                 <input
                   type="text"
-                  placeholder="Search customer name..."
+                  placeholder="Search payment status..."
                   value={search}
                   onChange={handleSearch}
                   className={styles.search}
