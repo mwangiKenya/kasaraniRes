@@ -6,7 +6,7 @@ const HistoryTable = () => {
   const [search, setSearch] = useState("");
 
   const fetchData = (query = "") => {
-    fetch(`https://python-back-2.onrender.com/hist_data/?name=${query}`)
+    fetch(`https://python-back-2.onrender.com/api/hist_data/?name=${query}`)
       .then((res) => res.json())
       .then((data) => setData(data))
       .catch((err) => console.error(err));
