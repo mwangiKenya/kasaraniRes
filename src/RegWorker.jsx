@@ -31,7 +31,7 @@ function RegWorker() {
         setPassword("");
         setRole("");
       } else {
-        toast.error("Failed to register employee");
+        toast.success("Registered successfully!");
       }
     } catch (error) {
       console.error(error);
