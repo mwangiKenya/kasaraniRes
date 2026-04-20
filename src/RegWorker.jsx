@@ -14,7 +14,7 @@ function RegWorker() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!username || !password || !role) {
-      toast.error("All fields are required");
+      toast.info("All fields are required");
       return;
     }
 
@@ -25,7 +25,7 @@ function RegWorker() {
         role,
       });
 
-      if (response.status === 201) {
+      if (response.status >= 201 && response.status < 300) {
         toast.success("Employee registered successfully!");
         setUsername("");
         setPassword("");
@@ -68,7 +68,7 @@ function RegWorker() {
           onChange={(e) => setRole(e.target.value)}
           className={styles.select}
         >
-          <option value="admin">Admin</option>
+          <option value="admin">admin</option>
           <option value="employee">reader</option>
           <option value="viewer">billing</option>
         </select>
