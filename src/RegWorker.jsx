@@ -69,8 +69,8 @@ function RegWorker() {
           className={styles.select}
         >
           <option value="admin">admin</option>
-          <option value="employee">reader</option>
-          <option value="viewer">billing</option>
+          <option value="reader">reader</option>
+          <option value="billing">billing</option>
         </select>
 
         <button type="submit" className={styles.button}>
