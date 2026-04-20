@@ -133,7 +133,7 @@ function Billings() {
   if (loading) return <div className={styles.mainDiv}>Loading...</div>;
   if (error) return <div className={styles.mainDiv}>Error: {error}</div>;
 
-  
+  {/*
   const sendSMS = async () => {
     try {
       const response = await axios.post(
@@ -149,7 +149,7 @@ function Billings() {
       console.error(error);
       toast.error("Failed to send SMS");
     }
-  };
+  };*/}
 
   return (
     <>
@@ -204,9 +204,10 @@ function Billings() {
             Save All Changes
           </button>
         </div>
+        {/*
         <button onClick={sendSMS}>
           Send billing SMS
-        </button>
+        </button>*/}
       </div>
       <Footer />
     </>
