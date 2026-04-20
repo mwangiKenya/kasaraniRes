@@ -32,6 +32,9 @@ function RegWorker() {
         setRole("");
       } else {
         toast.success("Registered successfully!");
+        setUsername("");
+        setPassword("");
+        setRole("");
       }
     } catch (error) {
       console.error(error);
