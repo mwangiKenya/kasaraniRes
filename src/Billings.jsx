@@ -137,7 +137,7 @@ function Billings() {
   const sendSMS = async () => {
     try {
       const response = await axios.post(
-        "https://python-back-2.onrender.com/api/send-sms/",
+        "https://python-back-2.onrender.com/api/send_sms_api/",
         {
           phone: "0712345678",
           message: "Your water bill is ready"
