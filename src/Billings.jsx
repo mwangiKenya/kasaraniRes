@@ -205,7 +205,7 @@ function Billings() {
           </button>
         </div>
         <button onClick={sendSMS}>
-          Send SMS
+          Send billing SMS
         </button>
       </div>
       <Footer />
