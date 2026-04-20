@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./Billings.module.css";
 import Footer from "./Footer";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 
 function Billings() {
@@ -132,6 +133,24 @@ function Billings() {
   if (loading) return <div className={styles.mainDiv}>Loading...</div>;
   if (error) return <div className={styles.mainDiv}>Error: {error}</div>;
 
+  
+  const sendSMS = async () => {
+    try {
+      const response = await axios.post(
+        "https://python-back-2.onrender.com/api/send-sms/",
+        {
+          phone: "0712345678",
+          message: "Your water bill is ready"
+        }
+      );
+
+      toast.success("SMS sent successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to send SMS");
+    }
+  };
+
   return (
     <>
       <div className={styles.mainDiv}>
@@ -185,6 +204,9 @@ function Billings() {
             Save All Changes
           </button>
         </div>
+        <button onClick={sendSMS}>
+          Send SMS
+        </button>
       </div>
       <Footer />
     </>
