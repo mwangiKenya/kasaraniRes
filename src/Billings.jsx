@@ -209,7 +209,7 @@ function Billings() {
           Send billing SMS
         </button>*/}
       </div>
-      <Footer />
+      {/*<Footer />*/}
     </>
   );
 }

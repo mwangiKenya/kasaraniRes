@@ -318,7 +318,7 @@ function Readings() {
           </button>
         </div>
       </div>
-      <Footer />
+      {/*<Footer />*/}
     </>
   );
 }
