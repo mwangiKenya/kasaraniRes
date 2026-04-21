@@ -36,6 +36,7 @@
   font-family: 'Inter', system-ui, sans-serif;
   color: var(--text-main);
   overflow: hidden;
+  margin-top: 160px;
 }
 
 /* =======================
