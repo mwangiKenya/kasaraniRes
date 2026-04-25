@@ -178,7 +178,13 @@ function Analytics() {
       {/* INSIGHT MESSAGE */}
       <div className={styles.insightBox}>
         <h3>System Insight</h3>
+        <h4>Financial insight</h4>
         <p>{getInsight()}</p>
+        <h4>Data insight</h4>
+        <p>
+          The system is currently optimizing service delivery for <strong>{customers}</strong> customers, 
+          supported by a dedicated team of <strong>X</strong> personnel.
+        </p>
       </div>
 
       {/* TREND */}

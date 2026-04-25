@@ -127,6 +127,7 @@ function Users() {
                 <td>
                   <input
                     value={c.metre_num}
+                    readOnly
                     onChange={(e) =>
                       setCustomers(prev =>
                         prev.map(u =>
@@ -140,6 +141,7 @@ function Users() {
                 <td>
                   <input
                     value={c.zone}
+                    readOnly
                     onChange={(e) =>
                       setCustomers(prev =>
                         prev.map(u =>
