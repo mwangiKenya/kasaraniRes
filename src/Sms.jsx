@@ -5,6 +5,10 @@ function Sms() {
   const [customers, setCustomers] = useState([]);
   const [error, setError] = useState(null);
 
+  // 👇 modal states
+  const [showModal, setShowModal] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+
   useEffect(() => {
     fetch("https://python-back-2.onrender.com/api/bill/")
       .then((res) => {
@@ -14,6 +18,12 @@ function Sms() {
       .then((data) => setCustomers(data))
       .catch((err) => setError(err.message));
   }, []);
+
+    const today = new Date();
+    const dueDate = new Date();
+    dueDate.setDate(today.getDate() + 7);
+
+    const formattedDueDate = dueDate.toLocaleDateString();
 
   return (
     <div className={styles.container}>
@@ -25,16 +35,18 @@ function Sms() {
         <table className={styles.tableContainer}>
           <thead>
             <tr>
-              <th colSpan="5" className={styles.tableHeaderMain}>
+              <th colSpan="6" className={styles.tableHeaderMain}>
                 Customers Billing SMS
               </th>
             </tr>
+
             <tr className={styles.tableRowHeader}>
               <th>ID</th>
               <th>Name</th>
               <th>Sms</th>
               <th>Status</th>
               <th>Toggle</th>
+              <th>View Sms</th>
             </tr>
           </thead>
 
@@ -45,13 +57,64 @@ function Sms() {
                 <td>{c.name}</td>
                 <td>Your invoice is ready...</td>
                 <td>
-                  <span className={styles.statusBadge}>Sent</span>
+                  <span className={styles.statusBadge}>Not sent</span>
                 </td>
-                <td><input type="checkbox" /></td>
+                <td>
+                  <input type="checkbox" />
+                </td>
+
+                <td>
+                  <button
+                    className={styles.sendBtn}
+                    onClick={() => {
+                      setSelectedCustomer(c);
+                      setShowModal(true);
+                    }}
+                  >
+                    View Sms structure
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
+
+        {/* ================= MODAL ================= */}
+        {showModal && selectedCustomer && (
+          <div className={styles.modalOverlay}>
+            <div className={styles.modalBox}>
+              <h2>SMS Structure Preview</h2>
+
+              <p>
+                Dear {selectedCustomer.name}, <br />
+                Your water bill as at {new Date().toLocaleDateString()}<br/>
+                are as follows: <br/>
+                Units Used: {selectedCustomer.units_used} <br />
+                Total Bill: {selectedCustomer.bill} <br />
+                Pay by {formattedDueDate} <br/>
+                <strong><p>Payment options:</p></strong><br/>
+                Via Mpesa send money: 0723311564<br/>
+                Buy goods, Kamengo agencies <br/>
+                Till number: 544783<br/>
+                Kamengo agencies: <br/>
+                a/c No: xxxxxxxxxxxx<br/>
+                Coop, TRM Branch <br/>
+                Or, Kamengo agencies <br/>
+                a/c No: xxxxxxxxxxxxx<br/>
+                Equity garden city branch
+              </p>
+
+
+              <button
+                className={styles.closeBtn}
+                onClick={() => setShowModal(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+        {/* ========================================= */}
       </div>
     </div>
   );
