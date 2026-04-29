@@ -17,6 +17,7 @@ import BillingDashboard from "./BillingDashboard";
 import RegWorker from "./RegWorker";
 import EmployeesList from "./EmployeesList";
 import HistoryTable from "./HistoryTable";
+import Sms from "./Sms";
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -64,6 +65,7 @@ function App() {
             <Link to="/" className="MyNavLinks" onClick={() => setMenuOpen(false)}>Home</Link>
             <Link to = "/Login" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Admin </Link>
             <Link to = "/Workers" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Users </Link>
+            <Link to = "/Sms" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Sms </Link>
           </nav>
 
           {/*<hr />*/}
@@ -85,6 +87,7 @@ function App() {
           <Route path="/RegWorker" element = {<RegWorker/>}/>
           <Route path="/EmployeesList" element = {<EmployeesList/>}/>
           <Route path="/HistoryTable" element = {<HistoryTable/>}/>
+          <Route path="/Sms" element = {<Sms/>}/>
         </Routes>
       </HashRouter>
 

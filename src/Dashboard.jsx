@@ -9,6 +9,7 @@ import Logs from "./Logs";
 import RegWorker from "./RegWorker";
 import EmployeesList from "./EmployeesList";
 import HistoryTable from "./HistoryTable";
+import Sms from "./Sms";
 
 function Dashboard() {
     const [activeView, setActiveView] = useState("analytics");
@@ -33,6 +34,8 @@ function Dashboard() {
                 return <EmployeesList/>
             case "hist":
                 return <HistoryTable/>
+            case "sms" :
+                return <Sms/>
             default:
                 return <Analytics/>;
         }
@@ -80,7 +83,13 @@ function Dashboard() {
                         Registered Customers 
                     </button>
 
-                    
+                    <button
+                        className={`${styles.navItem} ${activeView === "sms" ? styles.active : ""}`}
+                        onClick={() => setActiveView("sms")}
+                    >
+                        Send Billing sms 
+                    </button>
+                   
 
                     <button
                         className={`${styles.navItem} ${activeView === "logs" ? styles.active : ""}`}
