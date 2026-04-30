@@ -60,7 +60,7 @@ function Sms() {
 
     try {
       const res = await fetch(
-        "https://python-back-2.onrender.com/api/send-sms/",
+        "https://python-back-2.onrender.com/api/send_sms_view/",
         {
           method: "POST",
           headers: {
