@@ -55,7 +55,11 @@ function Sms() {
       Your water bill as at ${new Date().toLocaleDateString()}
       Units Used: ${c.units_used}
       Total Bill: KES ${c.bill}
-      Pay by ${formattedDueDate}`
+      Pay by ${formattedDueDate}
+      Payment options:
+      Via mpesa: send money:
+      0723311564, Till no: 544783
+      Bank: 01192576824499 Coop.`
     }));
 
     try {
