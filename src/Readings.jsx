@@ -229,10 +229,7 @@ function Readings() {
         <table className={styles.readingsTable}>
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Phone</th>
-              <th>Meter no</th>
+              <th colSpan={4}>User Data</th>
               <th colSpan={2}>
                 {waterUsers.length > 0 ? waterUsers[0].prev_date : ""}
               </th>
@@ -240,8 +237,19 @@ function Readings() {
               <th colSpan={2}>
                 {waterUsers.length > 0 ? waterUsers[0].cur_date : ""}
               </th>
+              <th colSpan={3}>Action</th>
+            </tr>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Meter</th>
+              <th>User</th>
+              <th>Sup</th>
+              <th>User</th>
+              <th>Sup</th>
               <th>Rate</th>
-              <th>Action</th>
+              <th>Save</th>
               <th>Status</th>
             </tr>
           </thead>
