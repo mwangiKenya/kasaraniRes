@@ -233,8 +233,13 @@ function Readings() {
               <th>Name</th>
               <th>Phone</th>
               <th>Meter no</th>
-              <th colSpan={2}>{waterUsers.prev_date}</th>
-              <th colSpan={2}>{waterUsers.cur_date}</th>
+              <th colSpan={2}>
+                {waterUsers.length > 0 ? waterUsers[0].prev_date : ""}
+              </th>
+
+              <th colSpan={2}>
+                {waterUsers.length > 0 ? waterUsers[0].cur_date : ""}
+              </th>
               <th>Rate</th>
               <th>Action</th>
               <th>Status</th>
