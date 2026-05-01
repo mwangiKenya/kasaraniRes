@@ -148,7 +148,11 @@ function Sms() {
               <br />
               Units Used: {selectedCustomer.units_used} <br />
               Total Bill: KES {selectedCustomer.bill} <br />
-              Pay by {formattedDueDate}
+              Pay by {formattedDueDate}<br/>
+              Payment options:<br/>
+              Via mpesa: send money:<br/>
+              0723311564, Till no: 544783<br/>
+              Bank: 01192576824499 Coop.<br/>
             </p>
 
             <button onClick={() => setShowModal(false)}>
