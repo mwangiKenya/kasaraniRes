@@ -99,8 +99,8 @@ function Sms() {
             <th>ID</th>
             <th>Name</th>
             {/*<th>Sms</th>*/}
-            <th>Status</th>
-            <th>Select</th>
+            {/*<th>Status</th>*/}
+            <th>Select to send </th>
             <th>Preview</th>
           </tr>
         </thead>
@@ -111,7 +111,7 @@ function Sms() {
               <td>{c.id}</td>
               <td>{c.name}</td>
               {/*<td>Your invoice is ready...</td>*/}
-              <td>Not sent</td>
+              {/*<td>Not sent</td>*/}
 
               <td>
                 <input
