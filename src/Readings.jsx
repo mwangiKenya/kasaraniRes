@@ -228,7 +228,7 @@ function Readings() {
 
         <table className={styles.readingsTable}>
           <thead>
-            <tr key={hed.id}>
+            <tr>
               <th>ID</th>
               <th>Name</th>
               <th>Phone</th>
