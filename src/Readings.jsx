@@ -228,21 +228,18 @@ function Readings() {
 
         <table className={styles.readingsTable}>
           <thead>
-            <tr>
+            {waterUsers.map(hed => (
+            <tr key={hed.id}>
               <th>ID</th>
               <th>Name</th>
               <th>Phone</th>
               <th>Meter no</th>
-              <th>Prev User</th>
-              <th>Prev Sup</th>
-              <th>Prev Date</th>
-              <th>Cur User</th>
-              <th>Cur Sup</th>
-              <th>Cur Date</th>
+              <th colSpan={2}>{hed.prev_date}</th>
+              <th colSpan={2}>{hed.cur_date}</th>
               <th>Rate</th>
               <th>Action</th>
               <th>Status</th>
-            </tr>
+            </tr>))}
           </thead>
           <tbody>
             {waterUsers.map(row => (
@@ -267,7 +264,7 @@ function Readings() {
                     readOnly
                   />
                 </td>
-                <td>{row.prev_date}</td>
+                
                 <td>
                   <input
                     type="number"
@@ -288,7 +285,7 @@ function Readings() {
                     }
                   />
                 </td>
-                <td>{row.cur_date}</td>
+                
                 <td>{row.rate}</td>
                 <td>
                   <button
