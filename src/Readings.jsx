@@ -228,18 +228,17 @@ function Readings() {
 
         <table className={styles.readingsTable}>
           <thead>
-            {waterUsers.map(hed => (
             <tr key={hed.id}>
               <th>ID</th>
               <th>Name</th>
               <th>Phone</th>
               <th>Meter no</th>
-              <th colSpan={2}>{hed.prev_date}</th>
-              <th colSpan={2}>{hed.cur_date}</th>
+              <th colSpan={2}>{waterUsers.prev_date}</th>
+              <th colSpan={2}>{waterUsers.cur_date}</th>
               <th>Rate</th>
               <th>Action</th>
               <th>Status</th>
-            </tr>))}
+            </tr>
           </thead>
           <tbody>
             {waterUsers.map(row => (
