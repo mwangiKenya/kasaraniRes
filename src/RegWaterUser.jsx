@@ -94,17 +94,14 @@ function RegWaterUser() {
                     onChange={handleChange}
                     className={styles.RegWaterUserInput}
                 />
-                <select
-                      value={reg.rate}
-                        name="rate"
-                        onChange={handleChange}
-                        className={styles.RegWaterUserInput}>
-                    <option>
-                        ---Select the billing rate---
-                    </option>
-                    <option> 100 </option>
-                    <option> 120 </option>
-                </select>
+                
+                <input type="number"
+                       placeholder="Billing rate"
+                       value={reg.rate}
+                       name="rate"
+                       onChange={handleChange}
+                    className={styles.RegWaterUserInput}
+                />
                 <input
                     type="submit"
                     value="Register user"
