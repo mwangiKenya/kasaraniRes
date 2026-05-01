@@ -151,11 +151,64 @@ function Billings() {
     }
   };*/}
 
+  const handleDownloadExcel = () => {
+  window.open(
+    "https://python-back-2.onrender.com/api/download-billings-template/",
+    "_blank"
+  );
+  };
+
+  const handleUploadExcel = async (e) => {
+  const file = e.target.files[0];
+
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await fetch(
+      "https://python-back-2.onrender.com/api/upload-billings-excel/",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      toast.error(data.error || "Upload failed");
+      return;
+    }
+
+    toast.success("Excel uploaded successfully!");
+
+    // refresh table
+    window.location.reload();
+
+  } catch (err) {
+    toast.error("Upload error: " + err.message);
+  }
+  };
+
   return (
     <>
       <div className={styles.mainDiv}>
         {/*<Sms />*/}
         <h1>Billings</h1>
+        <div style={{ marginBottom: "15px" }}>
+          <button onClick={handleDownloadExcel} className={styles.btnSave}>
+            Download Excel
+          </button>
+
+          <input
+            type="file"
+            accept=".xlsx, .xls"
+            onChange={handleUploadExcel}
+            style={{ marginLeft: "10px" }}
+          />
+        </div>
         <table className={styles.billingTable}>
           <thead>
             <tr>
