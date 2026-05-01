@@ -1,5 +1,6 @@
 import styles from "./Sms.module.css";
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 
 function Sms() {
   const [customers, setCustomers] = useState([]);
@@ -44,7 +45,7 @@ function Sms() {
   // ✅ send SMS (formatted properly)
   const sendSMS = async () => {
     if (selectedCustomers.length === 0) {
-      alert("Select at least one customer");
+      toast.info("Select at least one customer");
       return;
     }
 
@@ -77,10 +78,10 @@ function Sms() {
       );
 
       const data = await res.json();
-      alert("SMS sent successfully");
+      toast.success("SMS sent successfully");
       console.log(data);
     } catch (err) {
-      alert("Failed to send SMS");
+      toast.error("Failed to send SMS");
     }
   };
 
