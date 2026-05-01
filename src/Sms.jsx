@@ -55,7 +55,9 @@ function Sms() {
       message: `Dear ${c.name}, 
       Your water bill as at ${new Date().toLocaleDateString()}
       Units Used: ${c.units_used}
-      Total Bill: KES ${c.bill}
+      Current Bill: KES ${c.bill}
+      Last Balance: KES ${c.b_cd}
+      Total Bill: KES ${c.bal}
       Pay by ${formattedDueDate}
       Payment options:
       Via mpesa: send money:
@@ -167,7 +169,9 @@ function Sms() {
               Your water bill as at {new Date().toLocaleDateString()}
               <br />
               Units Used: {selectedCustomer.units_used} <br />
-              Total Bill: KES {selectedCustomer.bill} <br />
+              Current Bill: KES {selectedCustomer.bill} <br />
+              Last Bill: KES {selectedCustomer.b_cd}<br/>
+              Total Bill: KES {selectedCustomer.bal}<br/>
               Pay by {formattedDueDate}<br/>
               Payment options:<br/>
               Via mpesa: send money:<br/>
