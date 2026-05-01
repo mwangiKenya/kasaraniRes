@@ -85,6 +85,19 @@ function Sms() {
     }
   };
 
+      // ✅ check if all are selected
+    const allSelected =
+      customers.length > 0 && selectedCustomers.length === customers.length;
+
+    // ✅ toggle select all
+    const handleSelectAll = () => {
+      if (allSelected) {
+        setSelectedCustomers([]);
+      } else {
+        setSelectedCustomers(customers);
+      }
+    };
+
   return (
     <div className={styles.container}>
       <h1 className={styles.header1}>SMS Dashboard</h1>
@@ -100,7 +113,14 @@ function Sms() {
             <th>Name</th>
             {/*<th>Sms</th>*/}
             {/*<th>Status</th>*/}
-            <th>Select to send </th>
+            <th>
+              <input
+                type="checkbox"
+                checked={allSelected}
+                onChange={handleSelectAll}
+              />{" "}
+              Select All
+            </th>
             <th>Preview</th>
           </tr>
         </thead>
