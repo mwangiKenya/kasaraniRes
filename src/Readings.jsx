@@ -29,6 +29,8 @@ function Readings() {
         metre_num : user.metre_num ?? 0,
         prev_user: user.prev_user ?? 0,
         prev_sup: user.prev_sup ?? 0,
+        mid_user: user.mid_user ?? 0,
+        mid_sup: user.mid_sup ?? 0,
         cur_user: user.cur_user,
         cur_sup: user.cur_sup,
       }));
@@ -75,7 +77,9 @@ function Readings() {
       const payload = {
         user_id: row.user_id || row.id,
         cur_user: row.cur_user === null ? null : Number(row.cur_user),
-        cur_sup: row.cur_sup === null ? null : Number(row.cur_sup)
+        cur_sup: row.cur_sup === null ? null : Number(row.cur_sup),
+        mid_user: row.mid_user === null ? null : Number(row.mid_user),
+        mid_sup: row.mid_sup === null ? null : Number(row.mid_sup)
       };
 
       const res = await fetch(`${BACKEND_URL}/submit_new_reading/`, {
@@ -121,7 +125,9 @@ function Readings() {
     const updates = Object.entries(editedRows).map(([id, data]) => ({
       user_id: data.user_id || id,
       cur_user: data.cur_user === null ? null : Number(data.cur_user),
-      cur_sup: data.cur_sup === null ? null : Number(data.cur_sup)
+      cur_sup: data.cur_sup === null ? null : Number(data.cur_sup),
+      mid_user: data.mid_user === null ? null : Number(data.mid_user), // NEW
+      mid_sup: data.mid_sup === null ? null : Number(data.mid_sup)     // NEW
     }));
 
     if (updates.length === 0) {
@@ -234,6 +240,8 @@ function Readings() {
                 {waterUsers.length > 0 ? waterUsers[0].prev_date : ""}
               </th>
 
+              <th colSpan={2}> Mid-Month </th>
+
               <th colSpan={2}>
                 {waterUsers.length > 0 ? waterUsers[0].cur_date : ""}
               </th>
@@ -244,6 +252,8 @@ function Readings() {
               <th>Name</th>
               <th>Phone</th>
               <th>Meter</th>
+              <th>User</th>
+              <th>Sup</th>
               <th>User</th>
               <th>Sup</th>
               <th>User</th>
@@ -274,6 +284,28 @@ function Readings() {
                     className={styles.wateruserInput}
                     value={row.prev_sup}
                     readOnly
+                  />
+                </td>
+
+                <td>
+                  <input
+                    type="number"
+                    className={styles.wateruserInput}
+                    value={row.mid_user ?? ""}
+                    onChange={(e) =>
+                      handleInputChange(row.id, "mid_user", e.target.value)
+                    }
+                  />
+                </td>
+
+                <td>
+                  <input
+                    type="number"
+                    className={styles.wateruserInput}
+                    value={row.mid_sup ?? ""}
+                    onChange={(e) =>
+                      handleInputChange(row.id, "mid_sup", e.target.value)
+                    }
                   />
                 </td>
                 
@@ -312,7 +344,7 @@ function Readings() {
                     ? "No Reading"
                     : row.cur_user === 0
                       ? "Invalid"
-                      : Math.abs((((cur_sup-prev_sup) - (cur_user-prev_user))/(cur_sup-prev_sup)) * 100) <= 5
+                      : Math.abs((((row.cur_sup-row.prev_sup) - (row.cur_user-row.prev_user))/(row.cur_sup-row.prev_sup)) * 100) <= 5
                         ? "Good"
                         : "Leakage"}
                 </td>
