@@ -49,7 +49,7 @@ function Sms() {
       return;
     }
 
-    // 🔥 build payload properly
+    // build payload properly
     const formattedCustomers = selectedCustomers.map((c) => ({
       phone: c.phone, // make sure backend has phone field
       message: `Dear ${c.name}, 
@@ -87,11 +87,11 @@ function Sms() {
     }
   };
 
-      // ✅ check if all are selected
+      //  check if all are selected
     const allSelected =
       customers.length > 0 && selectedCustomers.length === customers.length;
 
-    // ✅ toggle select all
+    // toggle select all
     const handleSelectAll = () => {
       if (allSelected) {
         setSelectedCustomers([]);

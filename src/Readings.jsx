@@ -312,7 +312,7 @@ function Readings() {
                     ? "No Reading"
                     : row.cur_user === 0
                       ? "Invalid"
-                      : Math.abs(((row.cur_user - row.cur_sup) / row.cur_user) * 100) <= 5
+                      : Math.abs((((cur_sup-prev_sup) - (cur_user-prev_user))/(cur_sup-prev_sup)) * 100) <= 5
                         ? "Good"
                         : "Leakage"}
                 </td>
