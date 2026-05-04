@@ -54,6 +54,8 @@ function Sms() {
       phone: c.phone, // make sure backend has phone field
       message: `Dear ${c.name}, 
       Your water bill as at ${new Date().toLocaleDateString()}
+      Prev read: ${c.prev_user}
+      Curr read: ${c.cur_user}
       Units Used: ${c.units_used}
       Current Bill: KES ${c.bill}
       Last Balance: KES ${c.b_cd}
@@ -168,6 +170,8 @@ function Sms() {
               Dear {selectedCustomer.name}, <br />
               Your water bill as at {new Date().toLocaleDateString()}
               <br />
+              Prev read: {selectedCustomer.prev_user}<br/>
+              Curr read: {selectedCustomer.cur_user}<br/>
               Units Used: {selectedCustomer.units_used} <br />
               Current Bill: KES {selectedCustomer.bill} <br />
               Last Bill: KES {selectedCustomer.b_cd}<br/>
