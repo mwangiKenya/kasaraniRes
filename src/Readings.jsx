@@ -230,6 +230,10 @@ function Readings() {
             <button onClick={uploadExcel}>
               Submit Data File
             </button>
+
+            <button>
+              refresh mid data
+            </button>
           </div>
 
         <table className={styles.readingsTable}>
