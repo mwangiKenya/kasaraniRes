@@ -388,77 +388,108 @@ const setCycleDuration = async () => {
                 Restore System
               </button>
           </div>
-          <div style={{ marginBottom: "10px" }}>
-              <h3>Next Billing Cycle In:</h3>
-              <p>
-                {timer.days}d : {timer.hours}h : {timer.minutes}m : {timer.seconds}s
-              </p>
-            </div>
+          <div className={styles.settingsContainer}>
 
-          <div style={{ marginBottom: "15px" }}>
-        <h3>Billing Cycle Settings</h3>
+  <h3 className={styles.settingsTitle}>Billing Cycle Settings</h3>
 
-        <label>Start Month:</label>
-        <input
-          type="month"
-          value={startMonth}
-          onChange={(e) => setStartMonth(e.target.value)}
-        />
+  <div className={styles.inputGroup}>
+    <label>Start Month</label>
 
-        <h3>Cycle Duration Settings</h3>
+    <input
+      type="month"
+      className={styles.monthInput}
+      value={startMonth}
+      onChange={(e) => setStartMonth(e.target.value)}
+    />
 
-          <label>Days</label>
-          <input
-            type="number"
-            value={duration.days}
-            onChange={(e) =>
-              setDuration({ ...duration, days: e.target.value })
-            }
-          />
+    <button
+      className={styles.startButton}
+      onClick={startMonthCycle}
+    >
+      Start This Month
+    </button>
+  </div>
 
-          <label>Hours</label>
-          <input
-            type="number"
-            value={duration.hours}
-            onChange={(e) =>
-              setDuration({ ...duration, hours: e.target.value })
-            }
-          />
+  <h3 className={styles.settingsSubTitle}>
+    Cycle Duration Settings
+  </h3>
 
-          <label>Minutes</label>
-          <input
-            type="number"
-            value={duration.minutes}
-            onChange={(e) =>
-              setDuration({ ...duration, minutes: e.target.value })
-            }
-          />
+  <div className={styles.inputGroup}>
 
-          <label>Seconds</label>
-          <input
-            type="number"
-            value={duration.seconds}
-            onChange={(e) =>
-              setDuration({ ...duration, seconds: e.target.value })
-            }
-          />
-
-<button onClick={setCycleDuration}>
-  Use This Duration
-</button>
-      </div>
-      <div style={{ marginBottom: "10px" }}>
-      <h3>Next Cycle In:</h3>
-      <p>
-        {timer.days}d : {timer.hours}h : {timer.minutes}m : {timer.seconds}s
-      </p>
+    <div>
+      <label>Days</label>
+      <input
+        type="number"
+        className={styles.timerInput}
+        value={duration.days}
+        onChange={(e) =>
+          setDuration({ ...duration, days: e.target.value })
+        }
+      />
     </div>
-    <button onClick={startMonthCycle}>
-        Start This Month
-      </button>
-    
-       <button onClick={finalizeCycle}>Finish Month</button>
 
+    <div>
+      <label>Hours</label>
+      <input
+        type="number"
+        className={styles.timerInput}
+        value={duration.hours}
+        onChange={(e) =>
+          setDuration({ ...duration, hours: e.target.value })
+        }
+      />
+    </div>
+
+    <div>
+      <label>Minutes</label>
+      <input
+        type="number"
+        className={styles.timerInput}
+        value={duration.minutes}
+        onChange={(e) =>
+          setDuration({ ...duration, minutes: e.target.value })
+        }
+      />
+    </div>
+
+    <div>
+      <label>Seconds</label>
+      <input
+        type="number"
+        className={styles.timerInput}
+        value={duration.seconds}
+        onChange={(e) =>
+          setDuration({ ...duration, seconds: e.target.value })
+        }
+      />
+    </div>
+
+    <button
+      className={styles.timerButton}
+      onClick={setCycleDuration}
+    >
+      Use This Duration
+    </button>
+  </div>
+
+  <div className={styles.timerDisplay}>
+    <h3>Next Cycle In</h3>
+
+    <div className={styles.timerText}>
+      {timer.days}d : {timer.hours}h : {timer.minutes}m : {timer.seconds}s
+    </div>
+  </div>
+
+  <div className={styles.actionButtons}>
+    <button
+      className={styles.finishButton}
+      onClick={finalizeCycle}
+    >
+      Finish Month
+    </button>
+  </div>
+
+</div>
         <table className={styles.readingsTable}>
           <thead>
             <tr>

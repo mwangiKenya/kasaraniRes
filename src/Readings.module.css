@@ -258,3 +258,177 @@ div > .saveButton {
     align-items: stretch;
   }
 }
+
+
+
+/* =========================================
+   BILLING / TIMER SETTINGS SECTION
+========================================= */
+
+.settingsContainer {
+  width: 100%;
+  background: #ffffff;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* SECTION TITLES */
+.settingsTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 10px;
+}
+
+.settingsSubTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 10px;
+}
+
+/* INPUT GROUPS */
+.inputGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+}
+
+/* LABELS */
+.inputGroup label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #475569;
+}
+
+/* INPUTS */
+.timerInput,
+.monthInput {
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+  font-size: 15px;
+  width: 110px;
+  transition: 0.3s;
+  background: #f8fafc;
+}
+
+.monthInput {
+  width: 180px;
+}
+
+.timerInput:focus,
+.monthInput:focus {
+  border-color: #2563eb;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+}
+
+/* BUTTONS */
+.timerButton,
+.startButton,
+.finishButton {
+  padding: 11px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  color: white;
+}
+
+/* USE DURATION BUTTON */
+.timerButton {
+  background: #2563eb;
+}
+
+.timerButton:hover {
+  background: #1d4ed8;
+}
+
+/* START MONTH BUTTON */
+.startButton {
+  background: #16a34a;
+}
+
+.startButton:hover {
+  background: #15803d;
+}
+
+/* FINISH MONTH BUTTON */
+.finishButton {
+  background: #dc2626;
+}
+
+.finishButton:hover {
+  background: #b91c1c;
+}
+
+/* TIMER DISPLAY */
+.timerDisplay {
+  background: #0f172a;
+  color: #ffffff;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.timerDisplay h3 {
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+.timerText {
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #38bdf8;
+}
+
+/* ACTION BUTTONS AREA */
+.actionButtons {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+
+  .settingsContainer {
+    padding: 15px;
+  }
+
+  .inputGroup {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .timerInput,
+  .monthInput {
+    width: 100%;
+  }
+
+  .actionButtons {
+    flex-direction: column;
+  }
+
+  .timerButton,
+  .startButton,
+  .finishButton {
+    width: 100%;
+  }
+
+  .timerText {
+    font-size: 20px;
+  }
+}
