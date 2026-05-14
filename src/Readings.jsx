@@ -270,13 +270,15 @@ function Readings() {
             <tr>
               <th colSpan={4}>User Data</th>
               <th colSpan={2}>
-                {waterUsers.length > 0 ? waterUsers[0].prev_date : ""}
+                {/*{waterUsers.length > 0 ? waterUsers[0].prev_date : ""}*/}
+                2026-04-30
               </th>
 
               <th colSpan={2}> Mid-Month </th>
 
               <th colSpan={2}>
-                {waterUsers.length > 0 ? waterUsers[0].cur_date : ""}
+                {/*{waterUsers.length > 0 ? waterUsers[0].cur_date : ""}*/}
+                2026-05-30
               </th>
               <th colSpan={3}>Action</th>
             </tr>
