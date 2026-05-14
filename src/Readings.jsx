@@ -403,6 +403,7 @@ const startMonthCycle = async () => {
             <th colSpan={2}>
               {waterUsers.length > 0 ? waterUsers[0].cur_date : ""}
             </th>
+            <th colSpan={3}>Action</th>
             </tr>
             <tr>
               <th>ID</th>
