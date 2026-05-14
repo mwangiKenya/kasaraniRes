@@ -197,6 +197,34 @@ function Readings() {
     toast.error("Upload failed");
   }
   };
+   
+  if (!window.confirm("Reset all mid-month readings?")) return;
+  const resetMidMonth = async () => {
+  try {
+    const res = await fetch(`${BACKEND_URL}/reset-mid-month-readings/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        username: "admin",
+        role: "admin"
+      })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      toast.success(data.message || "Mid-month reset successful");
+      fetchData(); // refresh table after reset
+    } else {
+      toast.error(data.error || "Reset failed");
+    }
+  } catch (err) {
+    console.error(err);
+    toast.error("Network error");
+  }
+};
   // ----------------- RENDER -----------------
   return (
     <>
@@ -231,8 +259,8 @@ function Readings() {
               Submit Data File
             </button>
 
-            <button>
-              refresh mid data
+            <button onClick={resetMidMonth}>
+              Refresh Mid Data
             </button>
           </div>
 
