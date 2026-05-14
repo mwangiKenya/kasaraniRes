@@ -218,7 +218,8 @@ function Billings() {
               <th>Units Used</th>
               <th>Rate</th>
               <th>Bill</th>
-              <th>Last Bal</th>
+              <th>Prev Bal</th>
+              <th>Total bill</th>
               <th>Paid</th>
               <th>Bal</th>
               <th>Status</th>
@@ -235,6 +236,7 @@ function Billings() {
                 <td>{b.rate || 0}</td>
                 <td>{b.bill || 0}</td>
                 <td>{b.b_cd || 0}</td>
+                <td>{b.total || 0}</td>
                 <td>
                   <input
                     type="number"
