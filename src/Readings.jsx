@@ -168,8 +168,11 @@ const [cycleDelay, setCycleDelay] = useState(0);
       setEditedRows({});
 
       // ONLY NOW SHIFT MONTH
-      await fetch(`${BACKEND_URL}/finalize_month/`, {
-        method: "POST"
+     // only save data
+      await fetch(`${BACKEND_URL}/submit_new_reading/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates)
       });
 
       fetchData();
@@ -264,6 +267,23 @@ useEffect(() => {
 
   return () => clearInterval(interval);
 }, []);
+
+const finalizeCycle = async () => {
+  if (!window.confirm("Finalize month and shift readings?")) return;
+
+  const res = await fetch(`${BACKEND_URL}/finalize_month/`, {
+    method: "POST"
+  });
+
+  const data = await res.json();
+
+  if (res.ok) {
+    toast.success("Cycle shifted successfully");
+    fetchData();
+  } else {
+    toast.error(data.error);
+  }
+};
   // ----------------- RENDER -----------------
   return (
     <>
@@ -352,6 +372,8 @@ useEffect(() => {
         {timer.days}d : {timer.hours}h : {timer.minutes}m : {timer.seconds}s
       </p>
     </div>
+    <button
+       onClick={finalizeCycle()}> finish month </button>
 
         <table className={styles.readingsTable}>
           <thead>
