@@ -169,11 +169,6 @@ const [cycleDelay, setCycleDelay] = useState(0);
 
       // ONLY NOW SHIFT MONTH
      // only save data
-      await fetch(`${BACKEND_URL}/submit_new_reading/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updates)
-      });
 
       fetchData();
     }
@@ -372,8 +367,8 @@ const finalizeCycle = async () => {
         {timer.days}d : {timer.hours}h : {timer.minutes}m : {timer.seconds}s
       </p>
     </div>
-    <button
-       onClick={finalizeCycle()}> finish month </button>
+    
+       <button onClick={finalizeCycle}>Finish Month</button>
 
         <table className={styles.readingsTable}>
           <thead>
