@@ -14,9 +14,8 @@ function Readings() {
   const [cycleDays, setCycleDays] = useState(30); // configurable delay
   const [startMonth, setStartMonth] = useState("2026-05");
   const [timer, setTimer] = useState({});
-  const [startMonth, setStartMonth] = useState("2026-05");
 const [cycleDelay, setCycleDelay] = useState(0);
-const [timer, setTimer] = useState({});
+
 
   // ----------------- FETCH DATA -----------------
   useEffect(() => {
