@@ -198,8 +198,9 @@ function Readings() {
   }
   };
    
-  if (!window.confirm("Reset all mid-month readings?")) return;
+  
   const resetMidMonth = async () => {
+    if (!window.confirm("Reset all mid-month readings?")) return;
   try {
     const res = await fetch(`${BACKEND_URL}/reset-mid-month-readings/`, {
       method: "POST",
