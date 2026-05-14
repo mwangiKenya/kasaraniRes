@@ -261,7 +261,7 @@ function Readings() {
             </button>
 
             <button onClick={resetMidMonth}>
-              Refresh Mid Data
+              Rese Mid-Month Data
             </button>
           </div>
 
