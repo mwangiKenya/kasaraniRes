@@ -15,6 +15,12 @@ function Readings() {
   const [startMonth, setStartMonth] = useState("2026-05");
   const [timer, setTimer] = useState({});
 const [cycleDelay, setCycleDelay] = useState(0);
+const [duration, setDuration] = useState({
+  days: 0,
+  hours: 0,
+  minutes: 0,
+  seconds: 0
+});
 
 
   // ----------------- FETCH DATA -----------------
@@ -252,9 +258,20 @@ const [cycleDelay, setCycleDelay] = useState(0);
 useEffect(() => {
   const interval = setInterval(async () => {
     try {
-      const res = await fetch(`${BACKEND_URL}/billing_timer/`);
+      const res = await fetch(`${BACKEND_URL}/cycle_timer_status/`);
       const data = await res.json();
+
       setTimer(data);
+
+      // AUTO TRIGGER SHIFT WHEN EXPIRED
+      if (data.expired) {
+        await fetch(`${BACKEND_URL}/auto_shift_if_due/`, {
+          method: "POST"
+        });
+
+        fetchData();
+      }
+
     } catch (err) {
       console.error(err);
     }
@@ -262,6 +279,7 @@ useEffect(() => {
 
   return () => clearInterval(interval);
 }, []);
+
 
 const finalizeCycle = async () => {
   if (!window.confirm("Finalize month and shift readings?")) return;
@@ -292,6 +310,22 @@ const startMonthCycle = async () => {
   if (res.ok) {
     toast.success("Billing cycle started");
     fetchData();
+  } else {
+    toast.error(data.error);
+  }
+};
+
+const setCycleDuration = async () => {
+  const res = await fetch(`${BACKEND_URL}/set_cycle_duration/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(duration)
+  });
+
+  const data = await res.json();
+
+  if (res.ok) {
+    toast.success("Cycle timer started");
   } else {
     toast.error(data.error);
   }
@@ -371,12 +405,47 @@ const startMonthCycle = async () => {
           onChange={(e) => setStartMonth(e.target.value)}
         />
 
-        <label>Shift Delay (days):</label>
-        <input
-          type="number"
-          value={cycleDelay}
-          onChange={(e) => setCycleDelay(e.target.value)}
-        />
+        <h3>Cycle Duration Settings</h3>
+
+          <label>Days</label>
+          <input
+            type="number"
+            value={duration.days}
+            onChange={(e) =>
+              setDuration({ ...duration, days: e.target.value })
+            }
+          />
+
+          <label>Hours</label>
+          <input
+            type="number"
+            value={duration.hours}
+            onChange={(e) =>
+              setDuration({ ...duration, hours: e.target.value })
+            }
+          />
+
+          <label>Minutes</label>
+          <input
+            type="number"
+            value={duration.minutes}
+            onChange={(e) =>
+              setDuration({ ...duration, minutes: e.target.value })
+            }
+          />
+
+          <label>Seconds</label>
+          <input
+            type="number"
+            value={duration.seconds}
+            onChange={(e) =>
+              setDuration({ ...duration, seconds: e.target.value })
+            }
+          />
+
+<button onClick={setCycleDuration}>
+  Use This Duration
+</button>
       </div>
       <div style={{ marginBottom: "10px" }}>
       <h3>Next Cycle In:</h3>
