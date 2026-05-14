@@ -279,6 +279,23 @@ const finalizeCycle = async () => {
     toast.error(data.error);
   }
 };
+
+const startMonthCycle = async () => {
+  const res = await fetch(`${BACKEND_URL}/start_billing_month/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ start_month: startMonth })
+  });
+
+  const data = await res.json();
+
+  if (res.ok) {
+    toast.success("Billing cycle started");
+    fetchData();
+  } else {
+    toast.error(data.error);
+  }
+};
   // ----------------- RENDER -----------------
   return (
     <>
@@ -367,6 +384,9 @@ const finalizeCycle = async () => {
         {timer.days}d : {timer.hours}h : {timer.minutes}m : {timer.seconds}s
       </p>
     </div>
+    <button onClick={startMonthCycle}>
+        Start This Month
+      </button>
     
        <button onClick={finalizeCycle}>Finish Month</button>
 
@@ -375,17 +395,14 @@ const finalizeCycle = async () => {
             <tr>
               <th colSpan={4}>User Data</th>
               <th colSpan={2}>
-                {/*{waterUsers.length > 0 ? waterUsers[0].prev_date : ""}*/}
-                2026-04-30
-              </th>
+              {waterUsers.length > 0 ? waterUsers[0].prev_date : ""}
+            </th>
 
-              <th colSpan={2}> Mid-Month </th>
+            <th colSpan={2}> Mid-Month </th>
 
-              <th colSpan={2}>
-                {/*{waterUsers.length > 0 ? waterUsers[0].cur_date : ""}*/}
-                2026-05-30
-              </th>
-              <th colSpan={3}>Action</th>
+            <th colSpan={2}>
+              {waterUsers.length > 0 ? waterUsers[0].cur_date : ""}
+            </th>
             </tr>
             <tr>
               <th>ID</th>
