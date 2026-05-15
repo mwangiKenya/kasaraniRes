@@ -473,7 +473,7 @@ const setCycleDuration = async () => {
   </div>
 
   <div className={styles.timerDisplay}>
-    <h3>Next Cycle In</h3>
+    <h3>Readings will be shifted in </h3>
 
     <div className={styles.timerText}>
       {timer.days}d : {timer.hours}h : {timer.minutes}m : {timer.seconds}s
