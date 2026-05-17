@@ -88,7 +88,7 @@ function Users() {
             <th>Metre num</th>
             <th>Zone</th>
             <th>Rate</th>
-            <th>Registered on</th>
+            {/*<th>Registered on</th>*/}
             <th>Update</th>
             <th>Delete</th>
           </tr>
@@ -165,7 +165,7 @@ function Users() {
                   />
                 </td>
 
-                <td>{c.created_on}</td>
+                {/*<td>{c.created_on}</td>*/}
 
                 <td>
                   <button onClick={() => updateCustomer(c.id, c)}>
