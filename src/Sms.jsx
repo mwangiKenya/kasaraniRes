@@ -23,40 +23,50 @@ function Sms() {
 
   const formattedDueDate = dueDate.toLocaleDateString();
 
-  // generate default message
+  // =========================================
+  // GENERATE DEFAULT SMS
+  // =========================================
   const generateMessage = (customer) => {
-    return `Your Water Bill as at reading,
-            date:${today.toLocaleDateString()}
-            Prev Read: ${customer.prev_user}
-            Curr Read: ${customer.cur_user}
-            Consumption: ${customer.units_used}
-            Current Bill: KES ${customer.bill}
-            Bal b/d: KES ${customer.b_cd}
-            To pay: KES ${customer.bal}
-            Pay by ${formattedDueDate}
-            
-            via Send money 0723311564
-            or Mpesa buy goods name, Kamengo
-            Agencies Till No. 544783
+    return `Your Water Bill as at reading
+Date: ${today.toLocaleDateString()}
 
-            Or: Kamengo Agencies
-            a/c No. XXXXXXXXXXXXXX
-            Coop Bank
-            TRM Branch
-            
-            Or : Kamengo Agencies
-            a/c No. YYYYYYYYYYYYYYYY
-            Equity Bank
-            Garden City Branch.
-            `;
-              };
+Prev Read: ${customer.prev_user}
+Curr Read: ${customer.cur_user}
+Consumption: ${customer.units_used}
 
-  // fetch customers
+Current Bill: KES ${customer.bill}
+Bal b/d: KES ${customer.b_cd}
+To Pay: KES ${customer.bal}
+
+Pay by ${formattedDueDate}
+
+Via Send Money:
+0723311564
+
+M-PESA Buy Goods:
+Kamengo Agencies
+Till No. 544783
+
+Or:
+Kamengo Agencies
+A/C No. XXXXXXXXXXXXXX
+Coop Bank
+TRM Branch
+
+Or:
+Kamengo Agencies
+A/C No. YYYYYYYYYYYYYYYY
+Equity Bank
+Garden City Branch.`;
+  };
+
+  // =========================================
+  // FETCH CUSTOMERS
+  // =========================================
   useEffect(() => {
     fetchCustomers();
   }, []);
 
-  // fetch customers
   const fetchCustomers = async () => {
     try {
       setLoading(true);
@@ -71,8 +81,24 @@ function Sms() {
 
       const data = await res.json();
 
-      // prepare statuses
+      // prepare fresh data
       const preparedData = data.map((customer) => {
+        const defaultMessage =
+          generateMessage(customer);
+
+        // unique billing signature
+        // changes automatically whenever
+        // readings/bill changes
+        const billingSignature = `
+          ${customer.prev_user}
+          ${customer.cur_user}
+          ${customer.units_used}
+          ${customer.bill}
+          ${customer.b_cd}
+          ${customer.bal}
+        `;
+
+        // local storage
         const savedData = localStorage.getItem(
           `sms_${customer.id}`
         );
@@ -83,24 +109,39 @@ function Sms() {
           smsData = JSON.parse(savedData);
         }
 
-        // reset automatically next month
-        const isNewBillingMonth =
+        // ====================================
+        // CHECK IF NEW BILLING EXISTS
+        // ====================================
+
+        const isNewBillingCycle =
           !smsData ||
           smsData.month !== currentMonth ||
-          smsData.year !== currentYear;
+          smsData.year !== currentYear ||
+          smsData.billingSignature !==
+            billingSignature;
 
-        if (isNewBillingMonth) {
-          const freshMessage = generateMessage(customer);
-
+        // ====================================
+        // RESET TO FRESH MONTH DATA
+        // ====================================
+        if (isNewBillingCycle) {
           const newSmsData = {
-            message: freshMessage,
+            message: defaultMessage,
+
             smsStatus: "Unsent",
+
+            // IMPORTANT:
+            // reset edit status
             editStatus: "Default",
+
             sentDate: "-",
+
             month: currentMonth,
             year: currentYear,
+
+            billingSignature,
           };
 
+          // save fresh data
           localStorage.setItem(
             `sms_${customer.id}`,
             JSON.stringify(newSmsData)
@@ -112,6 +153,9 @@ function Sms() {
           };
         }
 
+        // ====================================
+        // KEEP OLD DATA IF SAME BILLING
+        // ====================================
         return {
           ...customer,
           ...smsData,
@@ -120,7 +164,7 @@ function Sms() {
 
       setCustomers(preparedData);
 
-      // editable messages
+      // initialize editable messages
       const messages = {};
 
       preparedData.forEach((c) => {
@@ -130,15 +174,25 @@ function Sms() {
       setEditedMessages(messages);
     } catch (err) {
       console.log(err);
-      toast.error("Failed to load customers");
+
+      toast.error(
+        "Failed to load customers"
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // save customer status
-  const saveCustomerData = (customerId, updates) => {
-    const customer = customers.find((c) => c.id === customerId);
+  // =========================================
+  // SAVE CUSTOMER DATA
+  // =========================================
+  const saveCustomerData = (
+    customerId,
+    updates
+  ) => {
+    const customer = customers.find(
+      (c) => c.id === customerId
+    );
 
     if (!customer) return;
 
@@ -151,45 +205,65 @@ function Sms() {
       `sms_${customerId}`,
       JSON.stringify({
         message: updatedCustomer.message,
-        smsStatus: updatedCustomer.smsStatus,
-        editStatus: updatedCustomer.editStatus,
-        sentDate: updatedCustomer.sentDate,
+
+        smsStatus:
+          updatedCustomer.smsStatus,
+
+        editStatus:
+          updatedCustomer.editStatus,
+
+        sentDate:
+          updatedCustomer.sentDate,
+
         month: currentMonth,
         year: currentYear,
+
+        billingSignature:
+          updatedCustomer.billingSignature,
       })
     );
 
     setCustomers((prev) =>
       prev.map((c) =>
-        c.id === customerId ? updatedCustomer : c
+        c.id === customerId
+          ? updatedCustomer
+          : c
       )
     );
   };
 
-  // checkbox select
+  // =========================================
+  // CHECKBOX SELECTION
+  // =========================================
   const handleSelect = (customer) => {
     setSelectedCustomers((prev) => {
-      const exists = prev.find((c) => c.id === customer.id);
+      const exists = prev.find(
+        (c) => c.id === customer.id
+      );
 
       if (exists) {
-        return prev.filter((c) => c.id !== customer.id);
+        return prev.filter(
+          (c) => c.id !== customer.id
+        );
       }
 
       return [...prev, customer];
     });
   };
 
-  // select checker
   const isSelected = (customer) => {
     return selectedCustomers.some(
       (c) => c.id === customer.id
     );
   };
 
-  // select all
+  // =========================================
+  // SELECT ALL
+  // =========================================
   const allSelected =
     customers.length > 0 &&
-    selectedCustomers.length === customers.length;
+    selectedCustomers.length ===
+      customers.length;
 
   const handleSelectAll = () => {
     if (allSelected) {
@@ -199,13 +273,17 @@ function Sms() {
     }
   };
 
-  // open preview modal
+  // =========================================
+  // OPEN PREVIEW
+  // =========================================
   const openPreview = (customer) => {
     setSelectedCustomer(customer);
     setShowModal(true);
   };
 
-  // edit sms
+  // =========================================
+  // HANDLE MESSAGE EDIT
+  // =========================================
   const handleMessageChange = (value) => {
     setEditedMessages((prev) => ({
       ...prev,
@@ -213,20 +291,35 @@ function Sms() {
     }));
   };
 
-  // save sms
+  // =========================================
+  // SAVE MESSAGE
+  // =========================================
   const saveMessage = () => {
-    saveCustomerData(selectedCustomer.id, {
-      message: editedMessages[selectedCustomer.id],
-      editStatus: "Edited",
-    });
+    saveCustomerData(
+      selectedCustomer.id,
+      {
+        message:
+          editedMessages[
+            selectedCustomer.id
+          ],
 
-    toast.success("SMS updated successfully");
+        editStatus: "Edited",
+      }
+    );
+
+    toast.success(
+      "SMS updated successfully"
+    );
 
     setShowModal(false);
   };
 
-  // send single sms
-  const sendSingleSMS = async (customer) => {
+  // =========================================
+  // SEND SINGLE SMS
+  // =========================================
+  const sendSingleSMS = async (
+    customer
+  ) => {
     try {
       setSending(true);
 
@@ -234,7 +327,11 @@ function Sms() {
         customers: [
           {
             phone: customer.phone,
-            message: editedMessages[customer.id],
+
+            message:
+              editedMessages[
+                customer.id
+              ],
           },
         ],
       };
@@ -243,89 +340,125 @@ function Sms() {
         "https://python-back-2.onrender.com/api/send_sms_view/",
         {
           method: "POST",
+
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
+
           body: JSON.stringify(payload),
         }
       );
 
       if (!res.ok) {
-        throw new Error("Failed to send SMS");
+        throw new Error(
+          "Failed to send SMS"
+        );
       }
 
-      const sentDate =
-        new Date().toLocaleDateString() +
-        " " +
-        new Date().toLocaleTimeString();
+      const sentDate = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
 
       saveCustomerData(customer.id, {
-        message: editedMessages[customer.id],
+        message:
+          editedMessages[customer.id],
+
         smsStatus: "Sent",
-        sentDate: sentDate,
+
+        sentDate,
       });
 
-      toast.success(`SMS sent to ${customer.name}`);
+      toast.success(
+        `SMS sent to ${customer.name}`
+      );
     } catch (err) {
       console.log(err);
-      toast.error("Failed to send SMS");
+
+      toast.error(
+        "Failed to send SMS"
+      );
     } finally {
       setSending(false);
     }
   };
 
-  // send selected sms
+  // =========================================
+  // SEND SELECTED SMS
+  // =========================================
   const sendSMS = async () => {
-    if (selectedCustomers.length === 0) {
-      toast.info("Select at least one customer");
+    if (
+      selectedCustomers.length === 0
+    ) {
+      toast.info(
+        "Select at least one customer"
+      );
+
       return;
     }
 
     try {
       setSending(true);
 
-      const formattedCustomers = selectedCustomers.map(
-        (c) => ({
+      const formattedCustomers =
+        selectedCustomers.map((c) => ({
           phone: c.phone,
-          message: editedMessages[c.id],
-        })
-      );
+
+          message:
+            editedMessages[c.id],
+        }));
 
       const res = await fetch(
         "https://python-back-2.onrender.com/api/send_sms_view/",
         {
           method: "POST",
+
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
+
           body: JSON.stringify({
-            customers: formattedCustomers,
+            customers:
+              formattedCustomers,
           }),
         }
       );
 
       if (!res.ok) {
-        throw new Error("Failed to send SMS");
+        throw new Error(
+          "Failed to send SMS"
+        );
       }
 
-      const sentDate =
-        new Date().toLocaleDateString() +
-        " " +
-        new Date().toLocaleTimeString();
+      const sentDate = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
 
       // update statuses
-      selectedCustomers.forEach((customer) => {
-        saveCustomerData(customer.id, {
-          message: editedMessages[customer.id],
-          smsStatus: "Sent",
-          sentDate: sentDate,
-        });
-      });
+      selectedCustomers.forEach(
+        (customer) => {
+          saveCustomerData(
+            customer.id,
+            {
+              message:
+                editedMessages[
+                  customer.id
+                ],
 
-      toast.success("SMS sent successfully");
+              smsStatus: "Sent",
+
+              sentDate,
+            }
+          );
+        }
+      );
+
+      toast.success(
+        "SMS sent successfully"
+      );
     } catch (err) {
       console.log(err);
-      toast.error("Failed to send SMS");
+
+      toast.error(
+        "Failed to send SMS"
+      );
     } finally {
       setSending(false);
     }
@@ -334,15 +467,21 @@ function Sms() {
   return (
     <div className={styles.container}>
       {/* HEADER */}
-      <div className={styles.headerSection}>
+      <div
+        className={styles.headerSection}
+      >
         <div>
-          <h1 className={styles.header1}>
+          <h1
+            className={styles.header1}
+          >
             SMS Dashboard
           </h1>
 
-          <p className={styles.subtitle}>
-            Manage, edit and send billing SMS
-            professionally
+          <p
+            className={styles.subtitle}
+          >
+            Manage, edit and send
+            billing SMS professionally
           </p>
         </div>
 
@@ -358,9 +497,19 @@ function Sms() {
       </div>
 
       {/* TABLE */}
-      <div className={styles.tableWrapper}>
-        <table className={styles.tableContainer}>
-          <thead className={styles.tableRowHeader}>
+      <div
+        className={styles.tableWrapper}
+      >
+        <table
+          className={
+            styles.tableContainer
+          }
+        >
+          <thead
+            className={
+              styles.tableRowHeader
+            }
+          >
             <tr>
               <th>ID</th>
               <th>Name</th>
@@ -370,14 +519,20 @@ function Sms() {
                 <input
                   type="checkbox"
                   checked={allSelected}
-                  onChange={handleSelectAll}
+                  onChange={
+                    handleSelectAll
+                  }
                 />
               </th>
 
               <th>SMS Status</th>
+
               <th>Edit Status</th>
+
               <th>Sent Date</th>
+
               <th>Preview</th>
+
               <th>Send</th>
             </tr>
           </thead>
@@ -386,10 +541,12 @@ function Sms() {
             {loading ? (
               <tr>
                 <td colSpan="9">
-                  Loading customers...
+                  Loading
+                  customers...
                 </td>
               </tr>
-            ) : customers.length === 0 ? (
+            ) : customers.length ===
+              0 ? (
               <tr>
                 <td colSpan="9">
                   No customers found
@@ -399,7 +556,9 @@ function Sms() {
               customers.map((c) => (
                 <tr
                   key={c.id}
-                  className={styles.tableRow}
+                  className={
+                    styles.tableRow
+                  }
                 >
                   <td>{c.id}</td>
 
@@ -410,7 +569,9 @@ function Sms() {
                   <td>
                     <input
                       type="checkbox"
-                      checked={isSelected(c)}
+                      checked={isSelected(
+                        c
+                      )}
                       onChange={() =>
                         handleSelect(c)
                       }
@@ -421,7 +582,8 @@ function Sms() {
                   <td>
                     <span
                       className={
-                        c.smsStatus === "Sent"
+                        c.smsStatus ===
+                        "Sent"
                           ? styles.sentBadge
                           : styles.unsentBadge
                       }
@@ -434,7 +596,8 @@ function Sms() {
                   <td>
                     <span
                       className={
-                        c.editStatus === "Edited"
+                        c.editStatus ===
+                        "Edited"
                           ? styles.editedBadge
                           : styles.defaultBadge
                       }
@@ -443,13 +606,17 @@ function Sms() {
                     </span>
                   </td>
 
-                  {/* DATE */}
-                  <td>{c.sentDate}</td>
+                  {/* SENT DATE */}
+                  <td>
+                    {c.sentDate}
+                  </td>
 
                   {/* PREVIEW */}
                   <td>
                     <button
-                      className={styles.previewBtn}
+                      className={
+                        styles.previewBtn
+                      }
                       onClick={() =>
                         openPreview(c)
                       }
@@ -461,9 +628,13 @@ function Sms() {
                   {/* SEND */}
                   <td>
                     <button
-                      className={styles.singleSendBtn}
+                      className={
+                        styles.singleSendBtn
+                      }
                       onClick={() =>
-                        sendSingleSMS(c)
+                        sendSingleSMS(
+                          c
+                        )
                       }
                     >
                       Send
@@ -477,67 +648,102 @@ function Sms() {
       </div>
 
       {/* MODAL */}
-      {showModal && selectedCustomer && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalBox}>
-            <div className={styles.modalHeader}>
-              <div>
-                <h2>SMS Editor</h2>
+      {showModal &&
+        selectedCustomer && (
+          <div
+            className={
+              styles.modalOverlay
+            }
+          >
+            <div
+              className={
+                styles.modalBox
+              }
+            >
+              <div
+                className={
+                  styles.modalHeader
+                }
+              >
+                <div>
+                  <h2>
+                    SMS Editor
+                  </h2>
 
-                <p>
-                  Editing SMS for{" "}
-                  <strong>
-                    {selectedCustomer.name}
-                  </strong>
-                </p>
+                  <p>
+                    Editing SMS
+                    for{" "}
+                    <strong>
+                      {
+                        selectedCustomer.name
+                      }
+                    </strong>
+                  </p>
+                </div>
+
+                <button
+                  className={
+                    styles.modalClose
+                  }
+                  onClick={() =>
+                    setShowModal(
+                      false
+                    )
+                  }
+                >
+                  ✕
+                </button>
               </div>
 
-              <button
-                className={styles.modalClose}
-                onClick={() =>
-                  setShowModal(false)
+              <textarea
+                className={
+                  styles.smsTextarea
                 }
-              >
-                ✕
-              </button>
-            </div>
-
-            <textarea
-              className={styles.smsTextarea}
-              value={
-                editedMessages[
-                  selectedCustomer.id
-                ] || ""
-              }
-              onChange={(e) =>
-                handleMessageChange(
-                  e.target.value
-                )
-              }
-            />
-
-            <div className={styles.modalActions}>
-              <button
-                className={styles.saveBtn}
-                onClick={saveMessage}
-              >
-                Save Changes
-              </button>
-
-              <button
-                className={styles.sendModalBtn}
-                onClick={() =>
-                  sendSingleSMS(
+                value={
+                  editedMessages[
                     selectedCustomer
+                      .id
+                  ] || ""
+                }
+                onChange={(e) =>
+                  handleMessageChange(
+                    e.target.value
                   )
                 }
+              />
+
+              <div
+                className={
+                  styles.modalActions
+                }
               >
-                Send SMS
-              </button>
+                <button
+                  className={
+                    styles.saveBtn
+                  }
+                  onClick={
+                    saveMessage
+                  }
+                >
+                  Save Changes
+                </button>
+
+                <button
+                  className={
+                    styles.sendModalBtn
+                  }
+                  onClick={() =>
+                    sendSingleSMS(
+                      selectedCustomer
+                    )
+                  }
+                >
+                  Send SMS
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 }
