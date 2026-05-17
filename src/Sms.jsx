@@ -25,32 +25,31 @@ function Sms() {
 
   // generate default message
   const generateMessage = (customer) => {
-    return `Dear ${customer.name},
-
-Your water bill as at ${today.toLocaleDateString()}
-
-Prev Read: ${customer.prev_user}
-Curr Read: ${customer.cur_user}
-Units Used: ${customer.units_used}
-
-Current Bill: KES ${customer.bill}
-Last Balance: KES ${customer.b_cd}
-Total Bill: KES ${customer.bal}
-
-Pay by ${formattedDueDate}
-
-Payment Options:
-M-PESA Send Money:
-0723311564
-
-Till Number:
-544783
-
-Bank:
-01192576824499 Coop Bank.
-
-Thank you.`;
-  };
+    return `Your Water Bill as at reading,
+            date:${today.toLocaleDateString()}
+            Prev Read: ${customer.prev_user}
+            Curr Read: ${customer.cur_user}
+            Consumption: ${customer.units_used}
+            Current Bill: KES ${customer.bill}
+            Bal b/d: KES ${customer.b_cd}
+            To pay: KES ${customer.bal}
+            Pay by ${formattedDueDate}
+            
+            via Send money 0723311564
+            or Mpesa buy goods name, Kamengo
+            Agencies Till No. 544783
+            
+            Or: Kamengo Agencies
+            a/c No. XXXXXXXXXXXXXX
+            Coop Bank
+            TRM Branch
+            
+            Or : Kamengo Agencies
+            a/c No. YYYYYYYYYYYYYYYY
+            Equity Bank
+            Garden City Branch.
+            `;
+              };
 
   // fetch customers
   useEffect(() => {
