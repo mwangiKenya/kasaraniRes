@@ -5,69 +5,186 @@ import { toast } from "react-toastify";
 function Sms() {
   const [customers, setCustomers] = useState([]);
   const [error, setError] = useState(null);
+
+  // selected customers
   const [selectedCustomers, setSelectedCustomers] = useState([]);
 
+  // modal states
   const [showModal, setShowModal] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
 
+  // store editable sms per customer
+  const [editedMessages, setEditedMessages] = useState({});
+
+  // loading states
+  const [sending, setSending] = useState(false);
+
+  // fetch customers
   useEffect(() => {
     fetch("https://python-back-2.onrender.com/api/bill/")
       .then((res) => {
-        if (!res.ok) throw new Error("Network error");
+        if (!res.ok) throw new Error("Failed to fetch customers");
         return res.json();
       })
-      .then((data) => setCustomers(data))
-      .catch((err) => setError(err.message));
+      .then((data) => {
+        setCustomers(data);
+
+        // initialize messages
+        const initialMessages = {};
+
+        data.forEach((c) => {
+          initialMessages[c.id] = generateMessage(c);
+        });
+
+        setEditedMessages(initialMessages);
+      })
+      .catch((err) => {
+        setError(err.message);
+        toast.error("Failed to load customers");
+      });
   }, []);
 
   // dates
   const today = new Date();
+
   const dueDate = new Date();
   dueDate.setDate(today.getDate() + 7);
+
   const formattedDueDate = dueDate.toLocaleDateString();
 
-  // ✅ checkbox (FIXED using ID)
+  // generate default sms
+  const generateMessage = (customer) => {
+    return `Dear ${customer.name},
+
+Your water bill as at ${today.toLocaleDateString()}
+
+Prev Read: ${customer.prev_user}
+Curr Read: ${customer.cur_user}
+Units Used: ${customer.units_used}
+
+Current Bill: KES ${customer.bill}
+Last Balance: KES ${customer.b_cd}
+Total Bill: KES ${customer.bal}
+
+Pay by ${formattedDueDate}
+
+Payment Options:
+M-PESA Send Money:
+0723311564
+
+Till Number:
+544783
+
+Bank:
+01192576824499 Coop Bank.
+
+Thank you.`;
+  };
+
+  // select one
   const handleSelect = (customer) => {
     setSelectedCustomers((prev) => {
       const exists = prev.find((c) => c.id === customer.id);
+
       if (exists) {
         return prev.filter((c) => c.id !== customer.id);
-      } else {
-        return [...prev, customer];
       }
+
+      return [...prev, customer];
     });
   };
 
+  // selected checker
   const isSelected = (customer) => {
     return selectedCustomers.some((c) => c.id === customer.id);
   };
 
-  // ✅ send SMS (formatted properly)
+  // select all
+  const allSelected =
+    customers.length > 0 &&
+    selectedCustomers.length === customers.length;
+
+  const handleSelectAll = () => {
+    if (allSelected) {
+      setSelectedCustomers([]);
+    } else {
+      setSelectedCustomers(customers);
+    }
+  };
+
+  // open modal
+  const openPreview = (customer) => {
+    setSelectedCustomer(customer);
+    setShowModal(true);
+  };
+
+  // edit sms
+  const handleMessageChange = (value) => {
+    setEditedMessages((prev) => ({
+      ...prev,
+      [selectedCustomer.id]: value,
+    }));
+  };
+
+  // save edited sms
+  const saveMessage = () => {
+    toast.success("SMS updated successfully");
+    setShowModal(false);
+  };
+
+  // send single sms
+  const sendSingleSMS = async (customer) => {
+    try {
+      setSending(true);
+
+      const payload = {
+        customers: [
+          {
+            phone: customer.phone,
+            message: editedMessages[customer.id],
+          },
+        ],
+      };
+
+      const res = await fetch(
+        "https://python-back-2.onrender.com/api/send_sms_view/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to send SMS");
+      }
+
+      toast.success(`SMS sent to ${customer.name}`);
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to send SMS");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  // send selected sms
   const sendSMS = async () => {
     if (selectedCustomers.length === 0) {
       toast.info("Select at least one customer");
       return;
     }
 
-    // build payload properly
-    const formattedCustomers = selectedCustomers.map((c) => ({
-      phone: c.phone, // make sure backend has phone field
-      message: `Dear ${c.name}, 
-      Your water bill as at ${new Date().toLocaleDateString()}
-      Prev read: ${c.prev_user}
-      Curr read: ${c.cur_user}
-      Units Used: ${c.units_used}
-      Current Bill: KES ${c.bill}
-      Last Balance: KES ${c.b_cd}
-      Total Bill: KES ${c.bal}
-      Pay by ${formattedDueDate}
-      Payment options:
-      Via mpesa: send money:
-      0723311564, Till no: 544783
-      Bank: 01192576824499 Coop.`
-    }));
-
     try {
+      setSending(true);
+
+      const formattedCustomers = selectedCustomers.map((c) => ({
+        phone: c.phone,
+        message: editedMessages[c.id],
+      }));
+
       const res = await fetch(
         "https://python-back-2.onrender.com/api/send_sms_view/",
         {
@@ -81,111 +198,154 @@ function Sms() {
         }
       );
 
+      if (!res.ok) {
+        throw new Error("Failed to send SMS");
+      }
+
       const data = await res.json();
-      toast.success("SMS sent successfully");
+
       console.log(data);
+
+      toast.success("SMS sent successfully");
     } catch (err) {
+      console.log(err);
       toast.error("Failed to send SMS");
+    } finally {
+      setSending(false);
     }
   };
 
-      //  check if all are selected
-    const allSelected =
-      customers.length > 0 && selectedCustomers.length === customers.length;
-
-    // toggle select all
-    const handleSelectAll = () => {
-      if (allSelected) {
-        setSelectedCustomers([]);
-      } else {
-        setSelectedCustomers(customers);
-      }
-    };
-
   return (
     <div className={styles.container}>
-      <h1 className={styles.header1}>SMS Dashboard</h1>
+      <div className={styles.topSection}>
+        <div>
+          <h1 className={styles.header1}>SMS Dashboard</h1>
+          <p className={styles.subtitle}>
+            Preview, edit and send customized SMS to customers
+          </p>
+        </div>
 
-      <button className={styles.sendBtn} onClick={sendSMS}>
-        Send SMS Now
-      </button>
+        <button
+          className={styles.sendBtn}
+          onClick={sendSMS}
+          disabled={sending}
+        >
+          {sending ? "Sending..." : "Send Selected SMS"}
+        </button>
+      </div>
 
-      <table className={styles.tableContainer}>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            {/*<th>Sms</th>*/}
-            {/*<th>Status</th>*/}
-            <th>
-              <input
-                type="checkbox"
-                checked={allSelected}
-                onChange={handleSelectAll}
-              />{" "}
-              Select All
-            </th>
-            <th>Preview</th>
-          </tr>
-        </thead>
+      {error && <p className={styles.error}>{error}</p>}
 
-        <tbody>
-          {customers.map((c) => (
-            <tr key={c.id}>
-              <td>{c.id}</td>
-              <td>{c.name}</td>
-              {/*<td>Your invoice is ready...</td>*/}
-              {/*<td>Not sent</td>*/}
+      <div className={styles.tableWrapper}>
+        <table className={styles.tableContainer}>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Customer</th>
+              <th>Phone</th>
 
-              <td>
+              <th>
                 <input
                   type="checkbox"
-                  checked={isSelected(c)}
-                  onChange={() => handleSelect(c)}
-                />
-              </td>
+                  checked={allSelected}
+                  onChange={handleSelectAll}
+                />{" "}
+                Select All
+              </th>
 
-              <td>
-                <button
-                  onClick={() => {
-                    setSelectedCustomer(c);
-                    setShowModal(true);
-                  }}
-                >
-                  View
-                </button>
-              </td>
+              <th>Preview/Edit</th>
+              <th>Send</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {customers.map((c) => (
+              <tr key={c.id}>
+                <td>{c.id}</td>
+
+                <td>{c.name}</td>
+
+                <td>{c.phone}</td>
+
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={isSelected(c)}
+                    onChange={() => handleSelect(c)}
+                  />
+                </td>
+
+                <td>
+                  <button
+                    className={styles.previewBtn}
+                    onClick={() => openPreview(c)}
+                  >
+                    Preview
+                  </button>
+                </td>
+
+                <td>
+                  <button
+                    className={styles.singleSendBtn}
+                    onClick={() => sendSingleSMS(c)}
+                    disabled={sending}
+                  >
+                    Send
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* MODAL */}
       {showModal && selectedCustomer && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalBox}>
-            <h2>SMS Preview</h2>
+            <div className={styles.modalHeader}>
+              <div>
+                <h2>SMS Editor</h2>
 
-            <p>
-              Dear {selectedCustomer.name}, <br />
-              Your water bill as at {new Date().toLocaleDateString()}
-              <br />
-              Prev read: {selectedCustomer.prev_user}<br/>
-              Curr read: {selectedCustomer.cur_user}<br/>
-              Units Used: {selectedCustomer.units_used} <br />
-              Current Bill: KES {selectedCustomer.bill} <br />
-              Last Bill: KES {selectedCustomer.b_cd}<br/>
-              Total Bill: KES {selectedCustomer.bal}<br/>
-              Pay by {formattedDueDate}<br/>
-              Payment options:<br/>
-              Via mpesa: send money:<br/>
-              0723311564, Till no: 544783<br/>
-              Bank: 01192576824499 Coop.<br/>
-            </p>
+                <p>
+                  Editing SMS for{" "}
+                  <strong>{selectedCustomer.name}</strong>
+                </p>
+              </div>
 
-            <button onClick={() => setShowModal(false)}>
-              Close
-            </button>
+              <button
+                className={styles.closeBtn}
+                onClick={() => setShowModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <textarea
+              className={styles.smsTextarea}
+              value={editedMessages[selectedCustomer.id] || ""}
+              onChange={(e) =>
+                handleMessageChange(e.target.value)
+              }
+            />
+
+            <div className={styles.modalActions}>
+              <button
+                className={styles.saveBtn}
+                onClick={saveMessage}
+              >
+                Save Changes
+              </button>
+
+              <button
+                className={styles.sendModalBtn}
+                onClick={() =>
+                  sendSingleSMS(selectedCustomer)
+                }
+              >
+                Send SMS
+              </button>
+            </div>
           </div>
         </div>
       )}
