@@ -23,7 +23,7 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const plot = {
-    name: "Kasarani Res ltd",
+    name: "Kamengo Agencies",
     location: "Kasarani",
     slogan: "Your Number One residence",
     service: "Water supply services"
