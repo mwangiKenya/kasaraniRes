@@ -132,63 +132,82 @@ const [duration, setDuration] = useState({
   };
 
   // ----------------- SAVE ALL ROWS -----------------
- const saveAllRows = async () => {
+  const saveAllRows = async () => {
+  const updates = Object.entries(editedRows).map(([id, data]) => {
+    const row = waterUsers.find(r => r.id == id);
 
-  //IF CUR READINGS ARE EMPTY, REPLACE WITH PREV READINGS
-  if (row.cur_sup == null) {
-    row.cur_sup == row.prev_sup;
-  }
-  if (row.cur_user == null) {
-    row.cur_user == row.prev_user;
-  }
+    return {
+      id,
+      user_id: data.user_id || id,
+      name: row?.name,
+      prev_user: row?.prev_user ?? 0,
+      prev_sup: row?.prev_sup ?? 0,
 
-  const updates = Object.entries(editedRows).map(([id, data]) => ({
-    user_id: data.user_id || id,
-    cur_user: data.cur_user === null ? null : Number(data.cur_user),
-    cur_sup: data.cur_sup === null ? null : Number(data.cur_sup),
-    mid_user: data.mid_user,
-    mid_sup: data.mid_sup
-  }));
+      cur_user: data.cur_user,
+      cur_sup: data.cur_sup,
+
+      mid_user: data.mid_user,
+      mid_sup: data.mid_sup
+    };
+  });
 
   if (updates.length === 0) {
     toast.info("No changes to save");
     return;
   }
 
+  // -------------------------------
+  // FIND MISSING READINGS
+  // -------------------------------
   const missing = updates.filter(
     u => u.cur_user == null || u.cur_sup == null
   );
 
-  if (missing.length > 0) {
-    if (!window.confirm(`${missing.length} missing readings. Fill with previous values?`)) {
-      return;
-    }
+  let finalUpdates = [...updates];
 
-    updates.forEach(u => {
-      if (u.cur_user == null) u.cur_user = 0;
-      if (u.cur_sup == null) u.cur_sup = 0;
-    });
+  if (missing.length > 0) {
+    const message = missing.map(u => {
+      return `
+User: ${u.name}
+- cur_user missing → will use prev_user: ${u.prev_user}
+- cur_sup missing → will use prev_sup: ${u.prev_sup}
+      `;
+    }).join("\n");
+
+    const confirmFill = window.confirm(
+      `The following users have missing readings:\n\n${message}\n\nDo you want to auto-fill with previous readings and continue?`
+    );
+
+    if (!confirmFill) return; // 
+
+    // -------------------------------
+    // AUTO FILL MISSING VALUES
+    // -------------------------------
+    finalUpdates = updates.map(u => ({
+      ...u,
+      cur_user: u.cur_user == null ? u.prev_user : u.cur_user,
+      cur_sup: u.cur_sup == null ? u.prev_sup : u.cur_sup
+    }));
   }
 
   try {
     const res = await fetch(`${BACKEND_URL}/submit_new_reading/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updates)
+      body: JSON.stringify(finalUpdates)
     });
 
     if (res.ok) {
       toast.success("Saved successfully");
       setEditedRows({});
-
-      // ONLY NOW SHIFT MONTH
-     // only save data
-
       fetchData();
+    } else {
+      const err = await res.json();
+      toast.error(err.error || "Save failed");
     }
-
   } catch (err) {
-    toast.error("Error saving");
+    console.error(err);
+    toast.error("Error saving data");
   }
 };
 
