@@ -134,6 +134,14 @@ const [duration, setDuration] = useState({
   // ----------------- SAVE ALL ROWS -----------------
  const saveAllRows = async () => {
 
+  //IF CUR READINGS ARE EMPTY, REPLACE WITH PREV READINGS
+  if (row.cur_sup == null) {
+    row.cur_sup == row.prev_sup;
+  }
+  if (row.cur_user == null) {
+    row.cur_user == row.prev_user;
+  }
+
   const updates = Object.entries(editedRows).map(([id, data]) => ({
     user_id: data.user_id || id,
     cur_user: data.cur_user === null ? null : Number(data.cur_user),
