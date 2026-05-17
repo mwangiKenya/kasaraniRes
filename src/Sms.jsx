@@ -19,7 +19,7 @@ function Sms() {
   const today = new Date();
 
   const dueDate = new Date();
-  dueDate.setDate(today.getDate() + 7);
+  dueDate.setDate(today.getDate() + 12);
 
   const formattedDueDate = dueDate.toLocaleDateString();
 
@@ -38,7 +38,7 @@ function Sms() {
             via Send money 0723311564
             or Mpesa buy goods name, Kamengo
             Agencies Till No. 544783
-            
+
             Or: Kamengo Agencies
             a/c No. XXXXXXXXXXXXXX
             Coop Bank
