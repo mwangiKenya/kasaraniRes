@@ -1,48 +1,19 @@
 import styles from "./Sms.module.css";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 function Sms() {
   const [customers, setCustomers] = useState([]);
-  const [error, setError] = useState(null);
-
-  // selected customers
   const [selectedCustomers, setSelectedCustomers] = useState([]);
-
-  // modal states
   const [showModal, setShowModal] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
-
-  // store editable sms per customer
   const [editedMessages, setEditedMessages] = useState({});
-
-  // loading states
   const [sending, setSending] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // fetch customers
-  useEffect(() => {
-    fetch("https://python-back-2.onrender.com/api/bill/")
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch customers");
-        return res.json();
-      })
-      .then((data) => {
-        setCustomers(data);
-
-        // initialize messages
-        const initialMessages = {};
-
-        data.forEach((c) => {
-          initialMessages[c.id] = generateMessage(c);
-        });
-
-        setEditedMessages(initialMessages);
-      })
-      .catch((err) => {
-        setError(err.message);
-        toast.error("Failed to load customers");
-      });
-  }, []);
+  // current billing cycle
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
 
   // dates
   const today = new Date();
@@ -52,7 +23,7 @@ function Sms() {
 
   const formattedDueDate = dueDate.toLocaleDateString();
 
-  // generate default sms
+  // generate default message
   const generateMessage = (customer) => {
     return `Dear ${customer.name},
 
@@ -81,7 +52,122 @@ Bank:
 Thank you.`;
   };
 
-  // select one
+  // fetch customers
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
+
+  // fetch customers
+  const fetchCustomers = async () => {
+    try {
+      setLoading(true);
+
+      const res = await fetch(
+        "https://python-back-2.onrender.com/api/bill/"
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch customers");
+      }
+
+      const data = await res.json();
+
+      // prepare statuses
+      const preparedData = data.map((customer) => {
+        const savedData = localStorage.getItem(
+          `sms_${customer.id}`
+        );
+
+        let smsData = null;
+
+        if (savedData) {
+          smsData = JSON.parse(savedData);
+        }
+
+        // reset automatically next month
+        const isNewBillingMonth =
+          !smsData ||
+          smsData.month !== currentMonth ||
+          smsData.year !== currentYear;
+
+        if (isNewBillingMonth) {
+          const freshMessage = generateMessage(customer);
+
+          const newSmsData = {
+            message: freshMessage,
+            smsStatus: "Unsent",
+            editStatus: "Default",
+            sentDate: "-",
+            month: currentMonth,
+            year: currentYear,
+          };
+
+          localStorage.setItem(
+            `sms_${customer.id}`,
+            JSON.stringify(newSmsData)
+          );
+
+          return {
+            ...customer,
+            ...newSmsData,
+          };
+        }
+
+        return {
+          ...customer,
+          ...smsData,
+        };
+      });
+
+      setCustomers(preparedData);
+
+      // editable messages
+      const messages = {};
+
+      preparedData.forEach((c) => {
+        messages[c.id] = c.message;
+      });
+
+      setEditedMessages(messages);
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to load customers");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // save customer status
+  const saveCustomerData = (customerId, updates) => {
+    const customer = customers.find((c) => c.id === customerId);
+
+    if (!customer) return;
+
+    const updatedCustomer = {
+      ...customer,
+      ...updates,
+    };
+
+    localStorage.setItem(
+      `sms_${customerId}`,
+      JSON.stringify({
+        message: updatedCustomer.message,
+        smsStatus: updatedCustomer.smsStatus,
+        editStatus: updatedCustomer.editStatus,
+        sentDate: updatedCustomer.sentDate,
+        month: currentMonth,
+        year: currentYear,
+      })
+    );
+
+    setCustomers((prev) =>
+      prev.map((c) =>
+        c.id === customerId ? updatedCustomer : c
+      )
+    );
+  };
+
+  // checkbox select
   const handleSelect = (customer) => {
     setSelectedCustomers((prev) => {
       const exists = prev.find((c) => c.id === customer.id);
@@ -94,9 +180,11 @@ Thank you.`;
     });
   };
 
-  // selected checker
+  // select checker
   const isSelected = (customer) => {
-    return selectedCustomers.some((c) => c.id === customer.id);
+    return selectedCustomers.some(
+      (c) => c.id === customer.id
+    );
   };
 
   // select all
@@ -112,7 +200,7 @@ Thank you.`;
     }
   };
 
-  // open modal
+  // open preview modal
   const openPreview = (customer) => {
     setSelectedCustomer(customer);
     setShowModal(true);
@@ -126,9 +214,15 @@ Thank you.`;
     }));
   };
 
-  // save edited sms
+  // save sms
   const saveMessage = () => {
+    saveCustomerData(selectedCustomer.id, {
+      message: editedMessages[selectedCustomer.id],
+      editStatus: "Edited",
+    });
+
     toast.success("SMS updated successfully");
+
     setShowModal(false);
   };
 
@@ -161,6 +255,17 @@ Thank you.`;
         throw new Error("Failed to send SMS");
       }
 
+      const sentDate =
+        new Date().toLocaleDateString() +
+        " " +
+        new Date().toLocaleTimeString();
+
+      saveCustomerData(customer.id, {
+        message: editedMessages[customer.id],
+        smsStatus: "Sent",
+        sentDate: sentDate,
+      });
+
       toast.success(`SMS sent to ${customer.name}`);
     } catch (err) {
       console.log(err);
@@ -180,10 +285,12 @@ Thank you.`;
     try {
       setSending(true);
 
-      const formattedCustomers = selectedCustomers.map((c) => ({
-        phone: c.phone,
-        message: editedMessages[c.id],
-      }));
+      const formattedCustomers = selectedCustomers.map(
+        (c) => ({
+          phone: c.phone,
+          message: editedMessages[c.id],
+        })
+      );
 
       const res = await fetch(
         "https://python-back-2.onrender.com/api/send_sms_view/",
@@ -202,9 +309,19 @@ Thank you.`;
         throw new Error("Failed to send SMS");
       }
 
-      const data = await res.json();
+      const sentDate =
+        new Date().toLocaleDateString() +
+        " " +
+        new Date().toLocaleTimeString();
 
-      console.log(data);
+      // update statuses
+      selectedCustomers.forEach((customer) => {
+        saveCustomerData(customer.id, {
+          message: editedMessages[customer.id],
+          smsStatus: "Sent",
+          sentDate: sentDate,
+        });
+      });
 
       toast.success("SMS sent successfully");
     } catch (err) {
@@ -217,11 +334,16 @@ Thank you.`;
 
   return (
     <div className={styles.container}>
-      <div className={styles.topSection}>
+      {/* HEADER */}
+      <div className={styles.headerSection}>
         <div>
-          <h1 className={styles.header1}>SMS Dashboard</h1>
+          <h1 className={styles.header1}>
+            SMS Dashboard
+          </h1>
+
           <p className={styles.subtitle}>
-            Preview, edit and send customized SMS to customers
+            Manage, edit and send billing SMS
+            professionally
           </p>
         </div>
 
@@ -230,18 +352,19 @@ Thank you.`;
           onClick={sendSMS}
           disabled={sending}
         >
-          {sending ? "Sending..." : "Send Selected SMS"}
+          {sending
+            ? "Sending..."
+            : "Send Selected SMS"}
         </button>
       </div>
 
-      {error && <p className={styles.error}>{error}</p>}
-
+      {/* TABLE */}
       <div className={styles.tableWrapper}>
         <table className={styles.tableContainer}>
-          <thead>
+          <thead className={styles.tableRowHeader}>
             <tr>
               <th>ID</th>
-              <th>Customer</th>
+              <th>Name</th>
               <th>Phone</th>
 
               <th>
@@ -249,52 +372,107 @@ Thank you.`;
                   type="checkbox"
                   checked={allSelected}
                   onChange={handleSelectAll}
-                />{" "}
-                Select All
+                />
               </th>
 
-              <th>Preview/Edit</th>
+              <th>SMS Status</th>
+              <th>Edit Status</th>
+              <th>Sent Date</th>
+              <th>Preview</th>
               <th>Send</th>
             </tr>
           </thead>
 
           <tbody>
-            {customers.map((c) => (
-              <tr key={c.id}>
-                <td>{c.id}</td>
-
-                <td>{c.name}</td>
-
-                <td>{c.phone}</td>
-
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={isSelected(c)}
-                    onChange={() => handleSelect(c)}
-                  />
-                </td>
-
-                <td>
-                  <button
-                    className={styles.previewBtn}
-                    onClick={() => openPreview(c)}
-                  >
-                    Preview
-                  </button>
-                </td>
-
-                <td>
-                  <button
-                    className={styles.singleSendBtn}
-                    onClick={() => sendSingleSMS(c)}
-                    disabled={sending}
-                  >
-                    Send
-                  </button>
+            {loading ? (
+              <tr>
+                <td colSpan="9">
+                  Loading customers...
                 </td>
               </tr>
-            ))}
+            ) : customers.length === 0 ? (
+              <tr>
+                <td colSpan="9">
+                  No customers found
+                </td>
+              </tr>
+            ) : (
+              customers.map((c) => (
+                <tr
+                  key={c.id}
+                  className={styles.tableRow}
+                >
+                  <td>{c.id}</td>
+
+                  <td>{c.name}</td>
+
+                  <td>{c.phone}</td>
+
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={isSelected(c)}
+                      onChange={() =>
+                        handleSelect(c)
+                      }
+                    />
+                  </td>
+
+                  {/* SMS STATUS */}
+                  <td>
+                    <span
+                      className={
+                        c.smsStatus === "Sent"
+                          ? styles.sentBadge
+                          : styles.unsentBadge
+                      }
+                    >
+                      {c.smsStatus}
+                    </span>
+                  </td>
+
+                  {/* EDIT STATUS */}
+                  <td>
+                    <span
+                      className={
+                        c.editStatus === "Edited"
+                          ? styles.editedBadge
+                          : styles.defaultBadge
+                      }
+                    >
+                      {c.editStatus}
+                    </span>
+                  </td>
+
+                  {/* DATE */}
+                  <td>{c.sentDate}</td>
+
+                  {/* PREVIEW */}
+                  <td>
+                    <button
+                      className={styles.previewBtn}
+                      onClick={() =>
+                        openPreview(c)
+                      }
+                    >
+                      Preview
+                    </button>
+                  </td>
+
+                  {/* SEND */}
+                  <td>
+                    <button
+                      className={styles.singleSendBtn}
+                      onClick={() =>
+                        sendSingleSMS(c)
+                      }
+                    >
+                      Send
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
@@ -309,13 +487,17 @@ Thank you.`;
 
                 <p>
                   Editing SMS for{" "}
-                  <strong>{selectedCustomer.name}</strong>
+                  <strong>
+                    {selectedCustomer.name}
+                  </strong>
                 </p>
               </div>
 
               <button
-                className={styles.closeBtn}
-                onClick={() => setShowModal(false)}
+                className={styles.modalClose}
+                onClick={() =>
+                  setShowModal(false)
+                }
               >
                 ✕
               </button>
@@ -323,9 +505,15 @@ Thank you.`;
 
             <textarea
               className={styles.smsTextarea}
-              value={editedMessages[selectedCustomer.id] || ""}
+              value={
+                editedMessages[
+                  selectedCustomer.id
+                ] || ""
+              }
               onChange={(e) =>
-                handleMessageChange(e.target.value)
+                handleMessageChange(
+                  e.target.value
+                )
               }
             />
 
@@ -340,7 +528,9 @@ Thank you.`;
               <button
                 className={styles.sendModalBtn}
                 onClick={() =>
-                  sendSingleSMS(selectedCustomer)
+                  sendSingleSMS(
+                    selectedCustomer
+                  )
                 }
               >
                 Send SMS
