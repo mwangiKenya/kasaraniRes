@@ -120,7 +120,7 @@ function Analytics() {
 
         <div className={styles.card}>
           <h3>Total Bills</h3>
-          <p>Ksh {paid}</p>
+          <p>Ksh {bills}</p>
         </div>
 
         <div className={styles.card}>
