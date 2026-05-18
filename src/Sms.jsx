@@ -49,13 +49,13 @@ Till No. 544783
 
 Or:
 Kamengo Agencies
-A/C No. XXXXXXXXXXXXXX
+A/C No. 01192576824400
 Coop Bank
 TRM Branch
 
 Or:
 Kamengo Agencies
-A/C No. YYYYYYYYYYYYYYYY
+A/C No. 1750278558907
 Equity Bank
 Garden City Branch.`;
   };
