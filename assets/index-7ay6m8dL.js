@@ -38,7 +38,6 @@ Pay by ${Z}
 
 Via Send Money:
 0723311564
-
 M-PESA Buy Goods:
 Kamengo Agencies
 Till No. 544783
@@ -53,7 +52,8 @@ Or:
 Kamengo Agencies
 A/C No. 1750278558907
 Equity Bank
-Garden City Branch.`;T.useEffect(()=>{ce()},[]);const ce=async()=>{try{A(!0);const _=await fetch("https://python-back-2.onrender.com/api/bill/");if(!_.ok)throw new Error("Failed to fetch customers");const $=(await _.json()).map(ee=>{const de=ie(ee),xe=`
+Garden City Branch.
+Reach out: 0741088799`;T.useEffect(()=>{ce()},[]);const ce=async()=>{try{A(!0);const _=await fetch("https://python-back-2.onrender.com/api/bill/");if(!_.ok)throw new Error("Failed to fetch customers");const $=(await _.json()).map(ee=>{const de=ie(ee),xe=`
           ${ee.prev_user}
           ${ee.cur_user}
           ${ee.units_used}
