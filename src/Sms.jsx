@@ -10,25 +10,43 @@ function Sms() {
   const [editedMessages, setEditedMessages] = useState({});
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] =
+  useState(new Date());
+
+const [confirmedDate, setConfirmedDate] =
+  useState(new Date());
 
   // current billing cycle
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
 
   // dates
-  const today = new Date();
+  // =========================================
+// DYNAMIC DATES
+// =========================================
 
-  const dueDate = new Date();
-  dueDate.setDate(today.getDate() + 12);
+// reading date
+const readingDate = confirmedDate;
 
-  const formattedDueDate = dueDate.toLocaleDateString();
+// due date = reading date + 12 days
+const dueDate = new Date(readingDate);
+
+dueDate.setDate(
+  dueDate.getDate() + 12
+);
+
+const formattedReadingDate =
+  readingDate.toLocaleDateString();
+
+const formattedDueDate =
+  dueDate.toLocaleDateString();
 
   // =========================================
   // GENERATE DEFAULT SMS
   // =========================================
   const generateMessage = (customer) => {
     return `Your Water Bill as at reading
-Date: ${today.toLocaleDateString()}
+Date: ${formattedReadingDate}
 
 Prev Read: ${customer.prev_user}
 Curr Read: ${customer.cur_user}
@@ -464,6 +482,20 @@ Garden City Branch.`;
     }
   };
 
+  // =========================================
+// CONFIRM DATE
+// =========================================
+const handleUseDate = () => {
+  setConfirmedDate(selectedDate);
+
+  toast.success(
+    "Billing date updated"
+  );
+
+  // regenerate messages
+  fetchCustomers();
+};
+
   return (
     <div className={styles.container}>
       {/* HEADER */}
@@ -494,6 +526,29 @@ Garden City Branch.`;
             ? "Sending..."
             : "Send Selected SMS"}
         </button>
+
+        <div className={styles.dateSection}>
+        <input
+          type="date"
+          value={
+            selectedDate
+              .toISOString()
+              .split("T")[0]
+          }
+          onChange={(e) =>
+            setSelectedDate(
+              new Date(e.target.value)
+            )
+          }
+        />
+
+        <button
+          className={styles.useDateBtn}
+          onClick={handleUseDate}
+        >
+          Use This Date
+        </button>
+      </div>
       </div>
 
       {/* TABLE */}
