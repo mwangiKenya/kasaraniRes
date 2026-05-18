@@ -77,7 +77,7 @@ function Analytics() {
 
   // ================= DERIVED METRICS =================
 
-  const balance = bills - paid;
+  const balance = total - paid;
   const efficiency = bills > 0 ? ((paid / total) * 100).toFixed(1) : 0;
   const avgBillPerCustomer =
     customers > 0 ? (bills / customers).toFixed(2) : 0;
