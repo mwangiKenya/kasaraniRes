@@ -106,6 +106,9 @@ function Analytics() {
   if (efficiency < 60) alerts.push("Low collection rate!");
   if (customers === 0) alerts.push("No customers found!");
 
+  //Get the total cost to be paid (bill + bal)
+  const total = Number(bills) + Number(bal);
+
   // ================= UI =================
 
   return (
@@ -137,6 +140,11 @@ function Analytics() {
         <div className={styles.card}>
           <h3>Prev Bal</h3>
           <p>Ksh {bal}</p>
+        </div>
+
+        <div className={styles.card}>
+          <h3>Total Amount</h3>
+          <p>Ksh {total}</p>
         </div>
 
         <div className={styles.card}>
