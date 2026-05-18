@@ -45,13 +45,13 @@ Till No. 544783
 
 Or:
 Kamengo Agencies
-A/C No. XXXXXXXXXXXXXX
+A/C No. 01192576824400
 Coop Bank
 TRM Branch
 
 Or:
 Kamengo Agencies
-A/C No. YYYYYYYYYYYYYYYY
+A/C No. 1750278558907
 Equity Bank
 Garden City Branch.`;T.useEffect(()=>{W()},[]);const W=async()=>{try{N(!0);const Z=await fetch("https://python-back-2.onrender.com/api/bill/");if(!Z.ok)throw new Error("Failed to fetch customers");const k=(await Z.json()).map(ue=>{const xe=L(ue),x=`
           ${ue.prev_user}
