@@ -8,6 +8,7 @@ function Analytics() {
   const [units, setUnits] = useState(0);
   const [paid, setPaid] = useState(0);
   const [error, setError] = useState("");
+  const [bal, setBal] = useState(0);
 
   // ================= FETCH DATA =================
 
@@ -18,6 +19,16 @@ function Analytics() {
         return res.json();
       })
       .then((data) => setUnitsUsed(data.total_units || 0))
+      .catch((err) => setError(err.message));
+  }, []);
+
+  useEffect(() => {
+    fetch("https://python-back-2.onrender.com/api/total_bal/")
+      .then((res) => {
+        if (!res.ok) throw new Error("Network error");
+        return res.json();
+      })
+      .then((data) => setBal(data.total_bal || 0))
       .catch((err) => setError(err.message));
   }, []);
 
@@ -121,6 +132,11 @@ function Analytics() {
         <div className={styles.card}>
           <h3>Current Bills</h3>
           <p>Ksh {bills}</p>
+        </div>
+
+        <div className={styles.card}>
+          <h3>Prev Bal</h3>
+          <p>Ksh {bal}</p>
         </div>
 
         <div className={styles.card}>
