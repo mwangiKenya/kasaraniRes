@@ -72,10 +72,13 @@ function Analytics() {
       .catch((err) => setError(err.message));
   }, []);
 
+  //Get the total cost to be paid (bill + bal)
+  const total = Number(bills) + Number(bal);
+
   // ================= DERIVED METRICS =================
 
   const balance = bills - paid;
-  const efficiency = bills > 0 ? ((paid / bills) * 100).toFixed(1) : 0;
+  const efficiency = bills > 0 ? ((paid / total) * 100).toFixed(1) : 0;
   const avgBillPerCustomer =
     customers > 0 ? (bills / customers).toFixed(2) : 0;
   const avgPaidPerCustomer =
@@ -105,9 +108,6 @@ function Analytics() {
   if (balance > 10000) alerts.push("High unpaid balance!");
   if (efficiency < 60) alerts.push("Low collection rate!");
   if (customers === 0) alerts.push("No customers found!");
-
-  //Get the total cost to be paid (bill + bal)
-  const total = Number(bills) + Number(bal);
 
   // ================= UI =================
 
