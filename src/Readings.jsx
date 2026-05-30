@@ -536,7 +536,7 @@ const setCycleDuration = async () => {
               <th>ID</th>
               <th>Name</th>
               <th>Phone</th>
-              <th>Meter</th>
+              <th>SMS Name</th>
               <th>User</th>
               <th>Sup</th>
               <th>User</th>
