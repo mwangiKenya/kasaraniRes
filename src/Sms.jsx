@@ -36,11 +36,10 @@ dueDate.setDate(
 );
 
 const formattedReadingDate =
-  readingDate.toLocaleDateString();
+  readingDate.toLocaleDateString("en-GB");
 
 const formattedDueDate =
-  dueDate.toLocaleDateString();
-
+  dueDate.toLocaleDateString("en-GB");
   // =========================================
   // GENERATE DEFAULT SMS
   // =========================================
