@@ -45,37 +45,39 @@ const formattedDueDate =
   // GENERATE DEFAULT SMS
   // =========================================
   const generateMessage = (customer) => {
-    return `Your Water Bill as at reading
-Date: ${formattedReadingDate}
+    return `
+    Dear ${customer.sms_name},
+    Your Water Bill as at reading
+    Date: ${formattedReadingDate}
 
-Prev Read: ${customer.prev_user}
-Curr Read: ${customer.cur_user}
-Consumption: ${customer.units_used}
+    Prev Read: ${customer.prev_user}
+    Curr Read: ${customer.cur_user}
+    Consumption: ${customer.units_used}
 
-Current Bill: KES ${customer.bill}
-Bal b/d: KES ${customer.b_cd}
-To Pay: KES ${customer.bal}
+    Current Bill: KES ${customer.bill}
+    Bal b/d: KES ${customer.b_cd}
+    To Pay: KES ${customer.bal}
 
-Pay by ${formattedDueDate}
+    Pay by ${formattedDueDate}
 
-Via Send Money:
-0723311564
-M-PESA Buy Goods:
-Kamengo Agencies
-Till No. 544783
+    Via Send Money:
+    0723311564
+    M-PESA Buy Goods:
+    Kamengo Agencies
+    Till No. 544783
 
-Or:
-Kamengo Agencies
-A/C No. 01192576824400
-Coop Bank
-TRM Branch
+    Or:
+    Kamengo Agencies
+    A/C No. 01192576824400
+    Coop Bank
+    TRM Branch
 
-Or:
-Kamengo Agencies
-A/C No. 1750278558907
-Equity Bank
-Garden City Branch.
-Reach out: 0741088799`;
+    Or:
+    Kamengo Agencies
+    A/C No. 1750278558907
+    Equity Bank
+    Garden City Branch.
+    Reach out: 0741088799`;
   };
 
   // =========================================
