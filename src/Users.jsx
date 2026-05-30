@@ -85,7 +85,7 @@ function Users() {
             <th>First Name</th>
             {/*<th>Last Name</th>*/}
             <th>Phone</th>
-            <th>Metre num</th>
+            <th>SMS Name</th>
             <th>Zone</th>
             <th>Rate</th>
             {/*<th>Registered on</th>*/}
