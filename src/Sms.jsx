@@ -528,7 +528,7 @@ const handleUseDate = () => {
         </button>
 
         <div className={styles.dateSection}>
-        <input
+         {/*<input
           type="date"
           value={
             selectedDate
@@ -540,14 +540,15 @@ const handleUseDate = () => {
               new Date(e.target.value)
             )
           }
-        />
-
+        />*/}
+        
+        {/*
         <button
           className={styles.useDateBtn}
           onClick={handleUseDate}
         >
           Use This Date
-        </button>
+        </button>*/}
       </div>
       </div>
 
