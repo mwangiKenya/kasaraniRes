@@ -513,7 +513,7 @@ const handleUseDate = () => {
             className={styles.subtitle}
           >
             Manage, edit and send
-            billing SMS professionally
+            billing SMS 
           </p>
         </div>
 
