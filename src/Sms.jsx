@@ -40,6 +40,16 @@ const formattedReadingDate =
 
 const formattedDueDate =
   dueDate.toLocaleDateString("en-GB");
+
+  let balanceLine = "";
+
+  if (Number(customer.b_cd) > 0) {
+    balanceLine = `Bal b/d: KES ${Number(customer.b_cd).toLocaleString()}\n`;
+  } else if (Number(customer.b_cd) < 0) {
+    balanceLine = `Credit c/d: KES ${Math.abs(Number(customer.b_cd)).toLocaleString()}\n`;
+  } else if (Number(customer.b_cd) === 0) {
+    balanceLine = "";
+  }
   // =========================================
   // GENERATE DEFAULT SMS
   // =========================================
@@ -51,7 +61,7 @@ Prev Read:${customer.prev_user}
 Curr Read:${customer.cur_user}
 Usage:${customer.units_used}
 Current Bill:KES ${Number(customer.bill).toLocaleString()}
-${Number(customer.b_cd) > 0 ? `Bal b/d: KES ${Number(customer.b_cd).toLocaleString()}\n` : ""}
+${balanceLine}
 To Pay:KES ${Number(customer.bal).toLocaleString()}
 Pay by ${formattedDueDate}
 
@@ -66,7 +76,7 @@ Or: Kamengo Agencies
 A/C No 01192576824400
 Coop Bank Or
 
-Kamengo Agencies
+Or Kamengo Agencies
 A/C No 1750278558907
 Equity Bank
 
