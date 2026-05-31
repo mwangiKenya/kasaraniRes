@@ -55,6 +55,11 @@ const formattedDueDate =
     } else if (Number(customer.b_cd) === 0) {
       balanceLine = "";
     }
+
+  //Handle pay by
+  let payBy = "";
+  if(Number(customer.b_cd) < 0){payBy="";}
+  else{payBy=`Pay by ${formattedDueDate}`}
     return `
     Dear ${customer.sms_name},
 Water Bill as at ${formattedReadingDate}
@@ -63,7 +68,8 @@ Curr Read:${customer.cur_user}
 Usage:${customer.units_used}
 Current Bill:KES ${Number(customer.bill).toLocaleString()}
 ${balanceLine}
-Pay by ${formattedDueDate}
+
+${payBy}
 
 Send Money: 0723311564
 
@@ -78,7 +84,7 @@ Coop Bank
 A/C No 1750278558907
 Equity Bank
 
-Contact us on:0741088799`.trim();
+Contact us on: 0741088799`.trim();
   };
 
   // =========================================
