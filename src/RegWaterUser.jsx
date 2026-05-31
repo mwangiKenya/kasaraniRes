@@ -79,8 +79,8 @@ function RegWaterUser() {
                     className={styles.RegWaterUserInput}
                 />
                 <input
-                    type="number"
-                    placeholder="Metre Number"
+                    type="text"
+                    placeholder="Sms Name"
                     value={reg.metre_num}
                     name="metre_num"
                     onChange={handleChange}
