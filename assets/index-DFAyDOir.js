@@ -35,7 +35,6 @@ Curr Read:${$.cur_user}
 Usage:${$.units_used}
 Current Bill:KES ${Number($.bill).toLocaleString()}
 ${S}
-
 ${Y}
 
 Send Money: 0723311564
