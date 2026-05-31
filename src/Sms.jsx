@@ -49,9 +49,11 @@ const formattedDueDate =
     let balanceLine = "";
 
     if (Number(customer.b_cd) > 0) {
-      balanceLine = `Bal b/d: KES ${Number(customer.b_cd).toLocaleString()}\n`;
+      balanceLine = `Bal b/d: KES ${Number(customer.b_cd).toLocaleString()}\n
+      To Pay:KES ${Number(customer.bal).toLocaleString()}\n`;
     } else if (Number(customer.b_cd) < 0) {
-      balanceLine = `Credit c/d: KES ${Math.abs(Number(customer.b_cd)).toLocaleString()}\n`;
+      balanceLine = `Credit c/d: KES ${Math.abs(Number(customer.b_cd)).toLocaleString()}\n
+      To Pay:KES ${Number(customer.bal).toLocaleString()}\n`;
     } else if (Number(customer.b_cd) === 0) {
       balanceLine = "";
     }
@@ -63,7 +65,6 @@ Curr Read:${customer.cur_user}
 Usage:${customer.units_used}
 Current Bill:KES ${Number(customer.bill).toLocaleString()}
 ${balanceLine}
-To Pay:KES ${Number(customer.bal).toLocaleString()}
 Pay by ${formattedDueDate}
 
 Send Money:
