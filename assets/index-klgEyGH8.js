@@ -34,17 +34,22 @@ Do you want to auto-fill with previous readings and continue?`))return;pe=q.map(
 `:""}
   To Pay:KES ${Number(W.bal).toLocaleString()}
   Pay by ${K}
+
   Send Money:
-  0723311564 Or
-  M-PESA Buy Goods:
+  0723311564
+
+  Or M-PESA Buy Goods:
   Kamengo Agencies
   Till No 544783
+
   Or: Kamengo Agencies
   A/C No 01192576824400
   Coop Bank Or
+
   Kamengo Agencies
   A/C No 1750278558907
   Equity Bank
+  
   Reach out:0741088799`.trim();T.useEffect(()=>{de()},[]);const de=async()=>{try{A(!0);const W=await fetch("https://python-back-2.onrender.com/api/bill/");if(!W.ok)throw new Error("Failed to fetch customers");const X=(await W.json()).map($=>{const re=ie($),ye=`
           ${$.prev_user}
           ${$.cur_user}
