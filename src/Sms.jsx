@@ -49,11 +49,9 @@ const formattedDueDate =
     let balanceLine = "";
 
     if (Number(customer.b_cd) > 0) {
-      balanceLine = `Bal b/d: KES ${Number(customer.b_cd).toLocaleString()}\n
-To Pay:KES ${Number(customer.bal).toLocaleString()}\n`;
+      balanceLine = `Bal b/d:KES ${Number(customer.b_cd).toLocaleString()}\nTo Pay:KES ${Number(customer.bal).toLocaleString()}\n`;
     } else if (Number(customer.b_cd) < 0) {
-      balanceLine = `Bal c/d: KES ${Math.abs(Number(customer.b_cd)).toLocaleString()}\n
-To Pay:KES ${Number(customer.bal).toLocaleString()}\n`;
+      balanceLine = `Bal b/d:KES (${Math.abs(Number(customer.b_cd)).toLocaleString()})\nTo Pay:KES ${Number(customer.bal).toLocaleString()}\n`;
     } else if (Number(customer.b_cd) === 0) {
       balanceLine = "";
     }
@@ -67,22 +65,20 @@ Current Bill:KES ${Number(customer.bill).toLocaleString()}
 ${balanceLine}
 Pay by ${formattedDueDate}
 
-Send Money:
-0723311564
+Send Money: 0723311564
 
-Or M-PESA Buy Goods:
+Or: M-PESA Buy Goods:
 Kamengo Agencies
-Till No 544783
+<strong>Till No 544783</strong>
 
 Or: Kamengo Agencies
 A/C No 01192576824400
-Coop Bank Or
+Coop Bank
 
-Or Kamengo Agencies
 A/C No 1750278558907
 Equity Bank
 
-Reach out:0741088799`.trim();
+Contact us on:0741088799`.trim();
   };
 
   // =========================================
