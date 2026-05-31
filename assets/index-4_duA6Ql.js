@@ -45,7 +45,7 @@ Do you want to auto-fill with previous readings and continue?`))return;pe=q.map(
     Kamengo Agencies
     A/C No 1750278558907
     Equity Bank
-    Reach out:0741088799`;T.useEffect(()=>{de()},[]);const de=async()=>{try{A(!0);const W=await fetch("https://python-back-2.onrender.com/api/bill/");if(!W.ok)throw new Error("Failed to fetch customers");const X=(await W.json()).map($=>{const re=ie($),ye=`
+    Reach out:0741088799`.trim();T.useEffect(()=>{de()},[]);const de=async()=>{try{A(!0);const W=await fetch("https://python-back-2.onrender.com/api/bill/");if(!W.ok)throw new Error("Failed to fetch customers");const X=(await W.json()).map($=>{const re=ie($),ye=`
           ${$.prev_user}
           ${$.cur_user}
           ${$.units_used}
