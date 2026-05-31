@@ -58,7 +58,7 @@ const formattedDueDate =
 
   //Handle pay by
   let payBy = "";
-  if(Number(customer.b_cd) < 0){payBy="";}
+  if(Math.abs(Number(customer.b_cd)) > Number(customer.bill)){payBy="";}
   else{payBy=`Pay by ${formattedDueDate}`}
     return `
     Dear ${customer.sms_name},
