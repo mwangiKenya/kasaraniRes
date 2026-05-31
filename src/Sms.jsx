@@ -46,31 +46,31 @@ const formattedDueDate =
   const generateMessage = (customer) => {
     return `
     Dear ${customer.sms_name},
-  Water Bill as at ${formattedReadingDate}
-  Prev Read:${customer.prev_user}
-  Curr Read:${customer.cur_user}
-  Usage:${customer.units_used}
-  Current Bill:KES ${Number(customer.bill).toLocaleString()}
-  ${Number(customer.b_cd) > 0 ? `Bal b/d: KES ${Number(customer.b_cd).toLocaleString()}\n` : ""}
-  To Pay:KES ${Number(customer.bal).toLocaleString()}
-  Pay by ${formattedDueDate}
+Water Bill as at ${formattedReadingDate}
+Prev Read:${customer.prev_user}
+Curr Read:${customer.cur_user}
+Usage:${customer.units_used}
+Current Bill:KES ${Number(customer.bill).toLocaleString()}
+${Number(customer.b_cd) > 0 ? `Bal b/d: KES ${Number(customer.b_cd).toLocaleString()}\n` : ""}
+To Pay:KES ${Number(customer.bal).toLocaleString()}
+Pay by ${formattedDueDate}
 
-  Send Money:
-  0723311564
+Send Money:
+0723311564
 
-  Or M-PESA Buy Goods:
-  Kamengo Agencies
-  Till No 544783
+Or M-PESA Buy Goods:
+Kamengo Agencies
+Till No 544783
 
-  Or: Kamengo Agencies
-  A/C No 01192576824400
-  Coop Bank Or
+Or: Kamengo Agencies
+A/C No 01192576824400
+Coop Bank Or
 
-  Kamengo Agencies
-  A/C No 1750278558907
-  Equity Bank
-  
-  Reach out:0741088799`.trim();
+Kamengo Agencies
+A/C No 1750278558907
+Equity Bank
+
+Reach out:0741088799`.trim();
   };
 
   // =========================================
