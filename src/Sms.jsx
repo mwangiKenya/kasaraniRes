@@ -41,19 +41,20 @@ const formattedReadingDate =
 const formattedDueDate =
   dueDate.toLocaleDateString("en-GB");
 
-  let balanceLine = "";
-
-  if (Number(customer.b_cd) > 0) {
-    balanceLine = `Bal b/d: KES ${Number(customer.b_cd).toLocaleString()}\n`;
-  } else if (Number(customer.b_cd) < 0) {
-    balanceLine = `Credit c/d: KES ${Math.abs(Number(customer.b_cd)).toLocaleString()}\n`;
-  } else if (Number(customer.b_cd) === 0) {
-    balanceLine = "";
-  }
+  
   // =========================================
   // GENERATE DEFAULT SMS
   // =========================================
   const generateMessage = (customer) => {
+    let balanceLine = "";
+
+    if (Number(customer.b_cd) > 0) {
+      balanceLine = `Bal b/d: KES ${Number(customer.b_cd).toLocaleString()}\n`;
+    } else if (Number(customer.b_cd) < 0) {
+      balanceLine = `Credit c/d: KES ${Math.abs(Number(customer.b_cd)).toLocaleString()}\n`;
+    } else if (Number(customer.b_cd) === 0) {
+      balanceLine = "";
+    }
     return `
     Dear ${customer.sms_name},
 Water Bill as at ${formattedReadingDate}
