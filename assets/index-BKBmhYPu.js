@@ -41,7 +41,7 @@ Send Money: 0723311564
 
 Or: M-PESA Buy Goods:
 Kamengo Agencies
-<strong>Till No 544783</strong>
+Till No 544783
 
 Or: Kamengo Agencies
 A/C No 01192576824400
