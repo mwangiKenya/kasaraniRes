@@ -65,7 +65,7 @@ const formattedDueDate =
     Kamengo Agencies
     A/C No 1750278558907
     Equity Bank
-    Reach out:0741088799`;
+    Reach out:0741088799`.trim();
   };
 
   // =========================================
