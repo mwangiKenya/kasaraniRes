@@ -46,8 +46,7 @@ const formattedDueDate =
   const generateMessage = (customer) => {
     return `
     Dear ${customer.sms_name},
-    Water Bill as at
-    Date:${formattedReadingDate}
+    Water Bill as at ${formattedReadingDate}
     Prev Read:${customer.prev_user}
     Curr Read:${customer.cur_user}
     Usage:${customer.units_used}
