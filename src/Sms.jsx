@@ -68,7 +68,6 @@ Curr Read:${customer.cur_user}
 Usage:${customer.units_used}
 Current Bill:KES ${Number(customer.bill).toLocaleString()}
 ${balanceLine}
-
 ${payBy}
 
 Send Money: 0723311564
