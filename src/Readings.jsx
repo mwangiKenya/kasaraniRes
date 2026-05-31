@@ -560,7 +560,7 @@ const setCycleDuration = async () => {
                     type="number"
                     className={styles.wateruserInput}
                     value={row.prev_user}
-                    readOnly
+                  
                   />
                 </td>
                 <td>
