@@ -52,7 +52,7 @@ const formattedDueDate =
       balanceLine = `Bal b/d: KES ${Number(customer.b_cd).toLocaleString()}\n
 To Pay:KES ${Number(customer.bal).toLocaleString()}\n`;
     } else if (Number(customer.b_cd) < 0) {
-      balanceLine = `Credit c/d: KES ${Math.abs(Number(customer.b_cd)).toLocaleString()}\n
+      balanceLine = `Bal c/d: KES ${Math.abs(Number(customer.b_cd)).toLocaleString()}\n
 To Pay:KES ${Number(customer.bal).toLocaleString()}\n`;
     } else if (Number(customer.b_cd) === 0) {
       balanceLine = "";
