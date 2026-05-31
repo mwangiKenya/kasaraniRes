@@ -55,11 +55,6 @@ const formattedDueDate =
     } else if (Number(customer.b_cd) === 0) {
       balanceLine = "";
     }
-
-  //Handle pay by
-  let payBy = "";
-  if(Math.abs(Number(customer.b_cd)) > Number(customer.bill)){payBy="";}
-  else{payBy=`Pay by ${formattedDueDate}`}
     return `
     Dear ${customer.sms_name},
 Water Bill as at ${formattedReadingDate}
@@ -68,7 +63,8 @@ Curr Read:${customer.cur_user}
 Usage:${customer.units_used}
 Current Bill:KES ${Number(customer.bill).toLocaleString()}
 ${balanceLine}
-${payBy}
+
+Pay by ${formattedDueDate}
 
 Send Money: 0723311564
 
