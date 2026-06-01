@@ -204,11 +204,23 @@ Contact us on: 0741088799`.trim();
         // ====================================
         // KEEP OLD DATA IF SAME BILLING
         // ====================================
+
+        let migratedMessage =
+          smsData.message
+            .replace(
+              /Water Bill as at .*/g,
+              "Water Bill as at {{READING_DATE}}"
+            )
+            .replace(
+              /Pay by .*/g,
+              "Pay by {{DUE_DATE}}"
+            );
+
         return {
           ...customer,
           ...smsData,
+          message: migratedMessage,
         };
-      });
 
       setCustomers(preparedData);
 
@@ -607,17 +619,15 @@ const handleUseDate = () => {
     <input
       type="date"
       value={
-        dueDate
-          .toISOString()
-          .split("T")[0]
-      }
-      onChange={(e) =>
-        setConfirmedDueDate(
-          new Date(
-            e.target.value
-          )
-        )
-      }
+      selectedDueDate
+        .toISOString()
+        .split("T")[0]
+    }
+    onChange={(e) =>
+      setSelectedDueDate(
+        new Date(e.target.value)
+      )
+    }
     />
   </div>
 
