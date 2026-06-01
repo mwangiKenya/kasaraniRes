@@ -16,6 +16,24 @@ function Sms() {
 const [confirmedDate, setConfirmedDate] =
   useState(new Date());
 
+const [selectedDueDate, setSelectedDueDate] =
+  useState(() => {
+    const d = new Date();
+    d.setDate(
+      d.getDate() + 12
+    );
+    return d;
+  });
+
+const [confirmedDueDate, setConfirmedDueDate] =
+  useState(() => {
+    const d = new Date();
+    d.setDate(
+      d.getDate() + 12
+    );
+    return d;
+  });
+
   // current billing cycle
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
@@ -29,17 +47,26 @@ const [confirmedDate, setConfirmedDate] =
 const readingDate = confirmedDate;
 
 // due date = reading date + 12 days
-const dueDate = new Date(readingDate);
-
-dueDate.setDate(
-  dueDate.getDate() + 12
-);
+const dueDate =
+  confirmedDueDate;
 
 const formattedReadingDate =
   readingDate.toLocaleDateString("en-GB");
 
 const formattedDueDate =
   dueDate.toLocaleDateString("en-GB");
+
+const applyDates = (message) => {
+  return message
+    .replaceAll(
+      "{{READING_DATE}}",
+      formattedReadingDate
+    )
+    .replaceAll(
+      "{{DUE_DATE}}",
+      formattedDueDate
+    );
+};
 
   
   // =========================================
@@ -57,13 +84,13 @@ const formattedDueDate =
     }
     return `
     Dear ${customer.sms_name},
-Water Bill as at ${formattedReadingDate}
+Water Bill as at {{READING_DATE}}
 Prev Read:${customer.prev_user}
 Curr Read:${customer.cur_user}
 Usage:${customer.units_used}
 Current Bill:KES ${Number(customer.bill).toLocaleString()}
 ${balanceLine}
-Pay by ${formattedDueDate}
+Pay by {{DUE_DATE}}
 
 Send Money: 0723311564
 
@@ -305,12 +332,25 @@ Contact us on: 0741088799`.trim();
   // =========================================
   // HANDLE MESSAGE EDIT
   // =========================================
-  const handleMessageChange = (value) => {
-    setEditedMessages((prev) => ({
-      ...prev,
-      [selectedCustomer.id]: value,
-    }));
-  };
+  const handleMessageChange = (
+  value
+) => {
+  const storedValue = value
+    .replaceAll(
+      formattedReadingDate,
+      "{{READING_DATE}}"
+    )
+    .replaceAll(
+      formattedDueDate,
+      "{{DUE_DATE}}"
+    );
+
+  setEditedMessages((prev) => ({
+    ...prev,
+    [selectedCustomer.id]:
+      storedValue,
+  }));
+};
 
   // =========================================
   // SAVE MESSAGE
@@ -349,10 +389,11 @@ Contact us on: 0741088799`.trim();
           {
             phone: customer.phone,
 
-            message:
+           message: applyDates(
               editedMessages[
                 customer.id
-              ],
+              ]
+            ),
           },
         ],
       };
@@ -423,8 +464,9 @@ Contact us on: 0741088799`.trim();
         selectedCustomers.map((c) => ({
           phone: c.phone,
 
-          message:
-            editedMessages[c.id],
+          message: applyDates(
+                editedMessages[c.id]
+              ),
         }));
 
       const res = await fetch(
@@ -489,14 +531,17 @@ Contact us on: 0741088799`.trim();
 // CONFIRM DATE
 // =========================================
 const handleUseDate = () => {
-  setConfirmedDate(selectedDate);
-
-  toast.success(
-    "Billing date updated"
+  setConfirmedDate(
+    selectedDate
   );
 
-  // regenerate messages
-  fetchCustomers();
+  setConfirmedDueDate(
+    selectedDueDate
+  );
+
+  toast.success(
+    "Dates updated"
+  );
 };
 
   return (
@@ -531,27 +576,60 @@ const handleUseDate = () => {
         </button>
 
         <div className={styles.dateSection}>
-         {/*<input
-          type="date"
-          value={
-            selectedDate
-              .toISOString()
-              .split("T")[0]
-          }
-          onChange={(e) =>
-            setSelectedDate(
-              new Date(e.target.value)
-            )
-          }
-        />*/}
-        
-        {/*
-        <button
-          className={styles.useDateBtn}
-          onClick={handleUseDate}
-        >
-          Use This Date
-        </button>*/}
+         <div className={styles.dateSection}>
+  <div>
+    <label>
+      Billing Date
+    </label>
+
+    <input
+      type="date"
+      value={
+        selectedDate
+          .toISOString()
+          .split("T")[0]
+      }
+      onChange={(e) =>
+        setSelectedDate(
+          new Date(
+            e.target.value
+          )
+        )
+      }
+    />
+  </div>
+
+  <div>
+    <label>
+      Pay By Date
+    </label>
+
+    <input
+      type="date"
+      value={
+        dueDate
+          .toISOString()
+          .split("T")[0]
+      }
+      onChange={(e) =>
+        setConfirmedDueDate(
+          new Date(
+            e.target.value
+          )
+        )
+      }
+    />
+  </div>
+
+  <button
+    className={
+      styles.useDateBtn
+    }
+    onClick={handleUseDate}
+  >
+    Apply Dates
+  </button>
+</div>
       </div>
       </div>
 
@@ -759,10 +837,11 @@ const handleUseDate = () => {
                   styles.smsTextarea
                 }
                 value={
-                  editedMessages[
-                    selectedCustomer
-                      .id
-                  ] || ""
+                  applyDates(
+                    editedMessages[
+                      selectedCustomer.id
+                    ] || ""
+                  )
                 }
                 onChange={(e) =>
                   handleMessageChange(
