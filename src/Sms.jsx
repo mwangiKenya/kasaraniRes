@@ -206,24 +206,24 @@ Contact us on: 0741088799`.trim();
         // ====================================
 
         let migratedMessage =
-          smsData.message
-            .replace(
-              /Water Bill as at .*/g,
-              "Water Bill as at {{READING_DATE}}"
-            )
-            .replace(
-              /Pay by .*/g,
-              "Pay by {{DUE_DATE}}"
-            );
+  smsData.message
+    .replace(
+      /Water Bill as at .*/g,
+      "Water Bill as at {{READING_DATE}}"
+    )
+    .replace(
+      /Pay by .*/g,
+      "Pay by {{DUE_DATE}}"
+    );
 
-        return {
-          ...customer,
-          ...smsData,
-          message: migratedMessage,
-        };
+return {
+  ...customer,
+  ...smsData,
+  message: migratedMessage,
+};
+}); // <-- CLOSE data.map() HERE
 
-      setCustomers(preparedData);
-
+setCustomers(preparedData);
       // initialize editable messages
       const messages = {};
 
