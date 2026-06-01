@@ -818,7 +818,7 @@ const handleUseDate = () => {
                   </h2>
 
                   <p>
-                    Editing SMS
+                    Managing SMS
                     for{" "}
                     <strong>
                       {
