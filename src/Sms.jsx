@@ -477,7 +477,6 @@ setCustomers(preparedData);
   // SEND SINGLE SMS
   // =========================================
 const sendSingleSMS = async (customer) => {
-  // BLOCK non-parent sending
   if (!isParent(customer)) {
     toast.info("Only parent account can send group SMS");
     return;
@@ -499,7 +498,7 @@ const sendSingleSMS = async (customer) => {
     const payload = {
       customers: [
         {
-          phone: customer.phone,
+          phone: sender.phone,
           message: applyDates(groupMessage),
         },
       ],
@@ -521,8 +520,6 @@ const sendSingleSMS = async (customer) => {
     }
 
     const sentDate = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
-
-    const groupCustomers = getGroupCustomers(customer);
 
     groupCustomers.forEach((c) => {
       saveCustomerData(c.id, {
