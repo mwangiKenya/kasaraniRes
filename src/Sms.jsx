@@ -128,38 +128,79 @@ const getGroupCustomers = (customer) => {
 };
 const generateGroupMessage = (customer) => {
   const groupCustomers = getGroupCustomers(customer);
+  const isSingle = groupCustomers.length === 1;
 
-  const parentCustomer = groupCustomers.find((c) =>
-    isParent(c)
-  );
-
+  const parentCustomer = groupCustomers.find(isParent);
   const sender = parentCustomer || customer;
 
+  // =========================
+  // SINGLE USER FORMAT
+  // =========================
+  if (isSingle) {
+    const c = groupCustomers[0];
+
+    let balanceLine = "";
+
+    if (Number(c.b_cd) > 0) {
+      balanceLine = `Bal b/d:KES ${Number(c.b_cd).toLocaleString()}\nTo Pay:KES ${Number(c.bal).toLocaleString()}\n`;
+    } else if (Number(c.b_cd) < 0) {
+      balanceLine = `Bal b/d:KES (${Math.abs(Number(c.b_cd)).toLocaleString()})\nTo Pay:KES ${Number(c.bal).toLocaleString()}\n`;
+    }
+
+    return `
+Dear ${c.sms_name},
+Water Bill as at {{READING_DATE}}
+
+Prev Read:${c.prev_user}
+Curr Read:${c.cur_user}
+Usage:${c.units_used}
+Current Bill:KES ${Number(c.bill).toLocaleString()}
+${balanceLine}
+Pay by {{DUE_DATE}}
+
+Send Money: 0723311564
+
+Or: M-PESA Buy Goods:
+Kamengo Agencies
+Till No 544783
+
+Or: Kamengo Agencies
+A/C No 01192576824400
+Coop Bank
+
+A/C No 1750278558907
+Equity Bank
+
+Contact us on: 0741088799
+    `.trim();
+  }
+
+  // =========================
+  // MULTI USER FORMAT
+  // =========================
   let total = 0;
 
-  const breakdown = groupCustomers
-    .map((c) => {
-      const bill = Number(c.bill || 0);
-      total += bill;
+  const breakdown = groupCustomers.map((c) => {
+    const bill = Number(c.bill || 0);
+    total += bill;
 
-      let balanceLine = "";
+    let balanceLine = "";
 
-      if (Number(c.b_cd) > 0) {
-        balanceLine = `Bal b/d:KES ${Number(c.b_cd).toLocaleString()}\nTo Pay:KES ${Number(c.bal).toLocaleString()}\n`;
-      } else if (Number(c.b_cd) < 0) {
-        balanceLine = `Bal b/d:KES (${Math.abs(Number(c.b_cd)).toLocaleString()})\nTo Pay:KES ${Number(c.bal).toLocaleString()}\n`;
-      }
+    if (Number(c.b_cd) > 0) {
+      balanceLine = `Bal b/d:KES ${Number(c.b_cd).toLocaleString()}\nTo Pay:KES ${Number(c.bal).toLocaleString()}\n`;
+    } else if (Number(c.b_cd) < 0) {
+      balanceLine = `Bal b/d:KES (${Math.abs(Number(c.b_cd)).toLocaleString()})\nTo Pay:KES ${Number(c.bal).toLocaleString()}\n`;
+    }
 
-      return `
+    return `
 ${c.sms_name}
 Prev Read:${c.prev_user}
 Curr Read:${c.cur_user}
 Usage:${c.units_used}
 Current Bill:KES ${bill.toLocaleString()}
 ${balanceLine}
-`.trim();
-    })
-    .join("\n\n");
+    `.trim();
+  }).join("\n\n");
 
   return `
 Dear ${sender.sms_name},
@@ -185,7 +226,7 @@ A/C No 1750278558907
 Equity Bank
 
 Contact us on: 0741088799
-`.trim();
+  `.trim();
 };
   // =========================================
   // FETCH CUSTOMERS
