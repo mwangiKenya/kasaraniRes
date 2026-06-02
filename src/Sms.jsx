@@ -695,7 +695,7 @@ const togglePhoneSelection = (
   // =========================================
 const sendSingleSMS = async (customer) => {
   if (!isParent(customer)) {
-    toast.info("Only parent account can send group SMS");
+    toast.info("Only parent contacts can recieve this bill");
     return;
   }
 
@@ -770,7 +770,7 @@ const recipients =
       });
     });
 
-    toast.success(`Group SMS sent to ${customer.sms_name}`);
+    toast.success(`Grouped bill sent to ${customer.sms_name}`);
   } catch (err) {
     console.log(err);
     toast.error("Failed to send SMS");
@@ -803,7 +803,7 @@ const recipients =
 
   if (!isParent(c)) {
     toast.info(
-      `${c.sms_name} is not a parent account`
+      `${c.name} is not a primary reciever of this sms`
     );
     return;
   }
