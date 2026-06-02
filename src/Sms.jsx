@@ -82,18 +82,27 @@ const applyDates = (message) => {
 // EXTRA PHONE NUMBERS (LOCAL STORAGE)
 // =========================================
 
-const getCustomerPhones = (customer) => {
+const getCustomerPhones = (
+  customer
+) => {
   const saved =
     extraPhones[customer.id] || [];
+
+  const primaryExists =
+    saved.find(
+      (p) =>
+        p.number === customer.phone
+    );
+
+  if (primaryExists) {
+    return saved;
+  }
 
   return [
     {
       number: customer.phone,
       primary: true,
-      selected:
-        saved.length === 0
-          ? true
-          : false,
+      selected: true,
     },
 
     ...saved,
@@ -493,8 +502,13 @@ const addPhoneNumber = (
 ) => {
   if (!phone.trim()) return;
 
+  const customer =
+  customers.find(
+    (c) => c.id === customerId
+  );
+
   const current =
-    extraPhones[customerId] || [];
+  getCustomerPhones(customer);
 
   const updated = [
     ...current,
@@ -516,8 +530,23 @@ const deletePhoneNumber = (
   customerId,
   number
 ) => {
+  const customer =
+    customers.find(
+      (c) => c.id === customerId
+    );
+
+  if (
+    customer.phone === number
+  ) {
+    toast.info(
+      "Primary number cannot be deleted"
+    );
+
+    return;
+  }
+
   const current =
-    extraPhones[customerId] || [];
+    getCustomerPhones(customer);
 
   const updated =
     current.filter(
@@ -535,11 +564,16 @@ const togglePhoneSelection = (
   customerId,
   number
 ) => {
-  const current =
-    extraPhones[customerId] || [];
+  const phones =
+    getCustomerPhones(
+      customers.find(
+        (c) =>
+          c.id === customerId
+      )
+    );
 
   const updated =
-    current.map((p) =>
+    phones.map((p) =>
       p.number === number
         ? {
             ...p,
@@ -679,7 +713,7 @@ const sendSingleSMS = async (customer) => {
     const groupMessage = generateGroupMessage(sender);
 
     const savedPhones =
-  extraPhones[sender.id] || [];
+  getCustomerPhones(sender);
 
 const selectedPhones =
   savedPhones.filter(
@@ -786,8 +820,8 @@ const recipients =
 
       const message = generateGroupMessage(sender);
 
-    const savedPhones =
-  extraPhones[sender.id] || [];
+   const savedPhones =
+  getCustomerPhones(sender);
 
 const selectedPhones =
   savedPhones.filter(
@@ -1177,12 +1211,7 @@ const handleUseDate = () => {
       <label>
         <input
           type="checkbox"
-          checked={
-            p.primary
-              ? true
-              : p.selected
-          }
-          disabled={p.primary}
+          checked={p.selected}
           onChange={() =>
             togglePhoneSelection(
               selectedCustomer.id,
