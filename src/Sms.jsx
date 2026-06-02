@@ -55,7 +55,7 @@ const formattedReadingDate =
 
 const formattedDueDate =
   dueDate.toLocaleDateString("en-GB");
-
+{/*
 const applyDates = (message) => {
   return message
     .replaceAll(
@@ -66,6 +66,14 @@ const applyDates = (message) => {
       "{{DUE_DATE}}",
       formattedDueDate
     );
+  };*/
+
+const applyDates = (message) => {
+  const msg = String(message ?? "");
+
+  return msg
+    .replaceAll("{{READING_DATE}}", formattedReadingDate)
+    .replaceAll("{{DUE_DATE}}", formattedDueDate);
 };
 
   
@@ -123,23 +131,18 @@ const generateGroupMessage = (
 
   customer
 ) => {
-  const groupCustomers =
-    getGroupCustomers(customer);
+return groupCustomers
+  .map((c) => {
+    let balanceLine = "";
 
-  return groupCustomers
-    .map((c) => {
-let balanceLine = "";
-
-    if (Number(customer.b_cd) > 0) {
-      balanceLine = `Bal b/d:KES ${Number(customer.b_cd).toLocaleString()}\nTo Pay:KES ${Number(customer.bal).toLocaleString()}\n`;
-    } else if (Number(customer.b_cd) < 0) {
-      balanceLine = `Bal b/d:KES (${Math.abs(Number(customer.b_cd)).toLocaleString()})\nTo Pay:KES ${Number(customer.bal).toLocaleString()}\n`;
-    } else if (Number(customer.b_cd) === 0) {
-      balanceLine = "";
+    if (Number(c.b_cd) > 0) {
+      balanceLine = `Bal b/d:KES ${Number(c.b_cd).toLocaleString()}\nTo Pay:KES ${Number(c.bal).toLocaleString()}\n`;
+    } else if (Number(c.b_cd) < 0) {
+      balanceLine = `Bal b/d:KES (${Math.abs(Number(c.b_cd)).toLocaleString()})\nTo Pay:KES ${Number(c.bal).toLocaleString()}\n`;
     }
 
-      return `
-Dear${c.sms_name}
+    return `
+Dear ${c.sms_name}
 Prev Read:${c.prev_user}
 Curr Read:${c.cur_user}
 Usage:${c.units_used}
@@ -160,9 +163,10 @@ Coop Bank
 A/C No 1750278558907
 Equity Bank
 
-Contact us on: 0741088799`.trim();
-
-    })
+Contact us on: 0741088799
+`.trim();
+  })
+  .join("\n\n");
 };
   // =========================================
   // FETCH CUSTOMERS
