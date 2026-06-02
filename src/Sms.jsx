@@ -108,6 +108,37 @@ Equity Bank
 Contact us on: 0741088799`.trim();
   };
 
+
+const getGroupCustomers = (customer) => {
+  if (!customer.grp) {
+    return [customer];
+  }
+
+  return customers.filter(
+    (c) => c.grp === customer.grp
+  );
+};
+
+const generateGroupMessage = (
+  customer
+) => {
+  const groupCustomers =
+    getGroupCustomers(customer);
+
+  return groupCustomers
+    .map((c) => {
+      return `
+Account: ${c.sms_name}
+Prev Read: ${c.prev_user}
+Curr Read: ${c.cur_user}
+Usage: ${c.units_used}
+Bill: KES ${Number(
+        c.bill
+      ).toLocaleString()}
+`;
+    })
+    .join("\n----------------\n");
+};
   // =========================================
   // FETCH CUSTOMERS
   // =========================================
@@ -337,10 +368,17 @@ setCustomers(preparedData);
   // OPEN PREVIEW
   // =========================================
   const openPreview = (customer) => {
-    setSelectedCustomer(customer);
-    setShowModal(true);
-  };
+  const groupMessage =
+    generateGroupMessage(customer);
 
+  setEditedMessages((prev) => ({
+    ...prev,
+    [customer.id]: groupMessage,
+  }));
+
+  setSelectedCustomer(customer);
+  setShowModal(true);
+};
   // =========================================
   // HANDLE MESSAGE EDIT
   // =========================================
