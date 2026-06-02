@@ -799,9 +799,17 @@ const recipients =
     const uniqueGroups = {};
 
     selectedCustomers.forEach((c) => {
-      if (!c.grp) return;
-      uniqueGroups[c.grp] = c;
-    });
+  if (!c.grp) return;
+
+  if (!isParent(c)) {
+    toast.info(
+      `${c.sms_name} is not a parent account`
+    );
+    return;
+  }
+
+  uniqueGroups[c.grp] = c;
+});
 
     const formattedCustomers = [];
 
