@@ -80,6 +80,7 @@ const applyDates = (message) => {
   // =========================================
   // GENERATE DEFAULT SMS
   // =========================================
+{/*
   const generateMessage = (customer) => {
     let balanceLine = "";
 
@@ -115,7 +116,7 @@ Equity Bank
 
 Contact us on: 0741088799`.trim();
   };
-
+*/}
 
 const getGroupCustomers = (customer) => {
   if (!customer.grp) {
@@ -150,7 +151,6 @@ const generateGroupMessage = (customer) => {
     return `
 Dear ${c.sms_name},
 Water Bill as at {{READING_DATE}}
-
 Prev Read:${c.prev_user}
 Curr Read:${c.cur_user}
 Usage:${c.units_used}
@@ -208,11 +208,11 @@ Water Bill as at {{READING_DATE}}
 
 ${breakdown}
 
-TOTAL GROUP BILL: KES ${total.toLocaleString()}
+To pay:KES ${total.toLocaleString()}
 
 Pay by {{DUE_DATE}}
 
-Send Money: 0723311564
+Send Money:0723311564
 
 Or: M-PESA Buy Goods:
 Kamengo Agencies
