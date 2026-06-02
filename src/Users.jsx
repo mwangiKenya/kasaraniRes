@@ -89,6 +89,8 @@ function Users() {
             <th>Zone</th>
             <th>Rate</th>
             {/*<th>Registered on</th>*/}
+            <th>Group</th>
+            <th>Parent</th>
             <th>Update</th>
             <th>Delete</th>
           </tr>
@@ -158,6 +160,32 @@ function Users() {
                       setCustomers(prev =>
                         prev.map(u =>
                           u.id === c.id ? { ...u, rate: e.target.value } : u
+                        )
+                      )
+                    }
+                  />
+                </td>
+
+                <td>
+                  <input
+                    value={c.grp}
+                    onChange={(e) =>
+                      setCustomers(prev =>
+                        prev.map(u =>
+                          u.id === c.id ? { ...u, grp: e.target.value } : u
+                        )
+                      )
+                    }
+                  />
+                </td>
+
+                <td>
+                  <input
+                    value={c.parent}
+                    onChange={(e) =>
+                      setCustomers(prev =>
+                        prev.map(u =>
+                          u.id === c.id ? { ...u, parent: e.target.value } : u
                         )
                       )
                     }
