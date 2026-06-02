@@ -127,21 +127,20 @@ const getGroupCustomers = (customer) => {
   );
 };
 
-const generateGroupMessage = (
+const generateGroupMessage = (customer) => {
+  const groupCustomers = getGroupCustomers(customer);
 
-  customer
-) => {
-return groupCustomers
-  .map((c) => {
-    let balanceLine = "";
+  return groupCustomers
+    .map((c) => {
+      let balanceLine = "";
 
-    if (Number(c.b_cd) > 0) {
-      balanceLine = `Bal b/d:KES ${Number(c.b_cd).toLocaleString()}\nTo Pay:KES ${Number(c.bal).toLocaleString()}\n`;
-    } else if (Number(c.b_cd) < 0) {
-      balanceLine = `Bal b/d:KES (${Math.abs(Number(c.b_cd)).toLocaleString()})\nTo Pay:KES ${Number(c.bal).toLocaleString()}\n`;
-    }
+      if (Number(c.b_cd) > 0) {
+        balanceLine = `Bal b/d:KES ${Number(c.b_cd).toLocaleString()}\nTo Pay:KES ${Number(c.bal).toLocaleString()}\n`;
+      } else if (Number(c.b_cd) < 0) {
+        balanceLine = `Bal b/d:KES (${Math.abs(Number(c.b_cd)).toLocaleString()})\nTo Pay:KES ${Number(c.bal).toLocaleString()}\n`;
+      }
 
-    return `
+      return `
 Dear ${c.sms_name}
 Prev Read:${c.prev_user}
 Curr Read:${c.cur_user}
@@ -165,8 +164,8 @@ Equity Bank
 
 Contact us on: 0741088799
 `.trim();
-  })
-  .join("\n\n");
+    })
+    .join("\n\n");
 };
   // =========================================
   // FETCH CUSTOMERS
