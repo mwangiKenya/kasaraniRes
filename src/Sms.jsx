@@ -709,7 +709,7 @@ const handleUseDate = () => {
                 >
                   <td>{c.id}</td>
 
-                  <td>{c.name}</td>
+                  <td>{c.sms_name}</td>
 
                   <td>{c.phone}</td>
 
