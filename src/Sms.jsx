@@ -116,7 +116,7 @@ Equity Bank
 
 Contact us on: 0741088799`.trim();
   };
-*
+
 
 const getGroupCustomers = (customer) => {
   if (!customer.grp) {
