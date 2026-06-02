@@ -141,7 +141,8 @@ const generateGroupMessage = (customer) => {
       }
 
       return `
-Dear ${c.sms_name}
+Dear ${c.sms_name},
+Water Bill as at {{READING_DATE}}
 Prev Read:${c.prev_user}
 Curr Read:${c.cur_user}
 Usage:${c.units_used}
