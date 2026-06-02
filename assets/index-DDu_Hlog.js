@@ -55,7 +55,8 @@ To Pay:KES ${Number(De.bal).toLocaleString()}
 `:Number(De.b_cd)<0&&(ze=`Bal b/d:KES (${Math.abs(Number(De.b_cd)).toLocaleString()})
 To Pay:KES ${Number(De.bal).toLocaleString()}
 `),`
-Dear ${De.sms_name}
+Dear ${De.sms_name},
+Water Bill as at {{READING_DATE}}
 Prev Read:${De.prev_user}
 Curr Read:${De.cur_user}
 Usage:${De.units_used}
