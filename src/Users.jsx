@@ -73,10 +73,17 @@ function Users() {
     alert("Error updating user");
   }
   };
+
+  const downloadUsers = () => {
+  window.open("https://python-back-2.onrender.com/api/download_users/", "_blank");
+};
   
   return (
     <div className={styles.mainDiv}>
       <h1>Registered Customers</h1>
+      <button onClick={downloadUsers}>
+  Download Users Excel
+</button>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <table className={styles.userTable}>
         <thead>
