@@ -8,6 +8,8 @@ function Sms() {
   const [showModal, setShowModal] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [editedMessages, setEditedMessages] = useState({});
+  const [extraPhones, setExtraPhones] = useState({});
+  const [newPhone, setNewPhone] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] =
@@ -76,6 +78,59 @@ const applyDates = (message) => {
     .replaceAll("{{DUE_DATE}}", formattedDueDate);
 };
 
+// =========================================
+// EXTRA PHONE NUMBERS (LOCAL STORAGE)
+// =========================================
+
+const getCustomerPhones = (customer) => {
+  const saved =
+    extraPhones[customer.id] || [];
+
+  return [
+    {
+      number: customer.phone,
+      primary: true,
+      selected:
+        saved.length === 0
+          ? true
+          : false,
+    },
+
+    ...saved,
+  ];
+};
+
+const loadExtraPhones = () => {
+  const data = {};
+
+  customers.forEach((c) => {
+    const saved =
+      localStorage.getItem(
+        `phones_${c.id}`
+      );
+
+    data[c.id] = saved
+      ? JSON.parse(saved)
+      : [];
+  });
+
+  setExtraPhones(data);
+};
+
+const savePhones = (
+  customerId,
+  phones
+) => {
+  localStorage.setItem(
+    `phones_${customerId}`,
+    JSON.stringify(phones)
+  );
+
+  setExtraPhones((prev) => ({
+    ...prev,
+    [customerId]: phones,
+  }));
+};
   
   // =========================================
   // GENERATE DEFAULT SMS
@@ -344,6 +399,21 @@ return {
 }); // <-- CLOSE data.map() HERE
 
 setCustomers(preparedData);
+
+const phoneData = {};
+
+preparedData.forEach((c) => {
+  const saved =
+    localStorage.getItem(
+      `phones_${c.id}`
+    );
+
+  phoneData[c.id] = saved
+    ? JSON.parse(saved)
+    : [];
+});
+
+setExtraPhones(phoneData);
       // initialize editable messages
       const messages = {};
 
@@ -412,6 +482,78 @@ setCustomers(preparedData);
     );
   };
 
+
+  // =========================================
+// PHONE MANAGEMENT
+// =========================================
+
+const addPhoneNumber = (
+  customerId,
+  phone
+) => {
+  if (!phone.trim()) return;
+
+  const current =
+    extraPhones[customerId] || [];
+
+  const updated = [
+    ...current,
+    {
+      number: phone,
+      selected: true,
+    },
+  ];
+
+  savePhones(
+    customerId,
+    updated
+  );
+
+  setNewPhone("");
+};
+
+const deletePhoneNumber = (
+  customerId,
+  number
+) => {
+  const current =
+    extraPhones[customerId] || [];
+
+  const updated =
+    current.filter(
+      (p) =>
+        p.number !== number
+    );
+
+  savePhones(
+    customerId,
+    updated
+  );
+};
+
+const togglePhoneSelection = (
+  customerId,
+  number
+) => {
+  const current =
+    extraPhones[customerId] || [];
+
+  const updated =
+    current.map((p) =>
+      p.number === number
+        ? {
+            ...p,
+            selected:
+              !p.selected,
+          }
+        : p
+    );
+
+  savePhones(
+    customerId,
+    updated
+  );
+};
   // =========================================
   // CHECKBOX SELECTION
   // =========================================
@@ -536,14 +678,38 @@ const sendSingleSMS = async (customer) => {
 
     const groupMessage = generateGroupMessage(sender);
 
-    const payload = {
-      customers: [
+    const savedPhones =
+  extraPhones[sender.id] || [];
+
+const selectedPhones =
+  savedPhones.filter(
+    (p) => p.selected
+  );
+
+const recipients =
+  selectedPhones.length > 0
+    ? selectedPhones.map(
+        (p) => ({
+          phone: p.number,
+          message:
+            applyDates(
+              groupMessage
+            ),
+        })
+      )
+    : [
         {
           phone: sender.phone,
-          message: applyDates(groupMessage),
+          message:
+            applyDates(
+              groupMessage
+            ),
         },
-      ],
-    };
+      ];
+
+      const payload = {
+        customers: recipients,
+      };
 
     const res = await fetch(
       "https://python-back-2.onrender.com/api/send_sms_view/",
@@ -620,10 +786,37 @@ const sendSingleSMS = async (customer) => {
 
       const message = generateGroupMessage(sender);
 
+    const savedPhones =
+  extraPhones[sender.id] || [];
+
+const selectedPhones =
+  savedPhones.filter(
+    (p) => p.selected
+  );
+
+if (
+  selectedPhones.length > 0
+) {
+  selectedPhones.forEach(
+    (p) => {
       formattedCustomers.push({
-        phone: sender.phone,
-        message: applyDates(message),
+        phone: p.number,
+        message:
+          applyDates(
+            message
+          ),
       });
+    }
+  );
+} else {
+  formattedCustomers.push({
+    phone: sender.phone,
+    message:
+      applyDates(
+        message
+      ),
+  });
+}
 
       // update ALL in group as sent
       groupCustomers.forEach((c) => {
@@ -967,6 +1160,86 @@ const handleUseDate = () => {
                 </button>
               </div>
 
+
+              <div
+  style={{
+    marginBottom: "15px",
+  }}
+>
+  <h4>
+    SMS Recipients
+  </h4>
+
+  {getCustomerPhones(
+    selectedCustomer
+  ).map((p, index) => (
+    <div key={index}>
+      <label>
+        <input
+          type="checkbox"
+          checked={
+            p.primary
+              ? true
+              : p.selected
+          }
+          disabled={p.primary}
+          onChange={() =>
+            togglePhoneSelection(
+              selectedCustomer.id,
+              p.number
+            )
+          }
+        />
+
+        {p.number}
+
+        {p.primary &&
+          " (Primary)"}
+      </label>
+
+      {!p.primary && (
+        <button
+          onClick={() =>
+            deletePhoneNumber(
+              selectedCustomer.id,
+              p.number
+            )
+          }
+        >
+          Delete
+        </button>
+      )}
+    </div>
+  ))}
+
+  <div
+    style={{
+      marginTop: "10px",
+    }}
+  >
+    <input
+      type="text"
+      placeholder="Add phone number"
+      value={newPhone}
+      onChange={(e) =>
+        setNewPhone(
+          e.target.value
+        )
+      }
+    />
+
+    <button
+      onClick={() =>
+        addPhoneNumber(
+          selectedCustomer.id,
+          newPhone
+        )
+      }
+    >
+      Add
+    </button>
+  </div>
+</div>
               <textarea
                 className={
                   styles.smsTextarea
