@@ -120,6 +120,7 @@ const getGroupCustomers = (customer) => {
 };
 
 const generateGroupMessage = (
+
   customer
 ) => {
   const groupCustomers =
@@ -127,17 +128,41 @@ const generateGroupMessage = (
 
   return groupCustomers
     .map((c) => {
+let balanceLine = "";
+
+    if (Number(customer.b_cd) > 0) {
+      balanceLine = `Bal b/d:KES ${Number(customer.b_cd).toLocaleString()}\nTo Pay:KES ${Number(customer.bal).toLocaleString()}\n`;
+    } else if (Number(customer.b_cd) < 0) {
+      balanceLine = `Bal b/d:KES (${Math.abs(Number(customer.b_cd)).toLocaleString()})\nTo Pay:KES ${Number(customer.bal).toLocaleString()}\n`;
+    } else if (Number(customer.b_cd) === 0) {
+      balanceLine = "";
+    }
+
       return `
-Account: ${c.sms_name}
-Prev Read: ${c.prev_user}
-Curr Read: ${c.cur_user}
-Usage: ${c.units_used}
-Bill: KES ${Number(
-        c.bill
-      ).toLocaleString()}
-`;
+Dear${c.sms_name}
+Prev Read:${c.prev_user}
+Curr Read:${c.cur_user}
+Usage:${c.units_used}
+Current Bill:KES ${Number(c.bill).toLocaleString()}
+${balanceLine}
+Pay by {{DUE_DATE}}
+
+Send Money: 0723311564
+
+Or: M-PESA Buy Goods:
+Kamengo Agencies
+Till No 544783
+
+Or: Kamengo Agencies
+A/C No 01192576824400
+Coop Bank
+
+A/C No 1750278558907
+Equity Bank
+
+Contact us on: 0741088799`.trim();
+
     })
-    .join("\n----------------\n");
 };
   // =========================================
   // FETCH CUSTOMERS
