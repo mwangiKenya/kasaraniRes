@@ -428,155 +428,144 @@ setCustomers(preparedData);
   // =========================================
   // SEND SINGLE SMS
   // =========================================
-  const sendSingleSMS = async (
-    customer
-  ) => {
-    try {
-      setSending(true);
+const sendSingleSMS = async (customer) => {
+  // BLOCK non-parent sending
+  if (!isParent(customer)) {
+    toast.info("Only parent account can send group SMS");
+    return;
+  }
 
-      const payload = {
-        customers: [
-          {
-            phone: customer.phone,
+  try {
+    setSending(true);
 
-           message: applyDates(
-              editedMessages[
-                customer.id
-              ]
-            ),
-          },
-        ],
-      };
+    const groupMessage = generateGroupMessage(customer);
 
-      const res = await fetch(
-        "https://python-back-2.onrender.com/api/send_sms_view/",
+    const payload = {
+      customers: [
         {
-          method: "POST",
+          phone: customer.phone,
+          message: applyDates(groupMessage),
+        },
+      ],
+    };
 
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-
-          body: JSON.stringify(payload),
-        }
-      );
-
-      if (!res.ok) {
-        throw new Error(
-          "Failed to send SMS"
-        );
+    const res = await fetch(
+      "https://python-back-2.onrender.com/api/send_sms_view/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       }
+    );
 
-      const sentDate = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
+    if (!res.ok) {
+      throw new Error("Failed to send SMS");
+    }
 
-      saveCustomerData(customer.id, {
-        message:
-          editedMessages[customer.id],
+    const sentDate = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
 
+    const groupCustomers = getGroupCustomers(customer);
+
+    groupCustomers.forEach((c) => {
+      saveCustomerData(c.id, {
+        message: editedMessages[c.id],
         smsStatus: "Sent",
-
         sentDate,
       });
+    });
 
-      toast.success(
-        `SMS sent to ${customer.name}`
-      );
-    } catch (err) {
-      console.log(err);
+    toast.success(`Group SMS sent to ${customer.sms_name}`);
+  } catch (err) {
+    console.log(err);
+    toast.error("Failed to send SMS");
+  } finally {
+    setSending(false);
+  }
+};
 
-      toast.error(
-        "Failed to send SMS"
-      );
-    } finally {
-      setSending(false);
-    }
-  };
+  const isParent = (customer) => {
+  return String(customer.parent).toLowerCase() === "yes";
+};
 
   // =========================================
   // SEND SELECTED SMS
   // =========================================
-  const sendSMS = async () => {
-    if (
-      selectedCustomers.length === 0
-    ) {
-      toast.info(
-        "Select at least one customer"
+ const sendSMS = async () => {
+  if (selectedCustomers.length === 0) {
+    toast.info("Select at least one customer");
+    return;
+  }
+
+  try {
+    setSending(true);
+
+    // STEP 1: get ONLY unique groups
+    const uniqueGroups = {};
+
+    selectedCustomers.forEach((c) => {
+      if (!c.grp) return;
+      uniqueGroups[c.grp] = c;
+    });
+
+    const formattedCustomers = [];
+
+    // STEP 2: for each group, send only once
+    Object.values(uniqueGroups).forEach((customer) => {
+      const groupCustomers = customers.filter(
+        (c) => c.grp === customer.grp
       );
 
-      return;
-    }
-
-    try {
-      setSending(true);
-
-      const formattedCustomers =
-        selectedCustomers.map((c) => ({
-          phone: c.phone,
-
-          message: applyDates(
-                editedMessages[c.id]
-              ),
-        }));
-
-      const res = await fetch(
-        "https://python-back-2.onrender.com/api/send_sms_view/",
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-
-          body: JSON.stringify({
-            customers:
-              formattedCustomers,
-          }),
-        }
+      const parentCustomer = groupCustomers.find((c) =>
+        isParent(c)
       );
 
-      if (!res.ok) {
-        throw new Error(
-          "Failed to send SMS"
-        );
+      // fallback if no parent found
+      const sender = parentCustomer || customer;
+
+      const message = generateGroupMessage(sender);
+
+      formattedCustomers.push({
+        phone: sender.phone,
+        message: applyDates(message),
+      });
+
+      // update ALL in group as sent
+      groupCustomers.forEach((c) => {
+        saveCustomerData(c.id, {
+          message: editedMessages[c.id],
+          smsStatus: "Sent",
+          sentDate: `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,
+        });
+      });
+    });
+
+    const res = await fetch(
+      "https://python-back-2.onrender.com/api/send_sms_view/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customers: formattedCustomers,
+        }),
       }
+    );
 
-      const sentDate = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
-
-      // update statuses
-      selectedCustomers.forEach(
-        (customer) => {
-          saveCustomerData(
-            customer.id,
-            {
-              message:
-                editedMessages[
-                  customer.id
-                ],
-
-              smsStatus: "Sent",
-
-              sentDate,
-            }
-          );
-        }
-      );
-
-      toast.success(
-        "SMS sent successfully"
-      );
-    } catch (err) {
-      console.log(err);
-
-      toast.error(
-        "Failed to send SMS"
-      );
-    } finally {
-      setSending(false);
+    if (!res.ok) {
+      throw new Error("Failed to send SMS");
     }
-  };
 
+    toast.success("Grouped SMS sent successfully");
+  } catch (err) {
+    console.log(err);
+    toast.error("Failed to send SMS");
+  } finally {
+    setSending(false);
+  }
+};
   // =========================================
 // CONFIRM DATE
 // =========================================
