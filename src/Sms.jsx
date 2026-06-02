@@ -126,12 +126,22 @@ const getGroupCustomers = (customer) => {
     (c) => c.grp === customer.grp
   );
 };
-
 const generateGroupMessage = (customer) => {
   const groupCustomers = getGroupCustomers(customer);
 
-  return groupCustomers
+  const parentCustomer = groupCustomers.find((c) =>
+    isParent(c)
+  );
+
+  const sender = parentCustomer || customer;
+
+  let total = 0;
+
+  const breakdown = groupCustomers
     .map((c) => {
+      const bill = Number(c.bill || 0);
+      total += bill;
+
       let balanceLine = "";
 
       if (Number(c.b_cd) > 0) {
@@ -141,13 +151,24 @@ const generateGroupMessage = (customer) => {
       }
 
       return `
-Dear ${c.sms_name},
-Water Bill as at {{READING_DATE}}
+${c.sms_name}
 Prev Read:${c.prev_user}
 Curr Read:${c.cur_user}
 Usage:${c.units_used}
-Current Bill:KES ${Number(c.bill).toLocaleString()}
+Current Bill:KES ${bill.toLocaleString()}
 ${balanceLine}
+`.trim();
+    })
+    .join("\n\n");
+
+  return `
+Dear ${sender.sms_name},
+Water Bill as at {{READING_DATE}}
+
+${breakdown}
+
+TOTAL GROUP BILL: KES ${total.toLocaleString()}
+
 Pay by {{DUE_DATE}}
 
 Send Money: 0723311564
@@ -165,8 +186,6 @@ Equity Bank
 
 Contact us on: 0741088799
 `.trim();
-    })
-    .join("\n\n");
 };
   // =========================================
   // FETCH CUSTOMERS
@@ -467,7 +486,15 @@ const sendSingleSMS = async (customer) => {
   try {
     setSending(true);
 
-    const groupMessage = generateGroupMessage(customer);
+    const groupCustomers = getGroupCustomers(customer);
+
+    const parentCustomer = groupCustomers.find((c) =>
+      isParent(c)
+    );
+
+    const sender = parentCustomer || customer;
+
+    const groupMessage = generateGroupMessage(sender);
 
     const payload = {
       customers: [
