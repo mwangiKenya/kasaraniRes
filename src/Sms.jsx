@@ -66,7 +66,7 @@ const applyDates = (message) => {
       "{{DUE_DATE}}",
       formattedDueDate
     );
-  };*/
+  };*/}
 
 const applyDates = (message) => {
   const msg = String(message ?? "");
