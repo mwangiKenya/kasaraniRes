@@ -681,6 +681,8 @@ const handleUseDate = () => {
               <th>Preview</th>
 
               <th>Send</th>
+              <th>Group</th>
+              <th>Parent</th>
             </tr>
           </thead>
 
@@ -787,6 +789,8 @@ const handleUseDate = () => {
                       Send
                     </button>
                   </td>
+                  <td>{c.grp}</td>
+                  <td>{c.parent}</td>
                 </tr>
               ))
             )}
