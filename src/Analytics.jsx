@@ -111,6 +111,10 @@ function Analytics() {
 
   //Put comma seperator on figures
   const totalBill = bills.toLocaleString()
+  const prevBal = bal.toLocaleString()
+  const totalAmount = total.toLocaleString()
+  const balance = balance.toLocaleString()
+  const totalUnits = units.toLocaleString()
 
   // ================= UI =================
 
@@ -132,7 +136,7 @@ function Analytics() {
 
         <div className={styles.card}>
           <h3>Units Used</h3>
-          <p>{units_used}</p>
+          <p>{totalUnits}</p>
         </div>
 
         <div className={styles.card}>
@@ -142,12 +146,12 @@ function Analytics() {
 
         <div className={styles.card}>
           <h3>Prev Bal</h3>
-          <p>Ksh {bal}</p>
+          <p>Ksh {prevBal}</p>
         </div>
 
         <div className={styles.card}>
           <h3>Total Amount</h3>
-          <p>Ksh {total}</p>
+          <p>Ksh {totalAmount}</p>
         </div>
 
         <div className={styles.card}>
