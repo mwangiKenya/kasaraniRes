@@ -113,7 +113,7 @@ function Analytics() {
   const totalBill = bills.toLocaleString()
   const prevBal = bal.toLocaleString()
   const totalAmount = total.toLocaleString()
-  const balance = balance.toLocaleString()
+  const totalbalance = balance.toLocaleString()
   const totalUnits = units.toLocaleString()
 
   // ================= UI =================
@@ -161,8 +161,8 @@ function Analytics() {
 
         <div className={styles.card}>
           <h3>Balance</h3>
-          <p className={balance > 0 ? styles.red : styles.green}>
-            Ksh {balance}
+          <p className={totalbalance > 0 ? styles.red : styles.green}>
+            Ksh {totalbalance}
           </p>
         </div>
 
