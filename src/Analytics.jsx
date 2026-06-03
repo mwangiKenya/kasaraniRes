@@ -109,6 +109,9 @@ function Analytics() {
   if (efficiency < 60) alerts.push("Low collection rate!");
   if (customers === 0) alerts.push("No customers found!");
 
+  //Put comma seperator on figures
+  const totalBill = bills.toLocaleString()
+
   // ================= UI =================
 
   return (
@@ -134,7 +137,7 @@ function Analytics() {
 
         <div className={styles.card}>
           <h3>Current Bills</h3>
-          <p>Ksh {bills}</p>
+          <p>Ksh {totalBill}</p>
         </div>
 
         <div className={styles.card}>
