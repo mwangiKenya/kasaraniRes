@@ -870,7 +870,7 @@ if (
       throw new Error("Failed to send SMS");
     }
 
-    toast.success("Grouped SMS sent successfully");
+    toast.success("Bill SMS sent successfully");
   } catch (err) {
     console.log(err);
     toast.error("Failed to send SMS");
