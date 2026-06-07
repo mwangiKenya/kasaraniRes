@@ -1,206 +1,835 @@
-/* ===== GLOBAL CONTAINER ===== */
+/* ============================================================
+   SMS DASHBOARD — MANAGEMENT GRADE
+   Theme: Executive Command Center
+   Palette: Deep Navy · Warm Gold · Slate · Ivory
+   Font: DM Serif Display (headings) + DM Sans (body)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+/* ============================================================
+   CSS VARIABLES
+   ============================================================ */
 .container {
-    max-width: 1200px;
-    margin: 2.5rem auto;
-    padding: 2.5rem;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    color: #1e293b;
-    background: linear-gradient(145deg, #ffffff, #f8fafc);
-    border-radius: 18px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
-    border: 1px solid #e5e7eb;
+  --navy-deep:    #0b1120;
+  --navy-mid:     #111827;
+  --navy-surface: #1a2438;
+  --navy-raised:  #212e45;
+  --navy-border:  #2a3a55;
+  --navy-hover:   #253350;
+
+  --gold:         #c9a84c;
+  --gold-light:   #e2c278;
+  --gold-dim:     #a07a30;
+  --gold-glow:    rgba(201, 168, 76, 0.18);
+
+  --ivory:        #f5f0e8;
+  --ivory-dim:    #c8bfa8;
+  --slate:        #8a9bb8;
+  --slate-dim:    #4f6180;
+
+  --sent-bg:      #0d2e1e;
+  --sent-text:    #4ade80;
+  --sent-border:  #16553a;
+  --unsent-bg:    #2d1515;
+  --unsent-text:  #f87171;
+  --unsent-border:#5c2020;
+  --edited-bg:    #2a2010;
+  --edited-text:  #fbbf24;
+  --edited-border:#5c4010;
+  --default-bg:   #1a2438;
+  --default-text: #8a9bb8;
+  --default-border:#2a3a55;
+
+  --radius-sm:    6px;
+  --radius-md:    10px;
+  --radius-lg:    14px;
+  --radius-xl:    20px;
+
+  --shadow-card:  0 4px 24px rgba(0,0,0,0.4), 0 1px 4px rgba(0,0,0,0.3);
+  --shadow-glow:  0 0 0 1px var(--gold-dim), 0 4px 24px var(--gold-glow);
+  --shadow-btn:   0 2px 12px rgba(201,168,76,0.3);
+
+  --transition:   all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  font-family: 'DM Sans', sans-serif;
+  background: var(--navy-deep);
+  color: var(--ivory);
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
 }
 
-/* ===== HEADER ===== */
+/* ============================================================
+   PAGE LAYOUT
+   ============================================================ */
+.container {
+  padding: 32px 36px 60px;
+  background:
+    radial-gradient(ellipse 80% 40% at 50% -10%, rgba(201,168,76,0.07) 0%, transparent 70%),
+    var(--navy-deep);
+}
+
+/* ============================================================
+   HEADER SECTION
+   ============================================================ */
+.headerSection {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  grid-template-rows: auto auto;
+  align-items: start;
+  gap: 0 24px;
+  background: var(--navy-surface);
+  border: 1px solid var(--navy-border);
+  border-top: 2px solid var(--gold);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+.headerSection::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.6;
+}
+
+/* title block occupies first column, both rows */
+.headerSection > div:first-child {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  align-self: center;
+}
+
 .header1 {
-    text-align: center;
-    font-size: 2.4rem;
-    font-weight: 800;
-    color: #0f172a;
-    margin-bottom: 2rem;
-    letter-spacing: -0.03em;
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--ivory);
+  margin: 0 0 6px;
+  letter-spacing: 0.2px;
+  line-height: 1.2;
 }
 
-/* ===== PRIMARY BUTTON ===== */
+.header1::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 2px;
+  background: var(--gold);
+  margin-top: 10px;
+  border-radius: 2px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--slate);
+  margin: 14px 0 0;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+}
+
+/* send button: top-right */
 .sendBtn {
-    display: block;
-    margin: 0 auto 2.5rem auto;
-    padding: 14px 36px;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+  grid-column: 3;
+  grid-row: 1;
+  align-self: start;
+  padding: 11px 24px;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dim) 100%);
+  color: var(--navy-deep);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow-btn);
+  white-space: nowrap;
+  text-transform: uppercase;
 }
 
-.sendBtn:hover {
-    transform: translateY(-2px) scale(1.01);
-    box-shadow: 0 15px 30px rgba(37, 99, 235, 0.35);
+.sendBtn:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+  box-shadow: 0 4px 20px rgba(201,168,76,0.5);
+  transform: translateY(-1px);
 }
 
-/* ===== TABLE ===== */
+.sendBtn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.sendBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* date section: bottom row, spans cols 2-3 */
+.dateSection {
+  grid-column: 2 / 4;
+  grid-row: 2;
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--navy-border);
+}
+
+.dateSection label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.dateSection input[type="date"] {
+  padding: 9px 12px;
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-border);
+  border-radius: var(--radius-sm);
+  color: var(--ivory);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  outline: none;
+  transition: var(--transition);
+  color-scheme: dark;
+}
+
+.dateSection input[type="date"]:focus {
+  border-color: var(--gold-dim);
+  box-shadow: 0 0 0 3px var(--gold-glow);
+}
+
+.useDateBtn {
+  padding: 9px 18px;
+  background: transparent;
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.useDateBtn:hover {
+  background: var(--gold-glow);
+  border-color: var(--gold);
+  box-shadow: 0 0 12px var(--gold-glow);
+}
+
+/* ============================================================
+   TABLE WRAPPER
+   ============================================================ */
+.tableWrapper {
+  background: var(--navy-surface);
+  border: 1px solid var(--navy-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
 .tableContainer {
-    width: 100%;
-    border-collapse: collapse;
-    background: #ffffff;
-    border-radius: 14px;
-    overflow: hidden;
-    border: 1px solid #e5e7eb;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
 }
 
-/* ===== TABLE HEADER ===== */
-.tableRowHeader {
-    background: #f1f5f9;
+/* ============================================================
+   TABLE HEADER
+   ============================================================ */
+.tableRowHeader tr {
+  background: var(--navy-mid);
+  border-bottom: 1px solid var(--navy-border);
 }
 
 .tableRowHeader th {
-    padding: 18px 22px;
-    text-align: left;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    color: #64748b;
-    border-bottom: 2px solid #e2e8f0;
+  padding: 14px 16px;
+  text-align: left;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
-/* ===== TABLE BODY ===== */
+.tableRowHeader th:first-child {
+  padding-left: 24px;
+}
+
+.tableRowHeader th:last-child {
+  padding-right: 24px;
+}
+
+/* header checkbox */
+.tableRowHeader input[type="checkbox"] {
+  accent-color: var(--gold);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+/* ============================================================
+   TABLE ROWS
+   ============================================================ */
 .tableRow {
-    transition: all 0.2s ease;
-    border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid rgba(42, 58, 85, 0.6);
+  transition: background 0.15s ease;
+}
+
+.tableRow:last-child {
+  border-bottom: none;
 }
 
 .tableRow:hover {
-    background: #f8fafc;
-    transform: scale(1.002);
+  background: var(--navy-hover);
 }
 
 .tableRow td {
-    padding: 18px 22px;
-    font-size: 0.95rem;
-    color: #334155;
-    vertical-align: middle;
+  padding: 13px 16px;
+  color: var(--ivory-dim);
+  vertical-align: middle;
+  font-size: 13px;
+  font-weight: 400;
 }
 
-/* Zebra striping */
-.tableRow:nth-child(even) {
-    background-color: #fcfcfd;
-}
-
-/* First column (ID) */
 .tableRow td:first-child {
-    font-weight: 600;
-    color: #94a3b8;
+  padding-left: 24px;
+  color: var(--slate);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
-/* ===== VIEW BUTTON ===== */
-.viewBtn {
-    padding: 8px 16px;
-    background: #eef2ff;
-    color: #4338ca;
-    border: none;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
+.tableRow td:last-child {
+  padding-right: 24px;
 }
 
-.viewBtn:hover {
-    background: #4338ca;
-    color: #ffffff;
-    transform: translateY(-1px);
+/* name column */
+.tableRow td:nth-child(2) {
+  color: var(--ivory);
+  font-weight: 500;
 }
 
-/* ===== CHECKBOX ===== */
-input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-    accent-color: #2563eb;
-    transition: transform 0.1s ease;
+/* phone column */
+.tableRow td:nth-child(3) {
+  color: var(--slate);
+  font-size: 12px;
+  font-family: 'DM Sans', monospace;
+  letter-spacing: 0.3px;
 }
 
-input[type="checkbox"]:hover {
-    transform: scale(1.1);
+/* row checkbox */
+.tableRow input[type="checkbox"] {
+  accent-color: var(--gold);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
 }
 
-/* ===== MODAL ===== */
+/* ============================================================
+   STATUS BADGES
+   ============================================================ */
+.sentBadge,
+.unsentBadge,
+.editedBadge,
+.defaultBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.sentBadge {
+  background: var(--sent-bg);
+  color: var(--sent-text);
+  border-color: var(--sent-border);
+}
+
+.sentBadge::before {
+  content: '●';
+  font-size: 7px;
+}
+
+.unsentBadge {
+  background: var(--unsent-bg);
+  color: var(--unsent-text);
+  border-color: var(--unsent-border);
+}
+
+.unsentBadge::before {
+  content: '●';
+  font-size: 7px;
+}
+
+.editedBadge {
+  background: var(--edited-bg);
+  color: var(--edited-text);
+  border-color: var(--edited-border);
+}
+
+.defaultBadge {
+  background: var(--default-bg);
+  color: var(--default-text);
+  border-color: var(--default-border);
+}
+
+/* ============================================================
+   ACTION BUTTONS IN TABLE
+   ============================================================ */
+.previewBtn {
+  padding: 6px 14px;
+  background: transparent;
+  color: #60a5fa;
+  border: 1px solid #1e3a5f;
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.previewBtn:hover {
+  background: rgba(96,165,250,0.1);
+  border-color: #3b82f6;
+  color: #93c5fd;
+}
+
+.singleSendBtn {
+  padding: 6px 14px;
+  background: transparent;
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.singleSendBtn:hover {
+  background: var(--gold-glow);
+  border-color: var(--gold);
+  box-shadow: 0 0 10px var(--gold-glow);
+}
+
+/* ============================================================
+   MODAL OVERLAY
+   ============================================================ */
 .modalOverlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.75);
-    backdrop-filter: blur(6px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 11, 20, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: overlayIn 0.2s ease;
 }
 
-/* Modal Card */
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ============================================================
+   MODAL BOX
+   ============================================================ */
 .modalBox {
-    background: linear-gradient(145deg, #ffffff, #f9fafb);
-    padding: 36px;
-    border-radius: 18px;
-    width: 480px;
-    max-width: 92%;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
-    border: 1px solid #e5e7eb;
-    animation: fadeIn 0.25s ease;
+  background: var(--navy-surface);
+  border: 1px solid var(--navy-border);
+  border-top: 2px solid var(--gold);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  width: 100%;
+  max-width: 540px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow:
+    0 0 0 1px rgba(201,168,76,0.1),
+    0 24px 80px rgba(0,0,0,0.7);
+  animation: modalIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  scrollbar-width: thin;
+  scrollbar-color: var(--navy-border) transparent;
 }
 
-/* Modal animation */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(15px) scale(0.97);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+.modalBox::-webkit-scrollbar { width: 5px; }
+.modalBox::-webkit-scrollbar-track { background: transparent; }
+.modalBox::-webkit-scrollbar-thumb {
+  background: var(--navy-border);
+  border-radius: 10px;
 }
 
-/* ===== CLOSE BUTTON ===== */
-.closeBtn {
-    margin-top: 24px;
-    width: 100%;
-    padding: 12px;
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.closeBtn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
+/* ============================================================
+   MODAL HEADER
+   ============================================================ */
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--navy-border);
 }
 
-/* ===== RESPONSIVE ===== */
+.modalHeader h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--ivory);
+  margin: 0 0 5px;
+  letter-spacing: 0.2px;
+}
+
+.modalHeader p {
+  font-size: 12px;
+  color: var(--slate);
+  margin: 0;
+  font-weight: 400;
+}
+
+.modalHeader p strong {
+  color: var(--gold-light);
+  font-weight: 600;
+}
+
+.modalClose {
+  background: var(--navy-raised);
+  border: 1px solid var(--navy-border);
+  border-radius: var(--radius-sm);
+  padding: 7px 11px;
+  color: var(--slate);
+  font-size: 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.modalClose:hover {
+  background: var(--unsent-bg);
+  border-color: var(--unsent-border);
+  color: var(--unsent-text);
+}
+
+/* ============================================================
+   SMS TEXTAREA
+   ============================================================ */
+.smsTextarea {
+  width: 100%;
+  min-height: 280px;
+  padding: 16px;
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-border);
+  border-radius: var(--radius-md);
+  color: var(--ivory);
+  font-family: 'DM Sans', monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  resize: vertical;
+  outline: none;
+  transition: var(--transition);
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: var(--navy-border) transparent;
+}
+
+.smsTextarea:focus {
+  border-color: var(--gold-dim);
+  box-shadow: 0 0 0 3px var(--gold-glow);
+  background: var(--navy-raised);
+}
+
+.smsTextarea::placeholder {
+  color: var(--slate-dim);
+}
+
+/* ============================================================
+   MODAL ACTIONS
+   ============================================================ */
+.modalActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  justify-content: flex-end;
+}
+
+.saveBtn {
+  padding: 10px 22px;
+  background: var(--navy-raised);
+  color: var(--ivory);
+  border: 1px solid var(--navy-border);
+  border-radius: var(--radius-md);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.saveBtn:hover {
+  background: var(--navy-hover);
+  border-color: var(--slate-dim);
+}
+
+.sendModalBtn {
+  padding: 10px 22px;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dim) 100%);
+  color: var(--navy-deep);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow-btn);
+}
+
+.sendModalBtn:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+  box-shadow: 0 4px 20px rgba(201,168,76,0.45);
+  transform: translateY(-1px);
+}
+
+.sendModalBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ============================================================
+   PHONE RECIPIENTS SECTION (inline style in JSX — 
+   add class if you refactor)
+   ============================================================ */
+
+/* This targets the inline phone section div */
+.modalBox > div[style] h4 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 12px;
+}
+
+.modalBox > div[style] label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ivory-dim);
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.modalBox > div[style] input[type="checkbox"] {
+  accent-color: var(--gold);
+  width: 14px;
+  height: 14px;
+}
+
+.modalBox > div[style] button {
+  padding: 4px 10px;
+  background: var(--unsent-bg);
+  color: var(--unsent-text);
+  border: 1px solid var(--unsent-border);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-left: 8px;
+}
+
+.modalBox > div[style] button:hover {
+  background: rgba(248, 113, 113, 0.15);
+}
+
+.modalBox > div[style] > div[style] {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--navy-border);
+}
+
+.modalBox > div[style] > div[style] input[type="text"] {
+  flex: 1;
+  padding: 9px 12px;
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-border);
+  border-radius: var(--radius-sm);
+  color: var(--ivory);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  outline: none;
+  transition: var(--transition);
+}
+
+.modalBox > div[style] > div[style] input[type="text"]:focus {
+  border-color: var(--gold-dim);
+  box-shadow: 0 0 0 3px var(--gold-glow);
+}
+
+.modalBox > div[style] > div[style] input[type="text"]::placeholder {
+  color: var(--slate-dim);
+}
+
+.modalBox > div[style] > div[style] button {
+  padding: 9px 16px;
+  background: var(--gold-glow);
+  color: var(--gold-light);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-left: 0;
+}
+
+.modalBox > div[style] > div[style] button:hover {
+  background: rgba(201,168,76,0.25);
+  border-color: var(--gold);
+}
+
+/* ============================================================
+   EMPTY / LOADING STATES
+   ============================================================ */
+.tableContainer tbody tr td[colspan] {
+  text-align: center;
+  padding: 48px;
+  color: var(--slate);
+  font-size: 14px;
+  letter-spacing: 0.3px;
+}
+
+/* ============================================================
+   SCROLLBAR (table wrapper)
+   ============================================================ */
+.tableWrapper {
+  scrollbar-width: thin;
+  scrollbar-color: var(--navy-border) transparent;
+  overflow-x: auto;
+}
+
+.tableWrapper::-webkit-scrollbar { height: 5px; }
+.tableWrapper::-webkit-scrollbar-track { background: transparent; }
+.tableWrapper::-webkit-scrollbar-thumb {
+  background: var(--navy-border);
+  border-radius: 10px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1024px) {
+  .headerSection {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto auto;
+  }
+
+  .sendBtn {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .dateSection {
+    grid-column: 1 / 3;
+    grid-row: 3;
+  }
+}
+
 @media (max-width: 768px) {
-    .container {
-        padding: 1.5rem;
-    }
+  .container {
+    padding: 16px 14px 40px;
+  }
 
-    .header1 {
-        font-size: 1.8rem;
-    }
+  .headerSection {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 22px 20px;
+  }
 
-    .tableRow td,
-    .tableRowHeader th {
-        padding: 12px;
-        font-size: 0.85rem;
-    }
+  .header1 {
+    font-size: 22px;
+  }
 
-    .sendBtn {
-        width: 100%;
-    }
+  .sendBtn {
+    width: 100%;
+  }
+
+  .dateSection {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding-top: 16px;
+    margin-top: 0;
+  }
+
+  .useDateBtn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .modalBox {
+    padding: 22px 18px;
+    border-radius: var(--radius-lg);
+  }
+
+  .modalActions {
+    flex-direction: column;
+  }
+
+  .saveBtn,
+  .sendModalBtn {
+    width: 100%;
+    text-align: center;
+  }
 }

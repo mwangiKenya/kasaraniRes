@@ -115,7 +115,7 @@ function Reminder() {
       return `Dear ${c.sms_name},
 This is a reminder that your water bill of ${outstanding} is due by {{DUE_DATE}}.
 
-Kindly clear your balance to avoid disconnection.
+Kindly clear your balance.
 
 Send Money: 0723311564
 
