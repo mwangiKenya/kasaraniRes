@@ -49,7 +49,7 @@ function App() {
               <p> {plot.service} </p>
               
 
-              {/* 👉 MOBILE HAMBURGER BUTTON */}
+              {/* MOBILE HAMBURGER BUTTON */}
               <div 
                 className="Hamburger" 
                 onClick={() => setMenuOpen(!menuOpen)}
