@@ -18,7 +18,7 @@ import RegWorker from "./RegWorker";
 import EmployeesList from "./EmployeesList";
 import HistoryTable from "./HistoryTable";
 import Sms from "./Sms";
-import Reminder from "../../../../Downloads/Reminder";
+import Reminder from "./Reminder";
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
