@@ -1,7 +1,6 @@
 import styles from "./Sms.module.css";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-
 function Sms() {
   const [customers, setCustomers] = useState([]);
   const [selectedCustomers, setSelectedCustomers] = useState([]);
@@ -17,7 +16,6 @@ function Sms() {
 
 const [confirmedDate, setConfirmedDate] =
   useState(new Date());
-
 const [selectedDueDate, setSelectedDueDate] =
   useState(() => {
     const d = new Date();
@@ -97,14 +95,12 @@ const getCustomerPhones = (
   if (primaryExists) {
     return saved;
   }
-
   return [
     {
       number: customer.phone,
       primary: true,
       selected: true,
     },
-
     ...saved,
   ];
 };
@@ -140,11 +136,9 @@ const savePhones = (
     [customerId]: phones,
   }));
 };
-  
   // =========================================
   // GENERATE DEFAULT SMS
   // =========================================
-
   const generateMessage = (customer) => {
     let balanceLine = "";
 
@@ -186,7 +180,6 @@ const getGroupCustomers = (customer) => {
   if (!customer.grp) {
     return [customer];
   }
-
   return customers.filter(
     (c) => c.grp === customer.grp
   );
@@ -243,7 +236,6 @@ Contact us on: 0741088799
   // MULTI USER FORMAT
   // =========================
   let total = 0;
-
   const breakdown = groupCustomers.map((c) => {
     const bill = Number(c.bill || 0);
     total += bill;
@@ -490,8 +482,6 @@ setExtraPhones(phoneData);
       )
     );
   };
-
-
   // =========================================
 // PHONE MANAGEMENT
 // =========================================
@@ -612,7 +602,6 @@ const togglePhoneSelection = (
       (c) => c.id === customer.id
     );
   };
-
   // =========================================
   // SELECT ALL
   // =========================================
@@ -628,7 +617,6 @@ const togglePhoneSelection = (
       setSelectedCustomers(customers);
     }
   };
-
   // =========================================
   // OPEN PREVIEW
   // =========================================
@@ -666,7 +654,6 @@ const togglePhoneSelection = (
       storedValue,
   }));
 };
-
   // =========================================
   // SAVE MESSAGE
   // =========================================
@@ -689,7 +676,6 @@ const togglePhoneSelection = (
 
     setShowModal(false);
   };
-
   // =========================================
   // SEND SINGLE SMS
   // =========================================
@@ -770,7 +756,7 @@ const recipients =
       });
     });
 
-    toast.success(`Grouped bill sent to ${customer.sms_name}`);
+    toast.success(`bill sent to ${customer.sms_name}`);
   } catch (err) {
     console.log(err);
     toast.error("Failed to send SMS");
@@ -778,11 +764,9 @@ const recipients =
     setSending(false);
   }
 };
-
   const isParent = (customer) => {
   return String(customer.parent).toLowerCase() === "yes";
 };
-
   // =========================================
   // SEND SELECTED SMS
   // =========================================
@@ -859,7 +843,6 @@ if (
       ),
   });
 }
-
       // update ALL in group as sent
       groupCustomers.forEach((c) => {
         saveCustomerData(c.id, {
@@ -924,7 +907,6 @@ const handleUseDate = () => {
           >
             SMS Dashboard
           </h1>
-
           <p
             className={styles.subtitle}
           >
@@ -932,7 +914,6 @@ const handleUseDate = () => {
             billing SMS 
           </p>
         </div>
-
         <button
           className={styles.sendBtn}
           onClick={sendSMS}
@@ -1227,7 +1208,6 @@ const handleUseDate = () => {
             )
           }
         />
-
         {p.number}
 
         {p.primary &&
