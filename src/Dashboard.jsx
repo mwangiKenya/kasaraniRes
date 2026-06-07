@@ -11,8 +11,10 @@ import EmployeesList from "./EmployeesList";
 import HistoryTable from "./HistoryTable";
 import Sms from "./Sms";
 import Reminder from "./Reminder";
+
 function Dashboard() {
     const [activeView, setActiveView] = useState("analytics");
+    const [sidebarOpen, setSidebarOpen] = useState(true);
 
     const renderContent = () => {
         switch (activeView) {
@@ -44,7 +46,7 @@ function Dashboard() {
     return (
         <div className={styles.dashboard}>
             {/* Sidebar */}
-            <aside className={styles.sidebar}>
+            <aside className={`${styles.sidebar} ${sidebarOpen ? "" : styles.sidebarCollapsed}`}>
                 <h2 className={styles.logo}>Admin Dashboard</h2>
 
                 <nav className={styles.nav}>
@@ -80,16 +82,15 @@ function Dashboard() {
                         className={`${styles.navItem} ${activeView === "users" ? styles.active : ""}`}
                         onClick={() => setActiveView("users")}
                     >
-                        Registered Customers 
+                        Registered Customers
                     </button>
 
                     <button
                         className={`${styles.navItem} ${activeView === "sms" ? styles.active : ""}`}
                         onClick={() => setActiveView("sms")}
                     >
-                        Send Billing sms 
+                        Send Billing sms
                     </button>
-                   
 
                     <button
                         className={`${styles.navItem} ${activeView === "reminder" ? styles.active : ""}`}
@@ -121,8 +122,17 @@ function Dashboard() {
                 </nav>
             </aside>
 
+            {/* Toggle Button */}
+            <button
+                className={`${styles.toggleBtn} ${sidebarOpen ? "" : styles.toggleBtnCollapsed}`}
+                onClick={() => setSidebarOpen((prev) => !prev)}
+                title={sidebarOpen ? "Hide sidebar" : "Show sidebar"}
+            >
+                {sidebarOpen ? "‹" : "›"}
+            </button>
+
             {/* Main Content */}
-            <main className={styles.content}>
+            <main className={`${styles.content} ${sidebarOpen ? "" : styles.contentExpanded}`}>
                 {renderContent()}
             </main>
         </div>
