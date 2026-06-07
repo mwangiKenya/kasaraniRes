@@ -10,6 +10,7 @@ import RegWorker from "./RegWorker";
 import EmployeesList from "./EmployeesList";
 import HistoryTable from "./HistoryTable";
 import Sms from "./Sms";
+import Reminder from "../../../../Downloads/Reminder";
 
 function Dashboard() {
     const [activeView, setActiveView] = useState("analytics");
@@ -26,8 +27,8 @@ function Dashboard() {
                 return <RegWaterUser />;
             case "users":
                 return <Users />;
-            case "logs":
-                return <Logs/>
+            case "reminder":
+                return <Reminder/>
             case "regw":
                 return <RegWorker/>
             case "emp":
@@ -92,10 +93,10 @@ function Dashboard() {
                    
 
                     <button
-                        className={`${styles.navItem} ${activeView === "logs" ? styles.active : ""}`}
-                        onClick={() => setActiveView("logs")}
+                        className={`${styles.navItem} ${activeView === "reminder" ? styles.active : ""}`}
+                        onClick={() => setActiveView("reminder")}
                     >
-                        Logs
+                        Reminder SMS
                     </button>
 
                     <button

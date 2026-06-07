@@ -1,0 +1,537 @@
+/* =========================================
+   REMINDER DASHBOARD — MODULE CSS
+   Mirrors Sms.module.css conventions
+   ========================================= */
+
+.container {
+  padding: 24px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f6f9;
+  min-height: 100vh;
+  color: #1a1a2e;
+}
+
+/* =========================================
+   HEADER
+   ========================================= */
+.headerSection {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  border-left: 5px solid #e67e22;
+}
+
+.header1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: #1a1a2e;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* =========================================
+   CONTROLS (DATE + FILTER)
+   ========================================= */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  margin-left: auto;
+}
+
+.dateSection {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dateSection label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.dateSection input[type="date"] {
+  padding: 7px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+  font-size: 13px;
+  background: #f9fafb;
+  color: #1a1a2e;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.dateSection input[type="date"]:focus {
+  border-color: #e67e22;
+}
+
+.useDateBtn {
+  padding: 8px 16px;
+  background: #e67e22;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.useDateBtn:hover {
+  background: #cf6d17;
+}
+
+.filterToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #374151;
+  cursor: pointer;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.filterToggle input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: #e67e22;
+  cursor: pointer;
+}
+
+/* =========================================
+   SEND BUTTON
+   ========================================= */
+.sendBtn {
+  padding: 10px 22px;
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  white-space: nowrap;
+  align-self: center;
+}
+
+.sendBtn:hover:not(:disabled) {
+  background: #c0392b;
+  transform: translateY(-1px);
+}
+
+.sendBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   TABLE
+   ========================================= */
+.tableWrapper {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  overflow-x: auto;
+}
+
+.tableContainer {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.tableRowHeader tr {
+  background: #1a1a2e;
+  color: #ffffff;
+}
+
+.tableRowHeader th {
+  padding: 13px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+.tableRow {
+  border-bottom: 1px solid #f0f0f5;
+  transition: background 0.15s;
+}
+
+.tableRow:hover {
+  background: #fef9f5;
+}
+
+.tableRow td {
+  padding: 11px 14px;
+  vertical-align: middle;
+  color: #374151;
+}
+
+/* =========================================
+   BALANCE DISPLAY
+   ========================================= */
+.balanceOwed {
+  color: #e74c3c;
+  font-weight: 700;
+}
+
+.balanceClear {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+/* =========================================
+   BADGES
+   ========================================= */
+.sentBadge,
+.unsentBadge,
+.editedBadge,
+.defaultBadge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.sentBadge {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.unsentBadge {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.editedBadge {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.defaultBadge {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+/* =========================================
+   ACTION BUTTONS (TABLE)
+   ========================================= */
+.previewBtn {
+  padding: 5px 13px;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.previewBtn:hover {
+  background: #2563eb;
+}
+
+.singleSendBtn {
+  padding: 5px 13px;
+  background: #e67e22;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.singleSendBtn:hover:not(:disabled) {
+  background: #cf6d17;
+}
+
+.singleSendBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   MODAL
+   ========================================= */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modalBox {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 28px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.modalHeader h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: #1a1a2e;
+}
+
+.modalHeader p {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.modalClose {
+  background: #f3f4f6;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #374151;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.modalClose:hover {
+  background: #e5e7eb;
+}
+
+/* =========================================
+   PHONE MANAGEMENT
+   ========================================= */
+.phoneSection {
+  margin-bottom: 18px;
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+}
+
+.phoneSection h4 {
+  margin: 0 0 10px 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a2e;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.phoneRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 13px;
+  color: #374151;
+}
+
+.phoneRow label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.phoneRow input[type="checkbox"] {
+  accent-color: #e67e22;
+  width: 14px;
+  height: 14px;
+}
+
+.deletePhoneBtn {
+  background: #fee2e2;
+  color: #991b1b;
+  border: none;
+  border-radius: 5px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.deletePhoneBtn:hover {
+  background: #fca5a5;
+}
+
+.addPhone {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.addPhone input {
+  flex: 1;
+  padding: 7px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.addPhone input:focus {
+  border-color: #e67e22;
+}
+
+.addPhone button {
+  padding: 7px 14px;
+  background: #e67e22;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.addPhone button:hover {
+  background: #cf6d17;
+}
+
+/* =========================================
+   TEXTAREA
+   ========================================= */
+.smsTextarea {
+  width: 100%;
+  min-height: 260px;
+  padding: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: "Courier New", Courier, monospace;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  line-height: 1.6;
+  color: #1a1a2e;
+  background: #fafafa;
+  box-sizing: border-box;
+}
+
+.smsTextarea:focus {
+  border-color: #e67e22;
+  background: #fff;
+}
+
+/* =========================================
+   MODAL ACTIONS
+   ========================================= */
+.modalActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+  justify-content: flex-end;
+}
+
+.saveBtn {
+  padding: 9px 20px;
+  background: #1a1a2e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.saveBtn:hover {
+  background: #2d2d4e;
+}
+
+.sendModalBtn {
+  padding: 9px 20px;
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sendModalBtn:hover:not(:disabled) {
+  background: #c0392b;
+}
+
+.sendModalBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+@media (max-width: 768px) {
+  .container {
+    padding: 14px;
+  }
+
+  .headerSection {
+    flex-direction: column;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 0;
+  }
+
+  .modalBox {
+    padding: 18px;
+  }
+
+  .modalActions {
+    flex-direction: column;
+  }
+
+  .sendBtn {
+    width: 100%;
+  }
+}

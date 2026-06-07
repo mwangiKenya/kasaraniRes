@@ -18,6 +18,7 @@ import RegWorker from "./RegWorker";
 import EmployeesList from "./EmployeesList";
 import HistoryTable from "./HistoryTable";
 import Sms from "./Sms";
+import Reminder from "../../../../Downloads/Reminder";
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -88,6 +89,7 @@ function App() {
           <Route path="/EmployeesList" element = {<EmployeesList/>}/>
           <Route path="/HistoryTable" element = {<HistoryTable/>}/>
           <Route path="/Sms" element = {<Sms/>}/>
+          <Route path="/Reminder" element = {<Reminder/>}/>
         </Routes>
       </HashRouter>
 
