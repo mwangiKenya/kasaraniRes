@@ -224,8 +224,6 @@ Garden city Branch
 
 Thank you
 
-${breakdown}
-
 Contact us on: 0741088799`.trim();
   };
 
