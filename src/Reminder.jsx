@@ -112,11 +112,11 @@ function Reminder() {
         ? `KES ${Number(c.bal).toLocaleString()}`
         : `KES ${Number(c.bill).toLocaleString()}`;
 
-      return `Dear ${c.sms_name},
+      return `
 BILL PAST DUE DATE
 
 Yor Water Bill as at reading
-date:30/04/3036 KES ${outstanding} was due
+date:30/04/3036 ${outstanding} was due
 on {{DUE_DATE}}. It is now past due
 date.
 
