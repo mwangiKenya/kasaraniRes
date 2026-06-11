@@ -218,7 +218,7 @@ Coop Bank
 A/C No 1750278558907
 Equity Bank
 
-Contact us on: 0741088799`.trim()},et=B=>{const F=Ae(B),oe=F.find(xe)||B;if(F.length===1){const _e=F[0];return`DISCONNECTION NOTICE
+Contact us on: 0741088799`.trim()},et=B=>{const F=Ae(B),oe=F.find(xe)||B;if(F.length===1){const _e=F[0],qe=E(_e);return`DISCONNECTION NOTICE
 
 Kindly note that your water is
 disconnected due to non payment.
@@ -230,7 +230,7 @@ An additional reconnection fee of
 KES 500 has been charged on your
 account as per agreement.
 
-Kindly pay ${E(_e)+500} for
+Kindly pay ${Number(qe)+500} for
 reconnection.
 
 Thankyou.
