@@ -269,27 +269,28 @@ Contact us on: 0741088799`.trim();
       return `${c.sms_name}: KES ${amount.toLocaleString()}`;
     }).join("\n");
 
-    return `Dear ${sender.sms_name},
-Your water bills are past due and your account is due for disconnection by {{DUE_DATE}}.
+    return `
+DUE FOR DISCONNECTION
 
-${breakdown}
+Your Water Bill as at reading
+date:{{READING_DATE}} Ksh ${total.toLocaleString()} was due
+on {{DUE_DATE}}. It is past due and
+due for disconnection. Note that
+once disconnected, a reconnection
+charge of Ksh 500 applies.
 
-Total: KES ${total.toLocaleString()}
+Mpesa Send money 0723311564
 
-Note that once disconnected, a reconnection charge of KES 500 applies.
+Or buy goods, Kamengo Agencies
+Till No. 544783
 
-Send Money: 0723311564
+Or deposit to: Kamengo Agencies
+a/c No. 01192576824400
+Coop, TRM Branch
 
-Or: M-PESA Buy Goods:
-Kamengo Agencies
-Till No 544783
-
-Or: Kamengo Agencies
-A/C No 01192576824400
-Coop Bank
-
-A/C No 1750278558907
-Equity Bank
+Or deposit to: Kamengo Agencies
+a/c No. 1750278558907
+Equity, Garden city Branch
 
 Contact us on: 0741088799`.trim();
   };
