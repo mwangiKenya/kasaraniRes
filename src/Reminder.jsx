@@ -333,20 +333,26 @@ Contact us on: 0741088799`.trim();
       return `${c.sms_name}: KES ${amount.toLocaleString()}`;
     }).join("\n");
 
-    return `Dear ${sender.sms_name},
+    const bal =
+        Number(c.bal) > 0
+          ? Number(c.bal)
+          : Number(c.bill);
+
+      const toPay = bal + 500;
+
+    return `
 DISCONNECTION NOTICE
 
-Kindly note that your water is disconnected due to non payment.
+Kindly note that your water is
+diconnected due to non payment.
+The account will be reconnected
+on full payment. An additional
+reconnection fee of Ksh 500 has
+been charged on your account as per
+agreement. Kindly pay Ksh ${toPay.toLocaleDateString()}
+for reconnection.
 
-The account will be reconnected on full payment.
-
-An additional reconnection fee of KES 500 has been charged on your account as per agreement.
-
-${breakdown}
-
-Total due for reconnection: KES ${total.toLocaleString()}
-
-Thankyou.
+Thank you
 
 Contact us on: 0741088799`.trim();
   };
