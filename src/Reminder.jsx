@@ -293,7 +293,7 @@ Contact us on: 0741088799`.trim();
     if (isSingle) {
       const c = groupCustomers[0];
       const outstanding = getAmount(c);
-      const toPay = outstanding + 500;
+      const toPay = Number(outstanding) + 500;
 
       return `DISCONNECTION NOTICE
 
