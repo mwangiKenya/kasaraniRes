@@ -185,13 +185,11 @@ Till No. 544783.
 
 Or deposit to: Kamengo Agencies
 a/c No. 01192576824400
-Coop Bank
-TRM Branch
+Coop, TRM Branch
 
 Or deposit to: Kamengo Agencies
 a/c No. 1750278558907
-Equity Bank
-Garden city Branch
+Equity, Garden city Branch
 
 Contact us on: 0741088799`.trim()}let Te=0;const ut=F.map(ve=>{const qe=Number(ve.bal)>0?Number(ve.bal):Number(ve.bill||0);return Te+=qe,`${ve.sms_name}: KES ${qe.toLocaleString()}`}).join(`
 `);return`Dear ${Ne.sms_name},
