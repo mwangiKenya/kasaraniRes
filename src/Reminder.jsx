@@ -199,27 +199,32 @@ Contact us on: 0741088799`.trim();
       return `${c.sms_name}: KES ${amount.toLocaleString()}`;
     }).join("\n");
 
-    return `Dear ${sender.sms_name},
-This is a reminder for outstanding water bills due by {{DUE_DATE}}.
+    return `
+BILL PAST DUE DATE
+
+Your Water Bill as at reading
+date:{{READING_DATE}} KES ${total.toLocaleString()} was due
+on{{DUE_DATE}}. It is now past due
+date.
+
+Mpesa Send money 0723311564
+
+Or buy goods name, Kamengo
+Agencies Till Number 544783.
+
+Or deposit to: Kamengo Agencies
+a/c No. 01192576824400
+Coop Bank
+TRM Branch
+
+Or deposit to: Kamengo Agencies
+a/c No. 1750278558907
+Equity Bank
+Garden city Branch
+
+Thank you
 
 ${breakdown}
-
-Total: KES ${total.toLocaleString()}
-
-Kindly clear your balance to avoid disconnection.
-
-Send Money: 0723311564
-
-Or: M-PESA Buy Goods:
-Kamengo Agencies
-Till No 544783
-
-Or: Kamengo Agencies
-A/C No 01192576824400
-Coop Bank
-
-A/C No 1750278558907
-Equity Bank
 
 Contact us on: 0741088799`.trim();
   };
