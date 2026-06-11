@@ -25,6 +25,19 @@ function Reminder() {
     return d;
   });
 
+  const [selectedReadingDate, setSelectedReadingDate] = useState(() => {
+  const d = new Date();
+  return d;
+  });
+
+  const [confirmedReadingDate, setConfirmedReadingDate] = useState(() => {
+    const d = new Date();
+    return d;
+  });
+
+const formattedReadingDate =
+  confirmedReadingDate.toLocaleDateString("en-GB");
+
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
 
@@ -33,10 +46,13 @@ function Reminder() {
   // =========================================
   // APPLY DATE PLACEHOLDERS
   // =========================================
-  const applyDates = (message) => {
-    const msg = String(message ?? "");
-    return msg.replaceAll("{{DUE_DATE}}", formattedDueDate);
-  };
+ const applyDates = (message) => {
+  const msg = String(message ?? "");
+
+  return msg
+    .replaceAll("{{DUE_DATE}}", formattedDueDate)
+    .replaceAll("{{READING_DATE}}", formattedReadingDate);
+};
 
   // =========================================
   // HELPER: IS PARENT
@@ -116,7 +132,7 @@ function Reminder() {
 BILL PAST DUE DATE
 
 Yor Water Bill as at reading
-date:30/04/3036 ${outstanding} was due
+date:{{READING_DATE}} ${outstanding} was due
 on {{DUE_DATE}}. It is now past due
 date.
 
@@ -228,6 +244,10 @@ Contact us on: 0741088799`.trim();
         let migratedMessage = reminderData.message
           .replace(/due by .*/g, "due by {{DUE_DATE}}")
           .replace(/Pay by .*/g, "Pay by {{DUE_DATE}}");
+          migratedMessage = migratedMessage.replace(
+            /reading\s*date:[^\n]*/gi,
+            "reading date:{{READING_DATE}}"
+          );
 
         return { ...customer, ...reminderData, message: migratedMessage };
       });
@@ -325,11 +345,27 @@ Contact us on: 0741088799`.trim();
   // HANDLE MESSAGE EDIT
   // =========================================
   const handleMessageChange = (value) => {
-    const storedValue = value.replaceAll(formattedDueDate, "{{DUE_DATE}}");
-    setEditedMessages((prev) => ({
-      ...prev,
-      [selectedCustomer.id]: storedValue,
-    }));
+  let storedValue = value;
+
+  storedValue = storedValue.replaceAll(
+    formattedDueDate,
+    "{{DUE_DATE}}"
+  );
+
+  storedValue = storedValue.replaceAll(
+    formattedReadingDate,
+    "{{READING_DATE}}"
+  );
+
+  setEditedMessages((prev) => ({
+    ...prev,
+    [selectedCustomer.id]: storedValue,
+  }));
+  };
+
+  const handleUseReadingDate = () => {
+  setConfirmedReadingDate(selectedReadingDate);
+  toast.success("Reading date updated");
   };
 
   // =========================================
@@ -511,6 +547,26 @@ Contact us on: 0741088799`.trim();
               Apply Date
             </button>
           </div>
+
+          <div className={styles.dateSection}>
+          <div>
+            <label>Reading Date</label>
+            <input
+              type="date"
+              value={selectedReadingDate.toISOString().split("T")[0]}
+              onChange={(e) =>
+                setSelectedReadingDate(new Date(e.target.value))
+              }
+            />
+          </div>
+
+          <button
+            className={styles.useDateBtn}
+            onClick={handleUseReadingDate}
+          >
+            Apply Reading Date
+          </button>
+        </div>
 
           <label className={styles.filterToggle}>
             <input
