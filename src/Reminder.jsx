@@ -238,13 +238,11 @@ Till No. 544783.
 
 Or deposit to: Kamengo Agencies
 a/c No. 01192576824400
-Coop Bank
-TRM Branch
+Coop, TRM Branch
 
 Or deposit to: Kamengo Agencies
 a/c No. 1750278558907
-Equity Bank
-Garden city Branch
+Equity, Garden city Branch
 
 Contact us on: 0741088799`.trim();
     }
@@ -300,16 +298,12 @@ Contact us on: 0741088799`.trim();
 
 Kindly note that your water is
 disconnected due to non payment.
-
 The account will be reconnected
-on full payment.
-
-An additional reconnection fee of
-KES 500 has been charged on your
-account as per agreement.
-
-Kindly pay ${toPay.toLocaleString()} for
-reconnection.
+on full payment. An additional
+reconnection fee of Ksh 500 has
+been charged on your account as per
+agreement. Kindly pay ${toPay.toLocaleString()}
+for reconnection.
 
 Thankyou.
 
