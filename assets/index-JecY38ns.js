@@ -152,7 +152,7 @@ BILL PAST DUE DATE
 
 Your Water Bill as at reading
 date:{{READING_DATE}} KES ${ue.toLocaleString()} was due
-on{{DUE_DATE}}. It is now past due
+on {{DUE_DATE}}. It is now past due
 date.
 
 Mpesa Send money 0723311564
