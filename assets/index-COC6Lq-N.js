@@ -174,11 +174,9 @@ Contact us on: 0741088799`.trim()},bt=B=>{const F=Ae(B),me=F.length===1,Ne=F.fin
 Your Water Bill as at reading
 date:{{READING_DATE}} ${E(ve)} was due
 on {{DUE_DATE}}. It is past due and
-due for disconnection.
-
-Note that once disconnected, a
-reconnection charge of KES 500
-applies.
+due for disconnection.Note that 
+once disconnected, a reconnection 
+charge of KES 500 applies.
 
 Mpesa Send money 0723311564
 
