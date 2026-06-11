@@ -113,22 +113,29 @@ function Reminder() {
         : `KES ${Number(c.bill).toLocaleString()}`;
 
       return `Dear ${c.sms_name},
-This is a reminder that your water bill of ${outstanding} is due by {{DUE_DATE}}.
+BILL PAST DUE DATE
 
-Kindly clear your balance.
+Yor Water Bill as at reading
+date:30/04/3036 KES ${outstanding} was due
+on ${{DUE_DATE}}. It is now past due
+date.
 
-Send Money: 0723311564
+Mpesa Send money 0723311564
 
-Or: M-PESA Buy Goods:
-Kamengo Agencies
-Till No 544783
+Or buy goods name, Kamengo
+Agencies Till Number 544783.
 
-Or: Kamengo Agencies
-A/C No 01192576824400
+Or deposit to: Kamengo Agencies
+a/c No. 01192576824400
 Coop Bank
+TRM Branch
 
-A/C No 1750278558907
+Or deposit to: Kamengo Agencies
+a/c No. 1750278558907
 Equity Bank
+Garden city Branch
+
+Thank you
 
 Contact us on: 0741088799`.trim();
     }
