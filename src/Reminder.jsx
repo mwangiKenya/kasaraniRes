@@ -227,7 +227,7 @@ Contact us on: 0741088799`.trim();
 Your Water Bill as at reading
 date:{{READING_DATE}} ${outstanding} was due
 on {{DUE_DATE}}. It is past due and
-due for disconnection.Note that 
+due for disconnection. Note that 
 once disconnected, a reconnection 
 charge of KES 500 applies.
 
@@ -302,7 +302,7 @@ The account will be reconnected
 on full payment. An additional
 reconnection fee of Ksh 500 has
 been charged on your account as per
-agreement. Kindly pay ${toPay.toLocaleString()}
+agreement. Kindly pay Ksh ${toPay.toLocaleString()}
 for reconnection.
 
 Thank you.
