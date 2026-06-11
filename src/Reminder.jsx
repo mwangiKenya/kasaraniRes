@@ -333,12 +333,7 @@ Contact us on: 0741088799`.trim();
       return `${c.sms_name}: KES ${amount.toLocaleString()}`;
     }).join("\n");
 
-    const bal =
-        Number(c.bal) > 0
-          ? Number(c.bal)
-          : Number(c.bill);
-
-      const toPay = bal + 500;
+      const toPay = total + 500;
 
     return `
 DISCONNECTION NOTICE
