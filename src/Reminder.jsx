@@ -101,11 +101,23 @@ function Reminder() {
   // PHONE MANAGEMENT
   // =========================================
   const getCustomerPhones = (customer) => {
-    const saved = extraPhones[customer.id] || [];
-    const primaryExists = saved.find((p) => p.number === customer.phone);
-    if (primaryExists) return saved;
-    return [{ number: customer.phone, primary: true, selected: true }, ...saved];
-  };
+  const saved =
+    extraPhones[customer.id] || [];
+
+  const extrasOnly =
+    saved.filter(
+      (p) => !p.primary
+    );
+
+  return [
+    {
+      number: customer.phone,
+      primary: true,
+      selected: true,
+    },
+    ...extrasOnly,
+  ];
+};
 
   const savePhones = (customerId, phones) => {
     localStorage.setItem(`phones_${customerId}`, JSON.stringify(phones));
@@ -419,8 +431,29 @@ Contact us on: 0741088799`.trim();
 
       const phoneData = {};
       preparedData.forEach((c) => {
-        const saved = localStorage.getItem(`phones_${c.id}`);
-        phoneData[c.id] = saved ? JSON.parse(saved) : [];
+        const saved = JSON.parse(
+          localStorage.getItem(
+            `phones_${c.id}`
+          ) || "[]"
+        );
+
+        const cleaned = [
+          {
+            number: c.phone,
+            primary: true,
+            selected: true,
+          },
+          ...saved.filter(
+            (p) => !p.primary
+          ),
+        ];
+
+        localStorage.setItem(
+          `phones_${c.id}`,
+          JSON.stringify(cleaned)
+        );
+
+        phoneData[c.id] = cleaned;
       });
       setExtraPhones(phoneData);
 
