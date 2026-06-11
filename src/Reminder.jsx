@@ -117,7 +117,7 @@ BILL PAST DUE DATE
 
 Yor Water Bill as at reading
 date:30/04/3036 KES ${outstanding} was due
-on ${{DUE_DATE}}. It is now past due
+on {{DUE_DATE}}. It is now past due
 date.
 
 Mpesa Send money 0723311564
