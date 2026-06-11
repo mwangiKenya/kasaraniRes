@@ -131,7 +131,7 @@ const formattedReadingDate =
       return `
 BILL PAST DUE DATE
 
-Yor Water Bill as at reading
+Your Water Bill as at reading
 date:{{READING_DATE}} ${outstanding} was due
 on {{DUE_DATE}}. It is now past due
 date.
