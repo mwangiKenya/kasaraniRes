@@ -292,9 +292,12 @@ Contact us on: 0741088799`.trim();
 
     if (isSingle) {
       const c = groupCustomers[0];
-      const outstanding = getAmount(c);
-      const toPay = Number(outstanding) + 500;
+      const amount =
+        Number(c.bal) > 0
+          ? Number(c.bal)
+          : Number(c.bill);
 
+      const toPay = amount + 500;
       return `DISCONNECTION NOTICE
 
 Kindly note that your water is
@@ -307,7 +310,7 @@ An additional reconnection fee of
 KES 500 has been charged on your
 account as per agreement.
 
-Kindly pay ${toPay} for
+Kindly pay ${toPay.toLocaleString()} for
 reconnection.
 
 Thankyou.
