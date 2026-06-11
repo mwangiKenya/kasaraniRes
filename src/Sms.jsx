@@ -80,28 +80,22 @@ const applyDates = (message) => {
 // EXTRA PHONE NUMBERS (LOCAL STORAGE)
 // =========================================
 
-const getCustomerPhones = (
-  customer
-) => {
+const getCustomerPhones = (customer) => {
   const saved =
     extraPhones[customer.id] || [];
 
-  const primaryExists =
-    saved.find(
-      (p) =>
-        p.number === customer.phone
-    );
+  // remove all old primary numbers
+  const extrasOnly = saved.filter(
+    (p) => !p.primary
+  );
 
-  if (primaryExists) {
-    return saved;
-  }
   return [
     {
       number: customer.phone,
       primary: true,
       selected: true,
     },
-    ...saved,
+    ...extrasOnly,
   ];
 };
 
