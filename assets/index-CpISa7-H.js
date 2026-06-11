@@ -218,16 +218,12 @@ Contact us on: 0741088799`.trim()},et=B=>{const F=Ae(B),oe=F.find(xe)||B;if(F.le
 
 Kindly note that your water is
 disconnected due to non payment.
-
 The account will be reconnected
-on full payment.
-
-An additional reconnection fee of
-KES 500 has been charged on your
-account as per agreement.
-
-Kindly pay ${((Number(ve.bal)>0?Number(ve.bal):Number(ve.bill))+500).toLocaleString()} for
-reconnection.
+on full payment. An additional
+reconnection fee of Ksh 500 has
+been charged on your account as per
+agreement. Kindly pay ${((Number(ve.bal)>0?Number(ve.bal):Number(ve.bill))+500).toLocaleString()}
+for reconnection.
 
 Thankyou.
 
