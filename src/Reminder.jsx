@@ -305,7 +305,7 @@ been charged on your account as per
 agreement. Kindly pay ${toPay.toLocaleString()}
 for reconnection.
 
-Thankyou.
+Thank you.
 
 Contact us on: 0741088799`.trim();
     }
