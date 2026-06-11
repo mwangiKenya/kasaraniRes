@@ -293,6 +293,7 @@ Contact us on: 0741088799`.trim();
     if (isSingle) {
       const c = groupCustomers[0];
       const outstanding = getAmount(c);
+      const toPay = outstanding + 500;
 
       return `DISCONNECTION NOTICE
 
@@ -306,7 +307,7 @@ An additional reconnection fee of
 KES 500 has been charged on your
 account as per agreement.
 
-Kindly pay ${outstanding} for
+Kindly pay ${toPay} for
 reconnection.
 
 Thankyou.
