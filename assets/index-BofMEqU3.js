@@ -225,7 +225,7 @@ been charged on your account as per
 agreement. Kindly pay ${((Number(ve.bal)>0?Number(ve.bal):Number(ve.bill))+500).toLocaleString()}
 for reconnection.
 
-Thankyou.
+Thank you.
 
 Contact us on: 0741088799`.trim()}let Te=0;const ut=F.map(ve=>{const qe=Number(ve.bal)>0?Number(ve.bal):Number(ve.bill||0);return Te+=qe,`${ve.sms_name}: KES ${qe.toLocaleString()}`}).join(`
 `);return`Dear ${oe.sms_name},
