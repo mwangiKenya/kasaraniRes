@@ -1040,7 +1040,7 @@ const handleUseDate = () => {
                     styles.tableRow
                   }
                 >
-                  <td>{c.id}</td>
+                  <td>{c.user_id}</td>
 
                   <td>{c.sms_name}</td>
 

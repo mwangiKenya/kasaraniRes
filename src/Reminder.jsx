@@ -876,7 +876,7 @@ Contact us on: 0741088799`.trim();
             ) : (
               displayedCustomers.map((c) => (
                 <tr key={c.id} className={styles.tableRow}>
-                  <td>{c.id}</td>
+                  <td>{c.user_id}</td>
                   <td>{c.sms_name}</td>
                   <td>{c.phone}</td>
                   <td>
