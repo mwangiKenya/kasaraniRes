@@ -89,7 +89,7 @@ function Users() {
         <thead>
           <tr>
             <th>ID</th>
-            <th>First Name</th>
+            <th>Name</th>
             {/*<th>Last Name</th>*/}
             <th>Phone</th>
             <th>SMS Name</th>
