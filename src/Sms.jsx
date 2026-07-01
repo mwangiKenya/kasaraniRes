@@ -501,10 +501,7 @@ setExtraPhones(phoneData);
   };
 
 
-  setEditedMessages((prev) => ({
-    ...prev,
-    [customerId]: updatedCustomer.message,
-}));
+
   // =========================================
 // PHONE MANAGEMENT
 // =========================================
@@ -655,20 +652,15 @@ const togglePhoneSelection = (
   // =========================================
   // HANDLE MESSAGE EDIT
   // =========================================
-  const handleMessageChange = (
-  value
-) => {
+  const handleMessageChange = (value) => {
   const storedValue = value
-    .replaceAll(
-      formattedReadingDate,
-      "{{READING_DATE}}"
-    )
-    .replaceAll(
-      formattedDueDate,
-      "{{DUE_DATE}}"
-    );
+    .replaceAll(formattedReadingDate, "{{READING_DATE}}")
+    .replaceAll(formattedDueDate, "{{DUE_DATE}}");
 
-  
+  setEditedMessages((prev) => ({
+    ...prev,
+    [selectedCustomer.id]: storedValue,
+  }));
 };
   // =========================================
   // SAVE MESSAGE
