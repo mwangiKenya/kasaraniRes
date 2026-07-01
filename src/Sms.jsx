@@ -179,7 +179,9 @@ const getGroupCustomers = (customer) => {
   );
 };
 const generateGroupMessage = (customer) => {
-  const groupCustomers = getGroupCustomers(customer);
+  const groupCustomers =
+    customer.__groupCustomers ||
+    getGroupCustomers(customer);
   const isSingle = groupCustomers.length === 1;
 
   const parentCustomer = groupCustomers.find(isParent);
@@ -425,16 +427,32 @@ preparedData.forEach((c) => {
 
 setExtraPhones(phoneData);
       // initialize editable messages
-      const messages = {};
+      // initialize editable messages
+const messages = {};
 
-      preparedData.forEach((c) => {
-        messages[c.id] =
-    c.editStatus === "Edited"
-        ? c.message
-        : generateGroupMessage(c);
-      });
+preparedData.forEach((c) => {
 
-      setEditedMessages(messages);
+    // Always use the FULL prepared customer list
+    const groupCustomers = c.grp
+        ? preparedData.filter(x => x.grp === c.grp)
+        : [c];
+
+    if (c.editStatus === "Edited") {
+
+        messages[c.id] = c.message;
+
+    } else {
+
+        messages[c.id] = generateGroupMessage({
+            ...c,
+            __groupCustomers: groupCustomers
+        });
+
+    }
+
+});
+
+setEditedMessages(messages);
     } catch (err) {
       console.log(err);
 
