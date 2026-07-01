@@ -278,6 +278,21 @@ Equity Bank
 Contact us on: 0741088799
   `.trim();
 };
+
+
+const getCustomerMessage = (customer) => {
+  const edited = editedMessages[customer.id];
+
+  if (edited) {
+    return edited;
+  }
+
+  if (customer.message) {
+    return customer.message;
+  }
+
+  return generateGroupMessage(customer);
+};
   // =========================================
   // FETCH CUSTOMERS
   // =========================================
@@ -375,44 +390,48 @@ Contact us on: 0741088799
         // KEEP OLD DATA IF SAME BILLING
         // ====================================
 
-        let migratedMessage = smsData.message
-          .replace(
-            /Water Bill as at .*/g,
-            "Water Bill as at {{READING_DATE}}"
-          )
-          .replace(
-            /Pay by .*/g,
-            "Pay by {{DUE_DATE}}"
-          );
+        let migratedMessage =
+  smsData.message
+    .replace(
+      /Water Bill as at .*/g,
+      "Water Bill as at {{READING_DATE}}"
+    )
+    .replace(
+      /Pay by .*/g,
+      "Pay by {{DUE_DATE}}"
+    );
 
-        return {
-          ...customer,
-          ...smsData,
-          message: migratedMessage,
-        };
-      }); // <-- CLOSE data.map() HERE
+return {
+  ...customer,
+  ...smsData,
+  message: migratedMessage,
+};
+}); // <-- CLOSE data.map() HERE
 
-      setCustomers(preparedData);
+setCustomers(preparedData);
 
-      const phoneData = {};
+const phoneData = {};
 
-      preparedData.forEach((c) => {
-        const saved =
-          localStorage.getItem(
-            `phones_${c.id}`
-          );
+preparedData.forEach((c) => {
+  const saved =
+    localStorage.getItem(
+      `phones_${c.id}`
+    );
 
-        phoneData[c.id] = saved
-          ? JSON.parse(saved)
-          : [];
-      });
+  phoneData[c.id] = saved
+    ? JSON.parse(saved)
+    : [];
+});
 
-      setExtraPhones(phoneData);
+setExtraPhones(phoneData);
       // initialize editable messages
       const messages = {};
 
       preparedData.forEach((c) => {
-        messages[c.id] = c.message;
+        messages[c.id] =
+    c.editStatus === "Edited"
+        ? c.message
+        : generateGroupMessage(c);
       });
 
       setEditedMessages(messages);
@@ -475,6 +494,12 @@ Contact us on: 0741088799
       )
     );
   };
+
+
+  setEditedMessages((prev) => ({
+    ...prev,
+    [customerId]: updatedCustomer.message,
+}));
   // =========================================
 // PHONE MANAGEMENT
 // =========================================
@@ -614,23 +639,13 @@ const togglePhoneSelection = (
   // OPEN PREVIEW
   // =========================================
   const openPreview = (customer) => {
-  // Check if customer has an edited message saved
-  const savedMessage = editedMessages[customer.id] || customer.message;
-  
-  // If no edited message exists, generate one
-  if (!savedMessage || savedMessage === customer.message) {
-    const groupMessage = generateGroupMessage(customer);
-    setEditedMessages((prev) => ({
-      ...prev,
-      [customer.id]: groupMessage,
-    }));
-    setSelectedCustomer(customer);
-    setShowModal(true);
-  } else {
-    // Use the saved edited message
-    setSelectedCustomer(customer);
-    setShowModal(true);
-  }
+  setEditedMessages((prev) => ({
+  ...prev,
+  [customer.id]: getCustomerMessage(customer),
+}));
+
+  setSelectedCustomer(customer);
+  setShowModal(true);
 };
   // =========================================
   // HANDLE MESSAGE EDIT
@@ -670,6 +685,12 @@ const togglePhoneSelection = (
       }
     );
 
+    setSelectedCustomer((prev) => ({
+    ...prev,
+    message: editedMessages[prev.id],
+    editStatus: "Edited",
+}));
+
     toast.success(
       "SMS updated successfully"
     );
@@ -696,16 +717,8 @@ const sendSingleSMS = async (customer) => {
 
     const sender = parentCustomer || customer;
 
-    // Get the saved message for the sender
-    const savedMessage = editedMessages[sender.id] || sender.message;
-    
-    // Use saved message if it exists and is edited, otherwise generate new
-    let messageToSend;
-    if (savedMessage && sender.editStatus === "Edited") {
-      messageToSend = savedMessage;
-    } else {
-      messageToSend = generateGroupMessage(sender);
-    }
+    const groupMessage =
+    getCustomerMessage(sender);
 
     const savedPhones =
   getCustomerPhones(sender);
@@ -722,7 +735,7 @@ const recipients =
           phone: p.number,
           message:
             applyDates(
-              messageToSend
+              groupMessage
             ),
         })
       )
@@ -731,7 +744,7 @@ const recipients =
           phone: sender.phone,
           message:
             applyDates(
-              messageToSend
+              groupMessage
             ),
         },
       ];
@@ -759,7 +772,7 @@ const recipients =
 
     groupCustomers.forEach((c) => {
       saveCustomerData(c.id, {
-        message: editedMessages[c.id] || c.message,
+        message: editedMessages[c.id],
         smsStatus: "Sent",
         sentDate,
       });
@@ -819,16 +832,8 @@ const recipients =
       // fallback if no parent found
       const sender = parentCustomer || customer;
 
-      // Get the saved message for the sender
-      const savedMessage = editedMessages[sender.id] || sender.message;
-      
-      // Use saved message if it exists and is edited, otherwise generate new
-      let messageToSend;
-      if (savedMessage && sender.editStatus === "Edited") {
-        messageToSend = savedMessage;
-      } else {
-        messageToSend = generateGroupMessage(sender);
-      }
+      const message =
+    getCustomerMessage(sender);
 
    const savedPhones =
   getCustomerPhones(sender);
@@ -847,7 +852,7 @@ if (
         phone: p.number,
         message:
           applyDates(
-            messageToSend
+            message
           ),
       });
     }
@@ -857,14 +862,14 @@ if (
     phone: sender.phone,
     message:
       applyDates(
-        messageToSend
+        message
       ),
   });
 }
       // update ALL in group as sent
       groupCustomers.forEach((c) => {
         saveCustomerData(c.id, {
-          message: editedMessages[c.id] || c.message,
+          message: editedMessages[c.id],
           smsStatus: "Sent",
           sentDate: `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,
         });
@@ -1280,12 +1285,10 @@ const handleUseDate = () => {
                   styles.smsTextarea
                 }
                 value={
-                  applyDates(
-                    editedMessages[
-                      selectedCustomer.id
-                    ] || ""
-                  )
-                }
+    applyDates(
+        getCustomerMessage(selectedCustomer)
+    )
+}
                 onChange={(e) =>
                   handleMessageChange(
                     e.target.value
