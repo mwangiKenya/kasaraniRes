@@ -493,6 +493,11 @@ setExtraPhones(phoneData);
           : c
       )
     );
+
+    setEditedMessages((prev) => ({
+  ...prev,
+  [customerId]: updatedCustomer.message,
+}));
   };
 
 
@@ -663,11 +668,7 @@ const togglePhoneSelection = (
       "{{DUE_DATE}}"
     );
 
-  setEditedMessages((prev) => ({
-    ...prev,
-    [selectedCustomer.id]:
-      storedValue,
-  }));
+  
 };
   // =========================================
   // SAVE MESSAGE
