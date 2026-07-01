@@ -685,11 +685,13 @@ const togglePhoneSelection = (
       }
     );
 
-    setSelectedCustomer((prev) => ({
-    ...prev,
-    message: editedMessages[prev.id],
-    editStatus: "Edited",
-}));
+    const updated = customers.find(
+    c => c.id === selectedCustomer.id
+);
+
+if (updated) {
+    setSelectedCustomer(updated);
+}
 
     toast.success(
       "SMS updated successfully"
