@@ -77,12 +77,41 @@ function Users() {
   const downloadUsers = () => {
   window.open("https://python-back-2.onrender.com/api/download_users/", "_blank");
 };
+
+const updateAllCustomers = async () => {
+  try {
+    const response = await fetch(
+      "https://python-back-2.onrender.com/api/update_all_users/",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(customers),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to update users");
+    }
+
+    alert("All users updated successfully");
+
+    fetchCustomers();
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+};
   
   return (
     <div className={styles.mainDiv}>
       <h1>Registered Customers</h1>
       <button onClick={downloadUsers}>
   Download Users Excel
+</button>
+<button onClick={updateAllCustomers}>
+  Save All Changes
 </button>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <table className={styles.userTable}>
