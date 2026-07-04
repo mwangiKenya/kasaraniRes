@@ -11,6 +11,7 @@ function Sms() {
   const [newPhone, setNewPhone] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [testPhone, setTestPhone] = useState("");
   const [selectedDate, setSelectedDate] = useState(() => {
   const saved = localStorage.getItem("billingDate");
   return saved ? new Date(saved) : new Date();
@@ -945,6 +946,41 @@ const handleUseDate = () => {
   toast.success("Dates updated");
 };
 
+const updateAllPhones = async () => {
+  if (!testPhone.trim()) {
+    toast.error("Enter a phone number");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "https://python-back-2.onrender.com/api/update_all_bill_phones/",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          phone: testPhone,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Update failed");
+    }
+
+    toast.success("All phone numbers updated");
+
+    fetchCustomers();
+  } catch (err) {
+    console.error(err);
+    toast.error(err.message);
+  }
+};
+
   return (
     <div className={styles.container}>
       {/* HEADER */}
@@ -1026,6 +1062,19 @@ const handleUseDate = () => {
   >
     Apply Dates
   </button>
+
+  <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+  <input
+    type="text"
+    placeholder="Testing phone number"
+    value={testPhone}
+    onChange={(e) => setTestPhone(e.target.value)}
+  />
+
+  <button onClick={updateAllPhones}>
+    Update All Phones
+  </button>
+</div>
 </div>
       </div>
       </div>
