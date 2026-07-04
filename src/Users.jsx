@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import styles from "./Users.module.css";
 import React, { useEffect, useState } from "react";
 
@@ -95,7 +96,7 @@ const updateAllCustomers = async () => {
       throw new Error("Failed to update users");
     }
 
-    alert("All users updated successfully");
+    toast.success("All users updated successfully");
 
     fetchCustomers();
   } catch (err) {
