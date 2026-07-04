@@ -11,28 +11,39 @@ function Sms() {
   const [newPhone, setNewPhone] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [selectedDate, setSelectedDate] =
-  useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(() => {
+  const saved = localStorage.getItem("billingDate");
+  return saved ? new Date(saved) : new Date();
+});
 
-const [confirmedDate, setConfirmedDate] =
-  useState(new Date());
-const [selectedDueDate, setSelectedDueDate] =
-  useState(() => {
-    const d = new Date();
-    d.setDate(
-      d.getDate() + 12
-    );
-    return d;
-  });
+const [confirmedDate, setConfirmedDate] = useState(() => {
+  const saved = localStorage.getItem("billingDate");
+  return saved ? new Date(saved) : new Date();
+});
 
-const [confirmedDueDate, setConfirmedDueDate] =
-  useState(() => {
-    const d = new Date();
-    d.setDate(
-      d.getDate() + 12
-    );
-    return d;
-  });
+const [selectedDueDate, setSelectedDueDate] = useState(() => {
+  const saved = localStorage.getItem("dueDate");
+
+  if (saved) {
+    return new Date(saved);
+  }
+
+  const d = new Date();
+  d.setDate(d.getDate() + 12);
+  return d;
+});
+
+const [confirmedDueDate, setConfirmedDueDate] = useState(() => {
+  const saved = localStorage.getItem("dueDate");
+
+  if (saved) {
+    return new Date(saved);
+  }
+
+  const d = new Date();
+  d.setDate(d.getDate() + 12);
+  return d;
+});
 
   // current billing cycle
   const currentMonth = new Date().getMonth();
@@ -918,17 +929,20 @@ if (
 // CONFIRM DATE
 // =========================================
 const handleUseDate = () => {
-  setConfirmedDate(
-    selectedDate
+  setConfirmedDate(selectedDate);
+  setConfirmedDueDate(selectedDueDate);
+
+  localStorage.setItem(
+    "billingDate",
+    selectedDate.toISOString()
   );
 
-  setConfirmedDueDate(
-    selectedDueDate
+  localStorage.setItem(
+    "dueDate",
+    selectedDueDate.toISOString()
   );
 
-  toast.success(
-    "Dates updated"
-  );
+  toast.success("Dates updated");
 };
 
   return (
