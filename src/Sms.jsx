@@ -1026,14 +1026,7 @@ const downloadSMSExcel = async () => {
             billing SMS 
           </p>
 
-          {/*DOWNLOAD THE SMS EXCEL*/}
-          <Button
-              variant="contained"
-              color="success"
-              onClick={downloadSMSExcel}
-          >
-              Download SMS Excel
-          </Button>
+          
         </div>
         <button
           className={styles.sendBtn}
@@ -1109,6 +1102,14 @@ const downloadSMSExcel = async () => {
   <button onClick={updateAllPhones}>
     Update All Phones
   </button>
+  {/*DOWNLOAD THE SMS EXCEL*/}
+          <Button
+              variant="contained"
+              color="success"
+              onClick={downloadSMSExcel}
+          >
+              Download SMS Excel
+          </Button>
 </div>
 </div>
       </div>
