@@ -981,6 +981,32 @@ const updateAllPhones = async () => {
   }
 };
 
+//DOWNLOAD THE SMS EXCEL
+const downloadSMSExcel = async () => {
+    try {
+        const response = await fetch(
+            "https://python-back-2.onrender.com/api/download_sms_excel/",
+            {
+                method: "GET",
+            }
+        );
+        if (!response.ok) {
+            throw new Error("Failed to download.");
+        }
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "SMS_Billings.xlsx";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+    } catch (err) {
+        alert(err.message);
+    }
+};
+
   return (
     <div className={styles.container}>
       {/* HEADER */}
@@ -999,6 +1025,15 @@ const updateAllPhones = async () => {
             Manage, edit and send
             billing SMS 
           </p>
+
+          {/*DOWNLOAD THE SMS EXCEL*/}
+          <Button
+              variant="contained"
+              color="success"
+              onClick={downloadSMSExcel}
+          >
+              Download SMS Excel
+          </Button>
         </div>
         <button
           className={styles.sendBtn}
