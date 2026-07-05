@@ -1103,13 +1103,13 @@ const downloadSMSExcel = async () => {
     Update All Phones
   </button>
   {/*DOWNLOAD THE SMS EXCEL*/}
-          <Button
+          <button
               variant="contained"
               color="success"
               onClick={downloadSMSExcel}
           >
               Download SMS Excel
-          </Button>
+          </button>
 </div>
 </div>
       </div>
