@@ -984,6 +984,7 @@ const updateAllPhones = async () => {
 
 //DOWNLOAD THE SMS EXCEL
 const downloadSMSExcel = () => {
+  console.log("DOWNLOAD BUTTON CLICKED");
   try {
     const rows = [];
 
@@ -1162,7 +1163,7 @@ const downloadSMSExcel = () => {
               color="success"
               onClick={downloadSMSExcel}
           >
-              Download SMS Excel
+              Download SMS Excel sheet
           </button>
 </div>
 </div>
