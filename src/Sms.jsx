@@ -1011,19 +1011,20 @@ const downloadSMSExcel = () => {
       );
 
       rows.push({
-        ID: sender.user_id,
-        Customer: sender.sms_name,
-        Phone: sender.phone,
-        Group: sender.grp,
-        Parent: sender.parent,
-        "Previous Reading": sender.prev_user,
-        "Current Reading": sender.cur_user,
-        Units: sender.units_used,
-        Bill: sender.bill,
-        Balance: sender.bal,
-        SMS: message,
-        Status: sender.smsStatus,
-      });
+    Selected: false,
+    ID: sender.user_id,
+    Customer: sender.sms_name,
+    Phone: sender.phone,
+    Group: sender.grp,
+    Parent: sender.parent,
+    "Previous Reading": sender.prev_user,
+    "Current Reading": sender.cur_user,
+    Units: sender.units_used,
+    Bill: sender.bill,
+    Balance: sender.bal,
+    SMS: message,
+    Status: sender.smsStatus,
+});
     });
 
     const worksheet = XLSX.utils.json_to_sheet(rows);
