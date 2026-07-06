@@ -1055,7 +1055,7 @@ const downloadSMSExcel = () => {
 
     XLSX.writeFile(
       workbook,
-      "SMS_Billings.xlsx"
+      "SMS_Billings_Data.xlsx"
     );
   } catch (err) {
     console.error(err);
