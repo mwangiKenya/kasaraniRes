@@ -1,6 +1,7 @@
 import styles from "./Sms.module.css";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import * as XLSX from "xlsx";
 function Sms() {
   const [customers, setCustomers] = useState([]);
   const [selectedCustomers, setSelectedCustomers] = useState([]);
@@ -982,29 +983,82 @@ const updateAllPhones = async () => {
 };
 
 //DOWNLOAD THE SMS EXCEL
-const downloadSMSExcel = async () => {
-    try {
-        const response = await fetch(
-            "https://python-back-2.onrender.com/api/download_sms_excel/",
-            {
-                method: "GET",
-            }
-        );
-        if (!response.ok) {
-            throw new Error("Failed to download.");
-        }
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "SMS_Billings.xlsx";
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        window.URL.revokeObjectURL(url);
-    } catch (err) {
-        alert(err.message);
-    }
+const downloadSMSExcel = () => {
+  try {
+    const rows = [];
+
+    // Prevent duplicate groups
+    const exportedGroups = new Set();
+
+    customers.forEach((customer) => {
+      // Only export parent customer once per group
+      if (customer.grp) {
+        if (!isParent(customer)) return;
+
+        if (exportedGroups.has(customer.grp)) return;
+
+        exportedGroups.add(customer.grp);
+      }
+
+      const groupCustomers = getGroupCustomers(customer);
+
+      const sender =
+        groupCustomers.find(isParent) || customer;
+
+      const message = applyDates(
+        getCustomerMessage(sender)
+      );
+
+      rows.push({
+        ID: sender.user_id,
+        Customer: sender.sms_name,
+        Phone: sender.phone,
+        Group: sender.grp,
+        Parent: sender.parent,
+        "Previous Reading": sender.prev_user,
+        "Current Reading": sender.cur_user,
+        Units: sender.units_used,
+        Bill: sender.bill,
+        Balance: sender.bal,
+        SMS: message,
+        Status: sender.smsStatus,
+      });
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+
+    // Make the SMS column wider
+    worksheet["!cols"] = [
+      { wch: 10 }, // ID
+      { wch: 25 }, // Customer
+      { wch: 18 }, // Phone
+      { wch: 10 }, // Group
+      { wch: 10 }, // Parent
+      { wch: 12 }, // Prev
+      { wch: 12 }, // Curr
+      { wch: 10 }, // Units
+      { wch: 12 }, // Bill
+      { wch: 12 }, // Balance
+      { wch: 90 }, // SMS
+      { wch: 12 }, // Status
+    ];
+
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      "SMS"
+    );
+
+    XLSX.writeFile(
+      workbook,
+      "SMS_Billings.xlsx"
+    );
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to generate Excel.");
+  }
 };
 
   return (
