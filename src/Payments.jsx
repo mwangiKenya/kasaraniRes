@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Payments.module.css';
+import { toast } from 'react-toastify';
+
+// Use the same BACKEND_URL pattern as your working Readings component
+const BACKEND_URL = "https://python-back-2.onrender.com/api";
+// const BACKEND_URL = "http://127.0.0.1:8000/api";
 
 const Payments = () => {
   const [payments, setPayments] = useState([]);
@@ -41,19 +46,32 @@ const Payments = () => {
       if (filters.payment_method) params.append('payment_method', filters.payment_method);
       if (filters.status) params.append('status', filters.status);
       
-      const url = `/api/payment-history/${params.toString() ? `?${params.toString()}` : ''}`;
+      // ✅ FIX: Use BACKEND_URL consistently
+      const url = `${BACKEND_URL}/payment-history/${params.toString() ? `?${params.toString()}` : ''}`;
+      
+      console.log('Fetching from:', url); // Debug log
       
       const response = await fetch(url);
+      
+      // Check if response is ok
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
       const data = await response.json();
       
       if (data.success) {
         setPayments(data.data);
         setSummary(data.summary);
+        toast.success(`Loaded ${data.data.length} payment records`);
       } else {
         setError(data.error || 'Failed to fetch payment history');
+        toast.error(data.error || 'Failed to fetch payment history');
       }
     } catch (err) {
+      console.error('Fetch error:', err);
       setError('Network error: ' + err.message);
+      toast.error('Failed to load payment history');
     } finally {
       setLoading(false);
     }
@@ -181,7 +199,7 @@ const Payments = () => {
       <div className={styles.header}>
         <h1 className={styles.title}>Payment History</h1>
         <div className={styles.headerActions}>
-          <button className={styles.exportButton} onClick={() => window.location.href = '/api/payment-history/export/'}>
+          <button className={styles.exportButton} onClick={() => window.open(`${BACKEND_URL}/payment-history/export/`, '_blank')}>
             📊 Export
           </button>
           <button className={styles.refreshButton} onClick={fetchPayments}>
@@ -504,7 +522,7 @@ const Payments = () => {
               {selectedPayment.receipt_number && (
                 <button 
                   className={styles.printButton}
-                  onClick={() => window.open(`/api/payment-history/receipt/${selectedPayment.receipt_number}/print/`, '_blank')}
+                  onClick={() => window.open(`${BACKEND_URL}/payment-history/receipt/${selectedPayment.receipt_number}/`, '_blank')}
                 >
                   🖨️ Print Receipt
                 </button>
