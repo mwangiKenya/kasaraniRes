@@ -11,7 +11,7 @@ import {
   FaCheckCircle,
   FaClock,
   FaDownload,
-  FaRefresh,
+  FaSync,
   FaArrowUp,
   FaArrowDown,
   FaDollarSign
@@ -128,13 +128,6 @@ function Analytics() {
     return new Intl.NumberFormat('en-KE').format(num);
   };
 
-  // Get status color
-  const getStatusColor = (value) => {
-    if (value > 0) return styles.positive;
-    if (value < 0) return styles.negative;
-    return styles.neutral;
-  };
-
   // Get efficiency level
   const getEfficiencyLevel = () => {
     if (efficiency >= 80) return { label: 'Excellent', color: '#10B981', icon: '✅' };
@@ -169,7 +162,7 @@ function Analytics() {
             Updated: {lastUpdated.toLocaleTimeString()}
           </span>
           <button onClick={fetchAllData} className={styles.refreshButton}>
-            <FaRefresh /> Refresh
+            <FaSync /> Refresh
           </button>
           <button className={styles.exportButton}>
             <FaDownload /> Export
@@ -192,7 +185,7 @@ function Analytics() {
           <div className={styles.kpiContent}>
             <span className={styles.kpiLabel}>Total Customers</span>
             <span className={styles.kpiValue}>{formatNumber(customers)}</span>
-            <span className={styles.kpiChange}>+12% this month</span>
+            <span className={styles.kpiChange}>Active accounts</span>
           </div>
         </div>
 
@@ -202,7 +195,7 @@ function Analytics() {
             <span className={styles.kpiLabel}>Total Revenue</span>
             <span className={styles.kpiValue}>{formatCurrency(total)}</span>
             <span className={styles.kpiChange}>
-              {bills > 0 ? `+${formatCurrency(bills)} this month` : 'No revenue yet'}
+              {bills > 0 ? `Current month: ${formatCurrency(bills)}` : 'No revenue yet'}
             </span>
           </div>
         </div>
@@ -238,7 +231,7 @@ function Analytics() {
           <span className={styles.secondaryLabel}>Units Consumed</span>
           <span className={styles.secondaryValue}>{formatNumber(units_used)} m³</span>
           <div className={styles.secondaryTrend}>
-            <FaArrowUp className={styles.trendUp} /> 8.5%
+            <FaArrowUp className={styles.trendUp} /> Current usage
           </div>
         </div>
         <div className={styles.secondaryCard}>
