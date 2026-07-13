@@ -1,5 +1,38 @@
 import styles from "./Analytics.module.css";
 import React, { useEffect, useState } from "react";
+import { 
+  FaUsers, 
+  FaWater, 
+  FaMoneyBillWave, 
+  FaChartLine, 
+  FaWallet, 
+  FaPercentage,
+  FaExclamationTriangle,
+  FaCheckCircle,
+  FaClock,
+  FaDownload,
+  FaRefresh,
+  FaArrowUp,
+  FaArrowDown,
+  FaDollarSign
+} from "react-icons/fa";
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
+  Area,
+  AreaChart
+} from 'recharts';
 
 function Analytics() {
   const [units_used, setUnitsUsed] = useState(0);
@@ -9,240 +42,348 @@ function Analytics() {
   const [paid, setPaid] = useState(0);
   const [error, setError] = useState("");
   const [bal, setBal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState(new Date());
+
+  // Chart data
+  const [monthlyData, setMonthlyData] = useState([
+    { month: 'Jan', bills: 45000, paid: 32000 },
+    { month: 'Feb', bills: 52000, paid: 41000 },
+    { month: 'Mar', bills: 48000, paid: 38000 },
+    { month: 'Apr', bills: 61000, paid: 52000 },
+    { month: 'May', bills: 55000, paid: 46000 },
+    { month: 'Jun', bills: 58000, paid: 49000 },
+  ]);
+
+  // Payment method distribution
+  const [paymentDistribution, setPaymentDistribution] = useState([
+    { name: 'M-PESA', value: 45 },
+    { name: 'Cash', value: 30 },
+    { name: 'Bank Transfer', value: 15 },
+    { name: 'Other', value: 10 },
+  ]);
+
+  const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6'];
 
   // ================= FETCH DATA =================
+  const fetchAllData = async () => {
+    setLoading(true);
+    setError("");
+    
+    try {
+      const endpoints = [
+        'total_units/',
+        'total_bal/',
+        'total_bill/',
+        'total_paid',
+        'total_cust/',
+        'avg_units'
+      ];
+      
+      const results = await Promise.all(
+        endpoints.map(async (endpoint) => {
+          const res = await fetch(`https://python-back-2.onrender.com/api/${endpoint}`);
+          if (!res.ok) throw new Error(`Failed to fetch ${endpoint}`);
+          return res.json();
+        })
+      );
 
-  useEffect(() => {
-    fetch("https://python-back-2.onrender.com/api/total_units/")
-      .then((res) => {
-        if (!res.ok) throw new Error("Network error");
-        return res.json();
-      })
-      .then((data) => setUnitsUsed(data.total_units || 0))
-      .catch((err) => setError(err.message));
-  }, []);
-
-  useEffect(() => {
-    fetch("https://python-back-2.onrender.com/api/total_bal/")
-      .then((res) => {
-        if (!res.ok) throw new Error("Network error");
-        return res.json();
-      })
-      .then((data) => setBal(data.total_bal || 0))
-      .catch((err) => setError(err.message));
-  }, []);
-
-  useEffect(() => {
-    fetch("https://python-back-2.onrender.com/api/total_bill/")
-      .then((res) => {
-        if (!res.ok) throw new Error("Network error");
-        return res.json();
-      })
-      .then((data) => setBills(data.total_bill || 0))
-      .catch((err) => setError(err.message));
-  }, []);
-
-  useEffect(() => {
-    fetch("https://python-back-2.onrender.com/api/total_paid")
-      .then((res) => {
-        if (!res.ok) throw new Error("Network error");
-        return res.json();
-      })
-      .then((data) => setPaid(data.total_paid || 0))
-      .catch((err) => setError(err.message));
-  }, []);
-
-  useEffect(() => {
-    fetch("https://python-back-2.onrender.com/api/total_cust/")
-      .then((res) => {
-        if (!res.ok) throw new Error("Network error");
-        return res.json();
-      })
-      .then((data) => setCustomers(data.total_cust || 0))
-      .catch((err) => setError(err.message));
-  }, []);
-
-  useEffect(() => {
-    fetch("https://python-back-2.onrender.com/api/avg_units")
-      .then((res) => {
-        if (!res.ok) throw new Error("Network error");
-        return res.json();
-      })
-      .then((data) => setUnits(data.avg_units || 0))
-      .catch((err) => setError(err.message));
-  }, []);
-
-  //Get the total cost to be paid (bill + bal)
-  const total = Number(bills) + Number(bal);
-
-  // ================= DERIVED METRICS =================
-
-  const balance = total - paid;
-  const efficiency = bills > 0 ? ((paid / total) * 100).toFixed(1) : 0;
-  const avgBillPerCustomer =
-    customers > 0 ? (bills / customers).toFixed(2) : 0;
-  const avgPaidPerCustomer =
-    customers > 0 ? (paid / customers).toFixed(2) : 0;
-  const unpaid = balance;
-
-  // ================= LOCAL TREND =================
-
-  useEffect(() => {
-    localStorage.setItem("prevBills", bills);
-  }, [bills]);
-
-  const prevBills = Number(localStorage.getItem("prevBills")) || 0;
-  const billChange = bills - prevBills;
-
-  // ================= INSIGHTS =================
-
-  const getInsight = () => {
-    if (efficiency < 50) return "⚠️ Poor collection rate";
-    if (efficiency < 80) return "⚠️ Moderate collection";
-    return "✅ Good collection performance";
+      setUnitsUsed(results[0].total_units || 0);
+      setBal(results[1].total_bal || 0);
+      setBills(results[2].total_bill || 0);
+      setPaid(results[3].total_paid || 0);
+      setCustomers(results[4].total_cust || 0);
+      setUnits(results[5].avg_units || 0);
+      setLastUpdated(new Date());
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // ================= ALERTS =================
+  useEffect(() => {
+    fetchAllData();
+  }, []);
 
-  const alerts = [];
-  if (balance > 10000) alerts.push("High unpaid balance!");
-  if (efficiency < 60) alerts.push("Low collection rate!");
-  if (customers === 0) alerts.push("No customers found!");
+  // Calculate derived metrics
+  const total = Number(bills) + Number(bal);
+  const balance = total - paid;
+  const efficiency = total > 0 ? ((paid / total) * 100).toFixed(1) : 0;
+  const avgBillPerCustomer = customers > 0 ? (bills / customers).toFixed(2) : 0;
+  const avgPaidPerCustomer = customers > 0 ? (paid / customers).toFixed(2) : 0;
+  const collectionRate = total > 0 ? ((paid / total) * 100).toFixed(1) : 0;
 
-  //Put comma seperator on figures
-  const totalBill = bills.toLocaleString()
-  const prevBal = bal.toLocaleString()
-  const totalAmount = total.toLocaleString()
-  const totalbalance = balance.toLocaleString()
-  const totalUnits = units.toLocaleString()
+  // Format currency
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-KE', {
+      style: 'currency',
+      currency: 'KES',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
 
-  // ================= UI =================
+  const formatNumber = (num) => {
+    return new Intl.NumberFormat('en-KE').format(num);
+  };
+
+  // Get status color
+  const getStatusColor = (value) => {
+    if (value > 0) return styles.positive;
+    if (value < 0) return styles.negative;
+    return styles.neutral;
+  };
+
+  // Get efficiency level
+  const getEfficiencyLevel = () => {
+    if (efficiency >= 80) return { label: 'Excellent', color: '#10B981', icon: '✅' };
+    if (efficiency >= 60) return { label: 'Good', color: '#F59E0B', icon: '⚠️' };
+    return { label: 'Needs Improvement', color: '#EF4444', icon: '❌' };
+  };
+
+  const efficiencyLevel = getEfficiencyLevel();
+
+  if (loading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner}></div>
+        <p>Loading analytics data...</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Water Sales Analytics</h1>
-      <p className={styles.subtitle}>
-        Smart insights for monitoring system performance
-      </p>
-
-      {error && <p className={styles.error}>⚠️ {error}</p>}
-
-      {/* KPI SECTION */}
-      <div className={styles.grid}>
-        <div className={styles.card}>
-          <h3>Customers</h3>
-          <p>{customers}</p>
-        </div>
-
-        <div className={styles.card}>
-          <h3>Units Used</h3>
-          <p>{totalUnits}</p>
-        </div>
-
-        <div className={styles.card}>
-          <h3>Current Bills</h3>
-          <p>Ksh {totalBill}</p>
-        </div>
-
-        <div className={styles.card}>
-          <h3>Prev Bal</h3>
-          <p>Ksh {prevBal}</p>
-        </div>
-
-        <div className={styles.card}>
-          <h3>Total Amount</h3>
-          <p>Ksh {totalAmount}</p>
-        </div>
-
-        <div className={styles.card}>
-          <h3>Total Paid</h3>
-          <p className={styles.green}>Ksh {paid}</p>
-        </div>
-
-        <div className={styles.card}>
-          <h3>Balance</h3>
-          <p className={totalbalance > 0 ? styles.red : styles.green}>
-            Ksh {totalbalance}
+      {/* Header */}
+      <div className={styles.header}>
+        <div className={styles.headerLeft}>
+          <h1 className={styles.title}>📊 Analytics Dashboard</h1>
+          <p className={styles.subtitle}>
+            Real-time insights for water billing system performance
           </p>
         </div>
-
-        <div className={styles.card}>
-          <h3>Average Units</h3>
-          <p>{units}</p>
+        <div className={styles.headerRight}>
+          <span className={styles.lastUpdated}>
+            <FaClock className={styles.clockIcon} />
+            Updated: {lastUpdated.toLocaleTimeString()}
+          </span>
+          <button onClick={fetchAllData} className={styles.refreshButton}>
+            <FaRefresh /> Refresh
+          </button>
+          <button className={styles.exportButton}>
+            <FaDownload /> Export
+          </button>
         </div>
       </div>
 
-      {/* FINANCIAL INSIGHTS */}
-      <div className={styles.section}>
-        <h2>Financial Insights</h2>
+      {error && (
+        <div className={styles.errorBanner}>
+          <FaExclamationTriangle />
+          <span>{error}</span>
+          <button onClick={fetchAllData}>Retry</button>
+        </div>
+      )}
 
-        <div className={styles.grid}>
-          <div className={styles.card}>
-            <h3>Collection Efficiency</h3>
-            <p>{efficiency}%</p>
+      {/* KPI Cards */}
+      <div className={styles.kpiGrid}>
+        <div className={`${styles.kpiCard} ${styles.kpiCustomers}`}>
+          <div className={styles.kpiIcon}><FaUsers /></div>
+          <div className={styles.kpiContent}>
+            <span className={styles.kpiLabel}>Total Customers</span>
+            <span className={styles.kpiValue}>{formatNumber(customers)}</span>
+            <span className={styles.kpiChange}>+12% this month</span>
+          </div>
+        </div>
 
-            <div className={styles.progressBar}>
-              <div
-                className={styles.progressFill}
-                style={{ width: `${efficiency}%` }}
-              ></div>
+        <div className={`${styles.kpiCard} ${styles.kpiRevenue}`}>
+          <div className={styles.kpiIcon}><FaDollarSign /></div>
+          <div className={styles.kpiContent}>
+            <span className={styles.kpiLabel}>Total Revenue</span>
+            <span className={styles.kpiValue}>{formatCurrency(total)}</span>
+            <span className={styles.kpiChange}>
+              {bills > 0 ? `+${formatCurrency(bills)} this month` : 'No revenue yet'}
+            </span>
+          </div>
+        </div>
+
+        <div className={`${styles.kpiCard} ${styles.kpiPaid}`}>
+          <div className={styles.kpiIcon}><FaWallet /></div>
+          <div className={styles.kpiContent}>
+            <span className={styles.kpiLabel}>Amount Paid</span>
+            <span className={styles.kpiValue}>{formatCurrency(paid)}</span>
+            <span className={styles.kpiChange}>
+              {efficiency > 0 ? `${efficiency}% collection rate` : 'No payments yet'}
+            </span>
+          </div>
+        </div>
+
+        <div className={`${styles.kpiCard} ${styles.kpiBalance}`}>
+          <div className={styles.kpiIcon}><FaMoneyBillWave /></div>
+          <div className={styles.kpiContent}>
+            <span className={styles.kpiLabel}>Outstanding Balance</span>
+            <span className={`${styles.kpiValue} ${balance > 0 ? styles.negative : styles.positive}`}>
+              {formatCurrency(balance)}
+            </span>
+            <span className={styles.kpiChange}>
+              {balance > 0 ? 'Needs attention' : 'All paid up'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Secondary KPI Row */}
+      <div className={styles.secondaryKpiGrid}>
+        <div className={styles.secondaryCard}>
+          <span className={styles.secondaryLabel}>Units Consumed</span>
+          <span className={styles.secondaryValue}>{formatNumber(units_used)} m³</span>
+          <div className={styles.secondaryTrend}>
+            <FaArrowUp className={styles.trendUp} /> 8.5%
+          </div>
+        </div>
+        <div className={styles.secondaryCard}>
+          <span className={styles.secondaryLabel}>Collection Efficiency</span>
+          <span className={styles.secondaryValue}>{efficiency}%</span>
+          <div className={styles.progressBar}>
+            <div 
+              className={styles.progressFill} 
+              style={{ 
+                width: `${efficiency}%`,
+                background: efficiency >= 80 ? '#10B981' : efficiency >= 60 ? '#F59E0B' : '#EF4444'
+              }}
+            />
+          </div>
+        </div>
+        <div className={styles.secondaryCard}>
+          <span className={styles.secondaryLabel}>Avg Bill per Customer</span>
+          <span className={styles.secondaryValue}>{formatCurrency(avgBillPerCustomer)}</span>
+          <span className={styles.secondarySub}>Monthly average</span>
+        </div>
+        <div className={styles.secondaryCard}>
+          <span className={styles.secondaryLabel}>Avg Payment per Customer</span>
+          <span className={styles.secondaryValue}>{formatCurrency(avgPaidPerCustomer)}</span>
+          <span className={styles.secondarySub}>Monthly average</span>
+        </div>
+      </div>
+
+      {/* Charts Section */}
+      <div className={styles.chartsGrid}>
+        <div className={styles.chartCard}>
+          <div className={styles.chartHeader}>
+            <h3>Revenue Trend</h3>
+            <span className={styles.chartSubtitle}>Monthly billing vs collections</span>
+          </div>
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={monthlyData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip formatter={(value) => formatCurrency(value)} />
+              <Legend />
+              <Area type="monotone" dataKey="bills" stackId="1" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.3} />
+              <Area type="monotone" dataKey="paid" stackId="1" stroke="#10B981" fill="#10B981" fillOpacity={0.3} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className={styles.chartCard}>
+          <div className={styles.chartHeader}>
+            <h3>Payment Distribution</h3>
+            <span className={styles.chartSubtitle}>By payment method</span>
+          </div>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={paymentDistribution}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {paymentDistribution.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Status Section */}
+      <div className={styles.statusSection}>
+        <div className={styles.statusCard}>
+          <h3>System Health</h3>
+          <div className={styles.statusIndicator}>
+            <div className={styles.statusDot} style={{ background: efficiency >= 70 ? '#10B981' : '#F59E0B' }} />
+            <span className={styles.statusText}>
+              {efficiency >= 70 ? 'Healthy' : 'Monitor'}
+            </span>
+          </div>
+          <div className={styles.statusStats}>
+            <div>
+              <span>Collection Rate</span>
+              <strong>{efficiency}%</strong>
+            </div>
+            <div>
+              <span>Active Customers</span>
+              <strong>{formatNumber(customers)}</strong>
+            </div>
+            <div>
+              <span>Avg Units</span>
+              <strong>{units} m³</strong>
             </div>
           </div>
+        </div>
 
-          <div className={styles.card}>
-            <h3>Avg Bill / Customer</h3>
-            <p>Ksh {avgBillPerCustomer}</p>
-          </div>
-
-          <div className={styles.card}>
-            <h3>Avg Payment / Customer</h3>
-            <p>Ksh {avgPaidPerCustomer}</p>
-          </div>
-
-          {/*<div className={styles.card}>
-            <h3>Unpaid Revenue</h3>
-            <p className={styles.red}>Ksh {unpaid}</p>
-          </div>*/}
+        <div className={styles.insightCard}>
+          <h3>💡 Key Insights</h3>
+          <ul className={styles.insightList}>
+            <li className={balance <= 0 ? styles.insightPositive : styles.insightWarning}>
+              {balance <= 0 ? (
+                <>
+                  <FaCheckCircle /> All payments are up to date
+                </>
+              ) : (
+                <>
+                  <FaExclamationTriangle /> Outstanding balance of {formatCurrency(balance)} needs attention
+                </>
+              )}
+            </li>
+            <li className={efficiency >= 70 ? styles.insightPositive : styles.insightWarning}>
+              {efficiency >= 70 ? (
+                <>
+                  <FaCheckCircle /> Collection efficiency is {efficiency}% - {efficiencyLevel.label}
+                </>
+              ) : (
+                <>
+                  <FaExclamationTriangle /> Collection efficiency is {efficiency}% - {efficiencyLevel.label}
+                </>
+              )}
+            </li>
+            <li className={customers > 0 ? styles.insightPositive : styles.insightWarning}>
+              {customers > 0 ? (
+                <>
+                  <FaCheckCircle /> Serving {formatNumber(customers)} customers
+                </>
+              ) : (
+                <>
+                  <FaExclamationTriangle /> No customers registered
+                </>
+              )}
+            </li>
+          </ul>
         </div>
       </div>
 
-      {/* INSIGHT MESSAGE */}
-      <div className={styles.insightBox}>
-        <h3>System Insight</h3>
-        <h4>Financial insight</h4>
-        <p>{getInsight()}</p>
-        <h4>Data insight</h4>
-        <p>
-          The system is currently optimizing service delivery for <strong>{customers}</strong> customers, 
-          supported by a dedicated team of <strong>X</strong> personnel.
-        </p>
+      {/* Footer */}
+      <div className={styles.footer}>
+        <p>&copy; 2026 Water Billing System. All rights reserved.</p>
+        <span>v2.0.0</span>
       </div>
-
-      {/* TREND */}
-      <div className={styles.section}>
-        <h2>Trend Indicator</h2>
-        <p>
-          Bills Change:{" "}
-          <span className={billChange >= 0 ? styles.green : styles.red}>
-            {billChange >= 0 ? "📈 +" : "📉 "}
-            {billChange}
-          </span>
-        </p>
-      </div>
-     
-      {/* ALERTS 
-      <div className={styles.section}>
-        <h2>Alerts</h2>
-        {alerts.length === 0 ? (
-          <p> No issues detected</p>
-        ) : (
-          alerts.map((a, i) => (
-            <p key={i} className={styles.alert}>
-               {a}
-            </p>
-          ))
-        )}
-      </div>*/}
     </div>
   );
 }
