@@ -11,6 +11,7 @@ import EmployeesList from "./EmployeesList";
 import HistoryTable from "./HistoryTable";
 import Sms from "./Sms";
 import Reminder from "./Reminder";
+import Payments from "./Payments";
 
 function Dashboard() {
     const [activeView, setActiveView] = useState("analytics");
@@ -38,6 +39,8 @@ function Dashboard() {
                 return <HistoryTable/>
             case "sms" :
                 return <Sms/>
+            case "payments" :
+                return <Payments/>
             default:
                 return <Analytics/>;
         }
@@ -104,6 +107,13 @@ function Dashboard() {
                         onClick={() => setActiveView("hist")}
                     >
                         Readings History
+                    </button>
+
+                    <button
+                        className={`${styles.navItem} ${activeView === "payments" ? styles.active : ""}`}
+                        onClick={() => setActiveView("payments")}
+                    >
+                        Payments History
                     </button>
 
                     <button
