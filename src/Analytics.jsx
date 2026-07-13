@@ -190,7 +190,7 @@ function Analytics() {
         </div>
 
         <div className={`${styles.kpiCard} ${styles.kpiRevenue}`}>
-          <div className={styles.kpiIcon}><FaDollarSign /></div>
+          
           <div className={styles.kpiContent}>
             <span className={styles.kpiLabel}>Total Revenue</span>
             <span className={styles.kpiValue}>{formatCurrency(total)}</span>
