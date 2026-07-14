@@ -187,8 +187,16 @@ function Analytics() {
             <span className={styles.kpiValue}>{formatNumber(customers)}</span>
             <span className={styles.kpiChange}>Active accounts</span>
           </div>
-          <p>{formatNumber(bal)}</p>
+          <p></p>
         </div>
+
+        <div className={`${styles.kpiCard} ${styles.kpiRevenue}`}>  
+          <div className={styles.kpiContent}>
+            <span className={styles.kpiLabel}>Previus balance</span>
+            <span className={styles.kpiValue}>{formatNumber(bal)}</span>
+          </div>
+        </div>
+
 
         <div className={`${styles.kpiCard} ${styles.kpiRevenue}`}>
           
