@@ -272,10 +272,14 @@ function Analytics() {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis type="number" />
               <YAxis type="category" dataKey="name" width={120} />
-              <Tooltip formatter={(value, name, props) => {
-                const data = props.payload;
-                return [data.payload.formatted || value, ''];
-              }} />
+              <Tooltip 
+                formatter={(value, name, props) => {
+                  if (props && props.payload) {
+                    return [props.payload.formatted || value, ''];
+                  }
+                  return [value, ''];
+                }} 
+              />
               <Bar dataKey="value" fill="#3B82F6">
                 {metricsData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
