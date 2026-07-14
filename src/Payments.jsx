@@ -235,6 +235,31 @@ const Payments = () => {
     );
   };
 
+  // Download user's complete payment history
+  const downloadUserPaymentHistory = (userId) => {
+    if (!userId) {
+      toast.warning('No user ID available');
+      return;
+    }
+    
+    toast.promise(
+      new Promise((resolve, reject) => {
+        try {
+          const url = `${BACKEND_URL}/download-user-payment-history/${userId}/`;
+          window.open(url, '_blank');
+          setTimeout(resolve, 1000);
+        } catch (error) {
+          reject(error);
+        }
+      }),
+      {
+        pending: 'Generating complete payment history PDF...',
+        success: 'Payment history downloaded successfully! 📚',
+        error: 'Failed to download payment history. Please try again.'
+      }
+    );
+  };
+
   // Pagination calculations
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -276,7 +301,8 @@ const Payments = () => {
       'PENDING': styles.statusPending,
       'FAILED': styles.statusFailed,
       'REVERSED': styles.statusReversed,
-      'CANCELLED': styles.statusCancelled
+      'CANCELLED': styles.statusCancelled,
+      'PARTIAL': styles.statusPartial
     };
     return statusMap[status] || styles.statusDefault;
   };
@@ -476,6 +502,7 @@ const Payments = () => {
               <option value="FAILED">Failed</option>
               <option value="REVERSED">Reversed</option>
               <option value="CANCELLED">Cancelled</option>
+              <option value="PARTIAL">Partial</option>
             </select>
           </div>
 
@@ -548,6 +575,18 @@ const Payments = () => {
                         title="Download Receipt"
                       >
                         📄
+                      </button>
+                    )}
+                    {payment.user_id && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent row click
+                          downloadUserPaymentHistory(payment.user_id);
+                        }}
+                        className={styles.downloadHistoryButton}
+                        title="Download All Payments for this User"
+                      >
+                        📚
                       </button>
                     )}
                   </td>
@@ -695,20 +734,20 @@ const Payments = () => {
                 Close
               </button>
               {selectedPayment.receipt_number && (
-                <>
-                  <button 
-                    className={styles.downloadButton}
-                    onClick={() => downloadReceiptWithFeedback(selectedPayment.receipt_number)}
-                  >
-                    📄 Download Receipt
-                  </button>
-                  <button 
-                    className={styles.printButton}
-                    onClick={() => window.open(`${BACKEND_URL}/payment-history/receipt/${selectedPayment.receipt_number}/`, '_blank')}
-                  >
-                    🖨️ Print Receipt
-                  </button>
-                </>
+                <button 
+                  className={styles.downloadButton}
+                  onClick={() => downloadReceiptWithFeedback(selectedPayment.receipt_number)}
+                >
+                  📄 Download Receipt
+                </button>
+              )}
+              {selectedPayment.user_id && (
+                <button 
+                  className={styles.downloadHistoryButton}
+                  onClick={() => downloadUserPaymentHistory(selectedPayment.user_id)}
+                >
+                  📚 Download All Payments
+                </button>
               )}
             </div>
           </div>
