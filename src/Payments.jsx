@@ -198,6 +198,43 @@ const Payments = () => {
     setSelectedPayment(null);
   };
 
+  // Download receipt function
+  const downloadReceipt = (receiptNumber) => {
+    if (!receiptNumber) {
+      toast.warning('No receipt number available for this payment');
+      return;
+    }
+    
+    const url = `${BACKEND_URL}/download_receipt/${receiptNumber}/`;
+    toast.info('Downloading receipt...');
+    window.open(url, '_blank');
+  };
+
+  // Download receipt with loading indicator
+  const downloadReceiptWithFeedback = (receiptNumber) => {
+    if (!receiptNumber) {
+      toast.warning('No receipt number available for this payment');
+      return;
+    }
+    
+    toast.promise(
+      new Promise((resolve, reject) => {
+        try {
+          const url = `${BACKEND_URL}/download_receipt/${receiptNumber}/`;
+          window.open(url, '_blank');
+          setTimeout(resolve, 1000);
+        } catch (error) {
+          reject(error);
+        }
+      }),
+      {
+        pending: 'Generating receipt PDF...',
+        success: 'Receipt downloaded successfully! 📄',
+        error: 'Failed to download receipt. Please try again.'
+      }
+    );
+  };
+
   // Pagination calculations
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -464,7 +501,7 @@ const Payments = () => {
               <th>Method</th>
               <th>Status</th>
               <th>Date</th>
-              <th>Recorded By</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -500,7 +537,20 @@ const Payments = () => {
                     </span>
                   </td>
                   <td>{formatDate(payment.payment_date)}</td>
-                  <td className={styles.recordedByCell}>{payment.recorded_by || 'system'}</td>
+                  <td>
+                    {payment.receipt_number && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent row click
+                          downloadReceiptWithFeedback(payment.receipt_number);
+                        }}
+                        className={styles.downloadButton}
+                        title="Download Receipt"
+                      >
+                        📄
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))
             ) : (
@@ -645,12 +695,20 @@ const Payments = () => {
                 Close
               </button>
               {selectedPayment.receipt_number && (
-                <button 
-                  className={styles.printButton}
-                  onClick={() => window.open(`${BACKEND_URL}/payment-history/receipt/${selectedPayment.receipt_number}/`, '_blank')}
-                >
-                  🖨️ Print Receipt
-                </button>
+                <>
+                  <button 
+                    className={styles.downloadButton}
+                    onClick={() => downloadReceiptWithFeedback(selectedPayment.receipt_number)}
+                  >
+                    📄 Download Receipt
+                  </button>
+                  <button 
+                    className={styles.printButton}
+                    onClick={() => window.open(`${BACKEND_URL}/payment-history/receipt/${selectedPayment.receipt_number}/`, '_blank')}
+                  >
+                    🖨️ Print Receipt
+                  </button>
+                </>
               )}
             </div>
           </div>
