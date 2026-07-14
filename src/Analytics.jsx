@@ -197,6 +197,13 @@ function Analytics() {
           </div>
         </div>
 
+        <div className={`${styles.kpiCard} ${styles.kpiRevenue}`}>  
+          <div className={styles.kpiContent}>
+            <span className={styles.kpiLabel}>Current Revenue</span>
+            <span className={styles.kpiValue}>{formatCurrency(bills)}</span>
+          </div>
+        </div>
+
 
         <div className={`${styles.kpiCard} ${styles.kpiRevenue}`}>
           
