@@ -193,7 +193,7 @@ function Analytics() {
         <div className={`${styles.kpiCard} ${styles.kpiRevenue}`}>  
           <div className={styles.kpiContent}>
             <span className={styles.kpiLabel}>Previus balance</span>
-            <span className={styles.kpiValue}>{formatNumber(bal)}</span>
+            <span className={styles.kpiValue}>{formatCurrency(bal)}</span>
           </div>
         </div>
 
