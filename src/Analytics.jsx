@@ -137,6 +137,17 @@ function Analytics() {
 
   const efficiencyLevel = getEfficiencyLevel();
 
+  // Prepare data for the metrics bar chart
+  const metricsData = [
+    { name: 'Total Customers', value: customers, formatted: formatNumber(customers), color: '#3B82F6' },
+    { name: 'Previous Balance', value: bal, formatted: formatCurrency(bal), color: '#8B5CF6' },
+    { name: 'Current Revenue', value: bills, formatted: formatCurrency(bills), color: '#3B82F6' },
+    { name: 'Total Revenue', value: total, formatted: formatCurrency(total), color: '#10B981' },
+    { name: 'Amount Paid', value: paid, formatted: formatCurrency(paid), color: '#F59E0B' },
+    { name: 'Outstanding Balance', value: balance, formatted: formatCurrency(balance), color: '#EF4444' },
+    { name: 'Units Consumed', value: units_used, formatted: `${formatNumber(units_used)} m³`, color: '#06B6D4' },
+  ];
+
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -279,6 +290,29 @@ function Analytics() {
       <div className={styles.chartsGrid}>
         <div className={styles.chartCard}>
           <div className={styles.chartHeader}>
+            <h3>Key Metrics Overview</h3>
+            <span className={styles.chartSubtitle}>All metrics at a glance</span>
+          </div>
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={metricsData} layout="vertical" margin={{ top: 20, right: 30, left: 100, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" />
+              <YAxis type="category" dataKey="name" width={120} />
+              <Tooltip formatter={(value, name, props) => {
+                const data = props.payload;
+                return [data.payload.formatted || value, ''];
+              }} />
+              <Bar dataKey="value" fill="#3B82F6">
+                {metricsData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className={styles.chartCard}>
+          <div className={styles.chartHeader}>
             <h3>Revenue Trend</h3>
             <span className={styles.chartSubtitle}>Monthly billing vs collections</span>
           </div>
@@ -292,32 +326,6 @@ function Analytics() {
               <Area type="monotone" dataKey="bills" stackId="1" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.3} />
               <Area type="monotone" dataKey="paid" stackId="1" stroke="#10B981" fill="#10B981" fillOpacity={0.3} />
             </AreaChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className={styles.chartCard}>
-          <div className={styles.chartHeader}>
-            <h3>Payment Distribution</h3>
-            <span className={styles.chartSubtitle}>By payment method</span>
-          </div>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={paymentDistribution}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {paymentDistribution.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
           </ResponsiveContainer>
         </div>
       </div>
