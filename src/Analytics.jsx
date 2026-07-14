@@ -25,13 +25,7 @@ import {
   Tooltip, 
   Legend, 
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  LineChart,
-  Line,
-  Area,
-  AreaChart
+  Cell
 } from 'recharts';
 
 function Analytics() {
@@ -44,26 +38,6 @@ function Analytics() {
   const [bal, setBal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
-
-  // Chart data
-  const [monthlyData, setMonthlyData] = useState([
-    { month: 'Jan', bills: 45000, paid: 32000 },
-    { month: 'Feb', bills: 52000, paid: 41000 },
-    { month: 'Mar', bills: 48000, paid: 38000 },
-    { month: 'Apr', bills: 61000, paid: 52000 },
-    { month: 'May', bills: 55000, paid: 46000 },
-    { month: 'Jun', bills: 58000, paid: 49000 },
-  ]);
-
-  // Payment method distribution
-  const [paymentDistribution, setPaymentDistribution] = useState([
-    { name: 'M-PESA', value: 45 },
-    { name: 'Cash', value: 30 },
-    { name: 'Bank Transfer', value: 15 },
-    { name: 'Other', value: 10 },
-  ]);
-
-  const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6'];
 
   // ================= FETCH DATA =================
   const fetchAllData = async () => {
@@ -286,7 +260,7 @@ function Analytics() {
         </div>
       </div>
 
-      {/* Charts Section */}
+      {/* Charts Section - Only Bar Chart */}
       <div className={styles.chartsGrid}>
         <div className={styles.chartCard}>
           <div className={styles.chartHeader}>
@@ -308,24 +282,6 @@ function Analytics() {
                 ))}
               </Bar>
             </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className={styles.chartCard}>
-          <div className={styles.chartHeader}>
-            <h3>Revenue Trend</h3>
-            <span className={styles.chartSubtitle}>Monthly billing vs collections</span>
-          </div>
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={monthlyData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip formatter={(value) => formatCurrency(value)} />
-              <Legend />
-              <Area type="monotone" dataKey="bills" stackId="1" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.3} />
-              <Area type="monotone" dataKey="paid" stackId="1" stroke="#10B981" fill="#10B981" fillOpacity={0.3} />
-            </AreaChart>
           </ResponsiveContainer>
         </div>
       </div>
