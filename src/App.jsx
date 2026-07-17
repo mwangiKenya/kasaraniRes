@@ -20,6 +20,7 @@ import HistoryTable from "./HistoryTable";
 import Sms from "./Sms";
 import Reminder from "./Reminder";
 import Payments from "./Payments";
+import ReadingsHistory from "./ReadingsHistory";
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -92,6 +93,7 @@ function App() {
           <Route path="/Sms" element = {<Sms/>}/>
           <Route path="/Reminder" element = {<Reminder/>}/>
           <Route path="/Payments" element = {<Payments/>}/>
+          <Route path="/ReadingsHistory" element = {<ReadingsHistory/>}/>
         </Routes>
       </HashRouter>
 

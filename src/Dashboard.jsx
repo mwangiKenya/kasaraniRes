@@ -12,6 +12,7 @@ import HistoryTable from "./HistoryTable";
 import Sms from "./Sms";
 import Reminder from "./Reminder";
 import Payments from "./Payments";
+import ReadingsHistory from "./ReadingsHistory";
 
 function Dashboard() {
     const [activeView, setActiveView] = useState("analytics");
@@ -36,7 +37,7 @@ function Dashboard() {
             case "emp":
                 return <EmployeesList/>
             case "hist":
-                return <HistoryTable/>
+                return <ReadingsHistory/>
             case "sms" :
                 return <Sms/>
             case "payments" :
