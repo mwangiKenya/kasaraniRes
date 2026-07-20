@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   Search, 
   Filter, 
@@ -49,6 +49,10 @@ const ReadingsHistory = () => {
     end_date: '',
     recorded_by: ''
   });
+  
+  // Debounced search value - this is what actually triggers the API call
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState('table'); // 'table' or 'cards'
   const [selectedReading, setSelectedReading] = useState(null);
@@ -56,18 +60,57 @@ const ReadingsHistory = () => {
   const [cycleMonths, setCycleMonths] = useState([]);
   const [recordedByOptions, setRecordedByOptions] = useState([]);
 
+  // Refs for debouncing
+  const searchTimeoutRef = useRef(null);
+  const isFirstRender = useRef(true);
+
   // API Base URL
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://python-back-2.onrender.com/api';
 
+  // Debounce search function
+  const debounceSearch = useCallback((value) => {
+    // Clear existing timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    // Set new timeout
+    searchTimeoutRef.current = setTimeout(() => {
+      setDebouncedSearch(value);
+      setPagination(prev => ({ ...prev, page: 1 })); // Reset to first page on search
+    }, 400); // 400ms delay for smooth typing experience
+  }, []);
+
+  // Handle search input change - updates immediately for UI, debounced for API
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    // Update the search value in filters immediately (for UI)
+    setFilters(prev => ({ ...prev, search: value }));
+    // Debounce the API call
+    debounceSearch(value);
+  };
+
+  // Handle search clear
+  const handleClearSearch = () => {
+    setFilters(prev => ({ ...prev, search: '' }));
+    setDebouncedSearch('');
+    setPagination(prev => ({ ...prev, page: 1 }));
+    // Clear any pending timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+  };
+
   // Fetch reading history
-  const fetchReadings = async () => {
+  const fetchReadings = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
+      // Use debouncedSearch for the API call, not the raw input value
       const params = new URLSearchParams({
         page: pagination.page,
         page_size: pagination.page_size,
-        ...(filters.search && { search: filters.search }),
+        ...(debouncedSearch && { search: debouncedSearch }),
         ...(filters.cycle_month && { cycle_month: filters.cycle_month }),
         ...(filters.start_date && { start_date: filters.start_date }),
         ...(filters.end_date && { end_date: filters.end_date }),
@@ -96,12 +139,29 @@ const ReadingsHistory = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, pagination.page_size, debouncedSearch, filters.cycle_month, filters.start_date, filters.end_date, filters.recorded_by, API_BASE_URL]);
 
-  // Initial fetch
+  // Fetch data when debounced search or filters change
+  useEffect(() => {
+    // Skip the first render to avoid double fetch
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    fetchReadings();
+  }, [fetchReadings]);
+
+  // Initial fetch - only once on mount
   useEffect(() => {
     fetchReadings();
-  }, [pagination.page, filters]);
+    // Cleanup timeout on unmount
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Handle page change
   const handlePageChange = (newPage) => {
@@ -110,7 +170,7 @@ const ReadingsHistory = () => {
     }
   };
 
-  // Handle filter change
+  // Handle filter change (non-search filters)
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
     setPagination(prev => ({ ...prev, page: 1 })); // Reset to first page on filter change
@@ -118,6 +178,7 @@ const ReadingsHistory = () => {
 
   // Clear all filters
   const clearFilters = () => {
+    // Clear search
     setFilters({
       search: '',
       cycle_month: '',
@@ -125,7 +186,12 @@ const ReadingsHistory = () => {
       end_date: '',
       recorded_by: ''
     });
+    setDebouncedSearch('');
     setPagination(prev => ({ ...prev, page: 1 }));
+    // Clear any pending timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
   };
 
   // Handle view mode change
@@ -261,13 +327,16 @@ const ReadingsHistory = () => {
             type="text"
             placeholder="Search by name or phone..."
             value={filters.search}
-            onChange={(e) => handleFilterChange('search', e.target.value)}
+            onChange={handleSearchChange}
             className={styles.searchInput}
+            autoComplete="off"
+            spellCheck="false"
           />
           {filters.search && (
             <button 
               className={styles.clearSearchBtn}
-              onClick={() => handleFilterChange('search', '')}
+              onClick={handleClearSearch}
+              type="button"
             >
               <X size={14} />
             </button>
@@ -277,6 +346,7 @@ const ReadingsHistory = () => {
         <button 
           className={styles.filterToggle}
           onClick={() => setShowFilters(!showFilters)}
+          type="button"
         >
           <Filter size={18} />
           <span>Filters</span>
@@ -288,6 +358,7 @@ const ReadingsHistory = () => {
             className={`${styles.viewBtn} ${viewMode === 'table' ? styles.active : ''}`}
             onClick={() => handleViewModeChange('table')}
             title="Table View"
+            type="button"
           >
             <Grid3x3 size={18} />
           </button>
@@ -295,16 +366,28 @@ const ReadingsHistory = () => {
             className={`${styles.viewBtn} ${viewMode === 'cards' ? styles.active : ''}`}
             onClick={() => handleViewModeChange('cards')}
             title="Card View"
+            type="button"
           >
             <List size={18} />
           </button>
         </div>
 
-        <button className={styles.refreshBtn} onClick={fetchReadings} title="Refresh">
+        <button 
+          className={styles.refreshBtn} 
+          onClick={fetchReadings} 
+          title="Refresh"
+          type="button"
+          disabled={loading}
+        >
           <RefreshCw size={18} className={loading ? styles.spinning : ''} />
         </button>
 
-        <button className={styles.exportBtn} onClick={exportToCSV} title="Export to CSV">
+        <button 
+          className={styles.exportBtn} 
+          onClick={exportToCSV} 
+          title="Export to CSV"
+          type="button"
+        >
           <Download size={18} />
           <span>Export</span>
         </button>
@@ -367,7 +450,11 @@ const ReadingsHistory = () => {
             />
           </div>
 
-          <button className={styles.clearFiltersBtn} onClick={clearFilters}>
+          <button 
+            className={styles.clearFiltersBtn} 
+            onClick={clearFilters}
+            type="button"
+          >
             <X size={16} />
             Clear Filters
           </button>
@@ -455,6 +542,7 @@ const ReadingsHistory = () => {
                     <button 
                       className={styles.viewBtn}
                       onClick={() => handleRowClick(reading)}
+                      type="button"
                     >
                       <Eye size={16} />
                     </button>
@@ -561,6 +649,7 @@ const ReadingsHistory = () => {
                 <button 
                   className={styles.cardViewBtn}
                   onClick={() => handleRowClick(reading)}
+                  type="button"
                 >
                   <Eye size={16} />
                   View Details
@@ -585,6 +674,7 @@ const ReadingsHistory = () => {
             <button 
               className={styles.modalClose}
               onClick={() => setShowDetailModal(false)}
+              type="button"
             >
               <X size={20} />
             </button>
@@ -706,12 +796,14 @@ const ReadingsHistory = () => {
             <button 
               className={styles.modalCloseBtn}
               onClick={() => setShowDetailModal(false)}
+              type="button"
             >
               Close
             </button>
             <button 
               className={styles.modalPrintBtn}
               onClick={() => window.print()}
+              type="button"
             >
               <Printer size={16} />
               Print
@@ -744,13 +836,14 @@ const ReadingsHistory = () => {
           className={styles.pageBtn}
           onClick={() => handlePageChange(pagination.page - 1)}
           disabled={pagination.page === 1}
+          type="button"
         >
           <ChevronLeft size={16} />
         </button>
 
         {start > 1 && (
           <>
-            <button className={styles.pageBtn} onClick={() => handlePageChange(1)}>1</button>
+            <button className={styles.pageBtn} onClick={() => handlePageChange(1)} type="button">1</button>
             {start > 2 && <span className={styles.pageDots}>...</span>}
           </>
         )}
@@ -760,6 +853,7 @@ const ReadingsHistory = () => {
             key={page}
             className={`${styles.pageBtn} ${page === pagination.page ? styles.active : ''}`}
             onClick={() => handlePageChange(page)}
+            type="button"
           >
             {page}
           </button>
@@ -768,7 +862,7 @@ const ReadingsHistory = () => {
         {end < pagination.total_pages && (
           <>
             {end < pagination.total_pages - 1 && <span className={styles.pageDots}>...</span>}
-            <button className={styles.pageBtn} onClick={() => handlePageChange(pagination.total_pages)}>
+            <button className={styles.pageBtn} onClick={() => handlePageChange(pagination.total_pages)} type="button">
               {pagination.total_pages}
             </button>
           </>
@@ -778,6 +872,7 @@ const ReadingsHistory = () => {
           className={styles.pageBtn}
           onClick={() => handlePageChange(pagination.page + 1)}
           disabled={pagination.page === pagination.total_pages}
+          type="button"
         >
           <ChevronRight size={16} />
         </button>
@@ -825,7 +920,7 @@ const ReadingsHistory = () => {
             <AlertCircle size={48} />
             <h3>Error Loading Data</h3>
             <p>{error}</p>
-            <button onClick={fetchReadings} className={styles.retryBtn}>
+            <button onClick={fetchReadings} className={styles.retryBtn} type="button">
               <RefreshCw size={16} />
               Retry
             </button>
