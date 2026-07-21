@@ -686,11 +686,11 @@ const Payments = () => {
                   </p>
                 </div>
                 <div className={styles.modalItem}>
-                  <label>Bill Amount</label>
-                  <p>{formatCurrency(selectedPayment.previous_balance)}</p>
+                  <label>Payment Status </label>
+                  <p>{formatCurrency(selectedPayment.status)}</p>
                 </div>
                 <div className={styles.modalItem}>
-                  <label>Previous Balance</label>
+                  <label>Billed Amount </label>
                   <p>{formatCurrency(selectedPayment.previous_balance)}</p>
                 </div>
                 <div className={styles.modalItem}>
