@@ -525,7 +525,7 @@ const Payments = () => {
               <th>Amount Paid</th>
               <th>Previous Balance</th>
               <th>Current Balance</th>
-              <th>Method</th>
+              {/*<th>Method</th>*/}
               <th>Status</th>
               <th>Date</th>
               <th>Actions</th>
@@ -553,11 +553,11 @@ const Payments = () => {
                   <td className={styles.balanceCell}>
                     {formatCurrency(payment.current_balance)}
                   </td>
-                  <td>
+                  {/*<td>
                     <span className={`${styles.badge} ${getMethodBadge(payment.payment_method)}`}>
                       {payment.payment_method_display || payment.payment_method}
                     </span>
-                  </td>
+                  </td>*/}
                   <td>
                     <span className={`${styles.badge} ${getStatusBadge(payment.status)}`}>
                       {payment.status_display || payment.status}
@@ -697,14 +697,14 @@ const Payments = () => {
                   <label>Current Balance</label>
                   <p>{formatCurrency(selectedPayment.current_balance)}</p>
                 </div>
-                <div className={styles.modalItem}>
+                {/*<div className={styles.modalItem}>
                   <label>Payment Method</label>
                   <p>
                     <span className={`${styles.badge} ${getMethodBadge(selectedPayment.payment_method)}`}>
                       {selectedPayment.payment_method_display || selectedPayment.payment_method}
                     </span>
                   </p>
-                </div>
+                </div>*/}
                 <div className={styles.modalItem}>
                   <label>Status</label>
                   <p>
