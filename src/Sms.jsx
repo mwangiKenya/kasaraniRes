@@ -1153,9 +1153,10 @@ const downloadSMSExcel = () => {
     placeholder="Testing phone number"
     value={testPhone}
     onChange={(e) => setTestPhone(e.target.value)}
+    className={styles.TestingPhoneNumber}
   />
 
-  <button onClick={updateAllPhones}>
+  <button onClick={updateAllPhones} className={styles.TestingPhoneButton}>
     Update All Phones
   </button>
   {/*DOWNLOAD THE SMS EXCEL*/}
@@ -1163,6 +1164,7 @@ const downloadSMSExcel = () => {
               variant="contained"
               color="success"
               onClick={downloadSMSExcel}
+              className={styles.downloadSheetBtn}
           >
               Download SMS Excel sheet
           </button>

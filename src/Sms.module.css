@@ -833,3 +833,79 @@
     text-align: center;
   }
 }
+
+/* Testing Phone Number Input */
+.TestingPhoneNumber {
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 1.5px solid #d8dce1;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #1f2937;
+  min-width: 220px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.TestingPhoneNumber::placeholder {
+  color: #9ca3af;
+}
+
+.TestingPhoneNumber:hover {
+  border-color: #b6bcc4;
+}
+
+.TestingPhoneNumber:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+/* Testing Phone Number Button (Update All Phones) */
+.TestingPhoneButton {
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(135deg, #4f46e5, #4338ca);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-shadow: 0 2px 6px rgba(67, 56, 202, 0.25);
+}
+
+.TestingPhoneButton:hover {
+  background: linear-gradient(135deg, #4338ca, #3730a3);
+  box-shadow: 0 4px 10px rgba(67, 56, 202, 0.35);
+  transform: translateY(-1px);
+}
+
+.TestingPhoneButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(67, 56, 202, 0.3);
+}
+
+/* Download SMS Excel Sheet Button */
+.downloadSheetBtn {
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #065f46;
+  background-color: #ecfdf5;
+  border: 1.5px solid #a7f3d0;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.downloadSheetBtn:hover {
+  background-color: #d1fae5;
+  border-color: #6ee7b7;
+  transform: translateY(-1px);
+}
+
+.downloadSheetBtn:active {
+  transform: translateY(0);
+}
