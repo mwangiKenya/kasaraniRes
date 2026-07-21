@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './Payments.module.css';
 import { toast } from 'react-toastify';
 
@@ -8,13 +8,16 @@ const BACKEND_URL = "https://python-back-2.onrender.com/api";
 
 const Payments = () => {
   const [payments, setPayments] = useState([]);
+  // `loading` = the very first load only (shows the full-page spinner)
   const [loading, setLoading] = useState(true);
+  // `isFetching` = any subsequent fetch (search/filter/refresh) - does NOT unmount the UI
+  const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState(null);
   const [summary, setSummary] = useState({
     total_payments: 0,
     total_amount: 0
   });
-  
+
   // Filter states
   const [filters, setFilters] = useState({
     search: '',
@@ -23,17 +26,23 @@ const Payments = () => {
     payment_method: '',
     status: ''
   });
-  
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
-  
+
   // Modal states
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  
+
   // Debug state
   const [debugInfo, setDebugInfo] = useState(null);
+
+  // Keep track of whether this is the first render, and hold the debounce timer
+  const isFirstRun = useRef(true);
+  const debounceTimer = useRef(null);
+  // Used to ignore results from a stale/older request if a newer one has since been fired
+  const requestIdRef = useRef(0);
 
   // Check if endpoint exists
   const checkEndpoint = async () => {
@@ -57,43 +66,55 @@ const Payments = () => {
   };
 
   // Fetch payment history
-  const fetchPayments = async () => {
-    setLoading(true);
+  // `isInitial` controls whether we show the full-page blocking loader
+  // or the lightweight, non-blocking "isFetching" state (used for search-as-you-type).
+  const fetchPayments = useCallback(async (currentFilters, isInitial = false) => {
+    const thisRequestId = ++requestIdRef.current;
+
+    if (isInitial) {
+      setLoading(true);
+    } else {
+      setIsFetching(true);
+    }
     setError(null);
-    
+
     try {
       // Build query string from filters
       const params = new URLSearchParams();
-      if (filters.search) params.append('search', filters.search);
-      if (filters.start_date) params.append('start_date', filters.start_date);
-      if (filters.end_date) params.append('end_date', filters.end_date);
-      if (filters.payment_method) params.append('payment_method', filters.payment_method);
-      if (filters.status) params.append('status', filters.status);
-      
+      if (currentFilters.search) params.append('search', currentFilters.search);
+      if (currentFilters.start_date) params.append('start_date', currentFilters.start_date);
+      if (currentFilters.end_date) params.append('end_date', currentFilters.end_date);
+      if (currentFilters.payment_method) params.append('payment_method', currentFilters.payment_method);
+      if (currentFilters.status) params.append('status', currentFilters.status);
+
       // Try the main endpoint
       const url = `${BACKEND_URL}/payment-history/${params.toString() ? `?${params.toString()}` : ''}`;
-      
+
       console.log('Fetching from:', url);
-      
+
       const response = await fetch(url);
-      
+
+      // If a newer request has been fired since this one started, ignore this result
+      if (thisRequestId !== requestIdRef.current) return;
+
       // If 404, try the JSON endpoint as fallback
       if (response.status === 404) {
         console.warn('Main endpoint returned 404, trying fallback...');
         const fallbackUrl = `${BACKEND_URL}/payment-history/json/${params.toString() ? `?${params.toString()}` : ''}`;
         const fallbackResponse = await fetch(fallbackUrl);
-        
+
+        if (thisRequestId !== requestIdRef.current) return;
+
         if (fallbackResponse.ok) {
           const data = await fallbackResponse.json();
           if (data.success) {
             setPayments(data.data);
             setSummary(data.summary || { total_payments: data.data.length, total_amount: 0 });
             toast.success(`Loaded ${data.data.length} payment records (fallback)`);
-            setLoading(false);
             return;
           }
         }
-        
+
         // If both fail, show helpful error
         throw new Error(
           'Payment history endpoint not found. Please ensure:\n' +
@@ -102,18 +123,20 @@ const Payments = () => {
           '3. The server is running properly'
         );
       }
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-      
+
       const data = await response.json();
-      
+
+      if (thisRequestId !== requestIdRef.current) return;
+
       if (data.success) {
         setPayments(data.data);
-        setSummary(data.summary || { 
-          total_payments: data.data.length, 
-          total_amount: data.data.reduce((sum, p) => sum + (p.amount_paid || 0), 0) 
+        setSummary(data.summary || {
+          total_payments: data.data.length,
+          total_amount: data.data.reduce((sum, p) => sum + (p.amount_paid || 0), 0)
         });
         toast.success(`Loaded ${data.data.length} payment records`);
       } else {
@@ -121,12 +144,14 @@ const Payments = () => {
         toast.error(data.error || 'Failed to fetch payment history');
       }
     } catch (err) {
+      if (thisRequestId !== requestIdRef.current) return;
+
       console.error('Fetch error:', err);
-      
+
       let errorMessage = err.message;
       if (errorMessage.includes('404')) {
         errorMessage = 'Payment history endpoint not found. The server may need to be redeployed with the new payment history features.';
-        
+
         // Try to check if the server is at least responding
         try {
           const healthCheck = await fetch(`${BACKEND_URL}/water_users/`);
@@ -141,27 +166,46 @@ const Payments = () => {
       } else if (errorMessage.includes('Network')) {
         errorMessage = 'Cannot connect to server. Please check your internet connection.';
       }
-      
+
       setError(errorMessage);
       toast.error('Failed to load payment history');
     } finally {
-      setLoading(false);
+      if (thisRequestId === requestIdRef.current) {
+        setLoading(false);
+        setIsFetching(false);
+      }
     }
-  };
+  }, []);
 
-  // Fetch on component mount and when filters change
+  // Initial load on mount
   useEffect(() => {
-    // Check endpoint on mount
     checkEndpoint();
-    fetchPayments();
-  }, []); // Only run on mount, not on filter change
+    fetchPayments(filters, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Re-fetch when filters change
+  // Debounced re-fetch whenever filters change (search-as-you-type, no focus loss)
   useEffect(() => {
-    if (filters.search || filters.start_date || filters.end_date || filters.payment_method || filters.status) {
-      fetchPayments();
+    // Skip the debounce cycle on first mount - the initial effect above already fetched
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      return;
     }
-  }, [filters]);
+
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
+    debounceTimer.current = setTimeout(() => {
+      fetchPayments(filters, false);
+    }, 400); // wait 400ms after the user stops typing before hitting the server
+
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, [filters, fetchPayments]);
 
   // Handle filter changes
   const handleFilterChange = (e) => {
@@ -183,7 +227,7 @@ const Payments = () => {
       status: ''
     });
     setCurrentPage(1);
-    fetchPayments();
+    // The filters-changed effect above will pick this up and re-fetch (debounced).
   };
 
   // Handle row click to show details
@@ -204,7 +248,7 @@ const Payments = () => {
       toast.warning('No receipt number available for this payment');
       return;
     }
-    
+
     const url = `${BACKEND_URL}/download_receipt/${receiptNumber}/`;
     toast.info('Downloading receipt...');
     window.open(url, '_blank');
@@ -216,7 +260,7 @@ const Payments = () => {
       toast.warning('No receipt number available for this payment');
       return;
     }
-    
+
     toast.promise(
       new Promise((resolve, reject) => {
         try {
@@ -241,7 +285,7 @@ const Payments = () => {
       toast.warning('No user ID available');
       return;
     }
-    
+
     toast.promise(
       new Promise((resolve, reject) => {
         try {
@@ -321,6 +365,7 @@ const Payments = () => {
     return methodMap[method] || styles.methodDefault;
   };
 
+  // Only block the entire UI on the very first load.
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -335,7 +380,11 @@ const Payments = () => {
     );
   }
 
-  if (error) {
+  // Only show the full error page if we have no data to show at all
+  // (e.g. the initial load failed). If the user already has data loaded
+  // and a subsequent search fails, we keep showing the table/input and
+  // just toast the error, so they never lose their place while typing.
+  if (error && payments.length === 0) {
     return (
       <div className={styles.errorContainer}>
         <div className={styles.errorIcon}>⚠️</div>
@@ -346,14 +395,14 @@ const Payments = () => {
           ))}
         </div>
         <div className={styles.errorActions}>
-          <button onClick={fetchPayments} className={styles.retryButton}>
+          <button onClick={() => fetchPayments(filters, true)} className={styles.retryButton}>
             🔄 Retry
           </button>
-          <button 
+          <button
             onClick={async () => {
               const result = await checkEndpoint();
               toast.info(result ? 'Endpoint test successful!' : 'Endpoint test failed. See console for details.');
-            }} 
+            }}
             className={styles.debugButton}
           >
             🐛 Test Endpoint
@@ -384,13 +433,13 @@ const Payments = () => {
       <div className={styles.header}>
         <h1 className={styles.title}>Payment History</h1>
         <div className={styles.headerActions}>
-          <button 
-            className={styles.exportButton} 
+          <button
+            className={styles.exportButton}
             onClick={() => window.open(`${BACKEND_URL}/payment-history/export/`, '_blank')}
           >
             📊 Export
           </button>
-          <button className={styles.refreshButton} onClick={fetchPayments}>
+          <button className={styles.refreshButton} onClick={() => fetchPayments(filters, false)}>
             🔄 Refresh
           </button>
         </div>
@@ -436,7 +485,9 @@ const Payments = () => {
       <div className={styles.filtersContainer}>
         <div className={styles.filterRow}>
           <div className={styles.filterGroup}>
-            <label className={styles.filterLabel}>Search</label>
+            <label className={styles.filterLabel}>
+              Search {isFetching && <span className={styles.searchingIndicator}> (searching…)</span>}
+            </label>
             <input
               type="text"
               name="search"
@@ -444,6 +495,7 @@ const Payments = () => {
               value={filters.search}
               onChange={handleFilterChange}
               className={styles.filterInput}
+              autoComplete="off"
             />
           </div>
 
@@ -515,7 +567,7 @@ const Payments = () => {
       </div>
 
       {/* Payments Table */}
-      <div className={styles.tableContainer}>
+      <div className={styles.tableContainer} style={{ opacity: isFetching ? 0.6 : 1, transition: 'opacity 0.15s ease' }}>
         <table className={styles.table}>
           <thead>
             <tr>
@@ -534,8 +586,8 @@ const Payments = () => {
           <tbody>
             {currentPayments.length > 0 ? (
               currentPayments.map((payment) => (
-                <tr 
-                  key={payment.id} 
+                <tr
+                  key={payment.id}
                   onClick={() => handleRowClick(payment)}
                   className={styles.tableRow}
                 >
@@ -734,7 +786,7 @@ const Payments = () => {
                 Close
               </button>
               {selectedPayment.receipt_number && (
-                <button 
+                <button
                   className={styles.downloadButton}
                   onClick={() => downloadReceiptWithFeedback(selectedPayment.receipt_number)}
                 >
@@ -742,7 +794,7 @@ const Payments = () => {
                 </button>
               )}
               {selectedPayment.user_id && (
-                <button 
+                <button
                   className={styles.downloadHistoryButton}
                   onClick={() => downloadUserPaymentHistory(selectedPayment.user_id)}
                 >
