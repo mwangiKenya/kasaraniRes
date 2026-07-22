@@ -546,10 +546,18 @@ Contact us on: 0741088799
 
     setCustomers((prev) => prev.map((c) => (c.id === customerId ? updatedCustomer : c)));
 
+    // Update the edited message with the new message
     setEditedMessages((prev) => ({
       ...prev,
       [customerId]: updatedCustomer.message,
     }));
+
+    // If this customer is currently selected in the modal, update the selected customer
+    if (selectedCustomer && selectedCustomer.id === customerId) {
+      setSelectedCustomer(updatedCustomer);
+    }
+
+    return updatedCustomer;
   };
 
   // =========================================
@@ -672,12 +680,6 @@ Contact us on: 0741088799
       editStatus: "Edited",
     });
 
-    const updated = customers.find((c) => c.id === selectedCustomer.id);
-
-    if (updated) {
-      setSelectedCustomer(updated);
-    }
-
     toast.success("SMS updated successfully");
 
     setShowModal(false);
@@ -719,14 +721,16 @@ Contact us on: 0741088799
       updates.penalty = 0;
     }
 
-    // Update the message
+    // Get the group customers for this customer
     const groupCustomers = customer.grp ? customers.filter((c) => c.grp === customer.grp) : [customer];
 
+    // Create updated customer object with the new penalty/discount
     const updatedCustomer = {
       ...customer,
       ...updates,
     };
 
+    // Generate the new message using the updated customer data
     const newMessage = generateGroupMessage({
       ...updatedCustomer,
       __groupCustomers: groupCustomers,
@@ -735,14 +739,13 @@ Contact us on: 0741088799
     updates.message = newMessage;
     updates.editStatus = "Edited";
 
-    // Save the updated customer data
-    saveCustomerData(customerId, updates);
+    // Save the updated customer data - this will update customers state and editedMessages
+    const savedCustomer = saveCustomerData(customerId, updates);
 
-    // Update the edited messages
-    setEditedMessages((prev) => ({
-      ...prev,
-      [customerId]: newMessage,
-    }));
+    // If the customer is currently selected in the modal, update the selected customer
+    if (selectedCustomer && selectedCustomer.id === customerId) {
+      setSelectedCustomer(savedCustomer || updatedCustomer);
+    }
 
     toast.success(`${adjustmentType.charAt(0).toUpperCase() + adjustmentType.slice(1)} applied successfully`);
     setShowAdjustmentModal(false);
