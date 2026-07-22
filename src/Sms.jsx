@@ -181,9 +181,17 @@ function Sms() {
       finalToPay -= discount;
     }
 
-    const toPayLine = `To Pay:KES ${finalToPay.toLocaleString()}\n`;
+    // If there's no carried-forward balance and no penalty/discount, the
+    // amount to pay is identical to the Current Bill already shown above -
+    // showing "To Pay" again would just be repeating the same figure, so
+    // we leave it out and let "Current Bill" stand as the amount owed.
+    const hasBalance = Number(c.b_cd) !== 0;
+    const hasAdjustment = penalty > 0 || discount > 0;
+    const showToPay = hasBalance || hasAdjustment;
 
-    return { balanceLine, adjustmentLine, toPayLine, finalToPay, penalty, discount };
+    const toPayLine = showToPay ? `To Pay:KES ${finalToPay.toLocaleString()}\n` : "";
+
+    return { balanceLine, adjustmentLine, toPayLine, finalToPay, penalty, discount, showToPay };
   };
 
   // =========================================
