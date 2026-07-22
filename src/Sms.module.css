@@ -909,3 +909,218 @@
 .downloadSheetBtn:active {
   transform: translateY(0);
 }
+
+
+
+
+
+
+
+/* Adjustment Select */
+.adjustmentSelect {
+  padding: 4px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 12px;
+  background-color: white;
+  cursor: pointer;
+  width: 100px;
+}
+
+.adjustmentSelect:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* Adjustment Badge */
+.adjustmentBadge {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  border-radius: 4px;
+  background-color: #fef3c7;
+  color: #92400e;
+  font-weight: 500;
+}
+
+/* Adjustment Modal Overlay */
+.adjustmentModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-in;
+}
+
+/* Adjustment Modal Box */
+.adjustmentModalBox {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 450px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Adjustment Modal Header */
+.adjustmentModalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.adjustmentModalHeader h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #111827;
+  font-weight: 600;
+}
+
+.adjustmentModalClose {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: color 0.2s;
+}
+
+.adjustmentModalClose:hover {
+  color: #111827;
+}
+
+/* Adjustment Modal Body */
+.adjustmentModalBody {
+  padding: 24px;
+}
+
+.adjustmentModalBody p {
+  margin: 0 0 16px 0;
+  color: #374151;
+  font-size: 14px;
+}
+
+.adjustmentModalBody label {
+  display: block;
+  margin-bottom: 8px;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.adjustmentInput {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-top: 4px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.adjustmentInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Adjustment Modal Footer */
+.adjustmentModalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  border-radius: 0 0 8px 8px;
+}
+
+.adjustmentCancelBtn {
+  padding: 8px 20px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: white;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.adjustmentCancelBtn:hover {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.adjustmentSaveBtn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  background-color: #3b82f6;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.adjustmentSaveBtn:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.adjustmentSaveBtn:active {
+  transform: translateY(0);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .adjustmentModalBox {
+    width: 95%;
+    margin: 10px;
+  }
+
+  .adjustmentModalFooter {
+    flex-direction: column;
+  }
+
+  .adjustmentCancelBtn,
+  .adjustmentSaveBtn {
+    width: 100%;
+  }
+}
