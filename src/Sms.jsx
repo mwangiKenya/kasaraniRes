@@ -656,13 +656,16 @@ Contact us on: 0741088799
   };
   // =========================================
   // SAVE MESSAGE
+  // A group shares ONE message (it's sent to the
+  // parent on behalf of everyone in the group), so
+  // saving an edit on any member propagates the same
+  // text to every member's stored message - this way
+  // previewing ANY of them shows the same, correct SMS.
   // =========================================
   const saveMessage = () => {
-    saveCustomerData(selectedCustomer.id, {
-      message: editedMessages[selectedCustomer.id],
+    const newMessage = editedMessages[selectedCustomer.id];
 
-      editStatus: "Edited",
-    });
+    propagateMessageToGroup(selectedCustomer, newMessage);
 
     toast.success("SMS updated successfully");
 
@@ -677,6 +680,36 @@ Contact us on: 0741088799
   // the freshest data - including for grouped
   // (multi-connection) customers.
   // =========================================
+  // Saves `message` to EVERY member of the customer's group (or just the
+  // customer if they aren't in a group). This is what guarantees that
+  // previewing or sending from ANY member - including the parent, who is
+  // the one the bill actually goes to - always shows the same, up to date
+  // combined SMS. `extraUpdates` lets the specific customer that triggered
+  // the change (e.g. the one who got a penalty/discount) also persist
+  // their own field changes (penalty/discount) alongside the message.
+  const propagateMessageToGroup = (customer, message, extraUpdates = {}) => {
+    const groupCustomers = customer.grp
+      ? customers.filter((c) => c.grp === customer.grp)
+      : [customer];
+
+    let lastSaved = null;
+
+    groupCustomers.forEach((c) => {
+      const memberUpdates =
+        c.id === customer.id
+          ? { ...extraUpdates, message, editStatus: "Edited" }
+          : { message, editStatus: "Edited" };
+
+      const saved = saveCustomerData(c.id, memberUpdates);
+
+      if (c.id === customer.id) {
+        lastSaved = saved;
+      }
+    });
+
+    return lastSaved;
+  };
+
   const applyAdjustmentToCustomer = (customerId, updates) => {
     const customer = customers.find((c) => c.id === customerId);
 
@@ -701,13 +734,11 @@ Contact us on: 0741088799
       __groupCustomers: groupCustomers,
     });
 
-    const finalUpdates = {
-      ...updates,
-      message: newMessage,
-      editStatus: "Edited",
-    };
-
-    return saveCustomerData(customerId, finalUpdates);
+    // Push the freshly generated message (with the adjustment baked in)
+    // out to EVERY member of the group, not just the one being adjusted -
+    // this is the fix that makes the penalty/discount visible no matter
+    // which member of the group you preview or send from.
+    return propagateMessageToGroup(customer, newMessage, updates);
   };
 
   const handleAdjustmentChange = (customer, type) => {
