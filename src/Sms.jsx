@@ -1044,7 +1044,7 @@ Contact us on: 0741088799
       {/* HEADER */}
       <div className={styles.headerSection}>
         <div>
-          <h1 className={styles.header1}>SMS Dashboard</h1>
+          <h1 className={styles.header1}>SMS Dashboard,,</h1>
           <p className={styles.subtitle}>Manage, edit and send billing SMS</p>
         </div>
         <button className={styles.sendBtn} onClick={sendSMS} disabled={sending}>
