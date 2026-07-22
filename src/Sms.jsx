@@ -3,6 +3,25 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 
+// =========================================
+// SAFE DATE LOADER (persists across sessions,
+// never silently falls back to "today" unless
+// nothing valid has ever been saved)
+// =========================================
+const loadStoredDate = (key, fallbackFn) => {
+  const saved = localStorage.getItem(key);
+
+  if (saved) {
+    const parsed = new Date(saved);
+
+    if (!isNaN(parsed.getTime())) {
+      return parsed;
+    }
+  }
+
+  return fallbackFn();
+};
+
 function Sms() {
   const [customers, setCustomers] = useState([]);
   const [selectedCustomers, setSelectedCustomers] = useState([]);
@@ -14,39 +33,37 @@ function Sms() {
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [testPhone, setTestPhone] = useState("");
-  const [selectedDate, setSelectedDate] = useState(() => {
-    const saved = localStorage.getItem("billingDate");
-    return saved ? new Date(saved) : new Date();
-  });
 
-  const [confirmedDate, setConfirmedDate] = useState(() => {
-    const saved = localStorage.getItem("billingDate");
-    return saved ? new Date(saved) : new Date();
-  });
+  // =========================================
+  // BILLING / DUE DATES
+  // These are ONLY ever changed when the user
+  // explicitly clicks "Apply Dates". They are
+  // never reset to "today" on reload or on a
+  // new billing cycle.
+  // =========================================
+  const [selectedDate, setSelectedDate] = useState(() =>
+    loadStoredDate("billingDate", () => new Date())
+  );
 
-  const [selectedDueDate, setSelectedDueDate] = useState(() => {
-    const saved = localStorage.getItem("dueDate");
+  const [confirmedDate, setConfirmedDate] = useState(() =>
+    loadStoredDate("billingDate", () => new Date())
+  );
 
-    if (saved) {
-      return new Date(saved);
-    }
+  const [selectedDueDate, setSelectedDueDate] = useState(() =>
+    loadStoredDate("dueDate", () => {
+      const d = new Date();
+      d.setDate(d.getDate() + 12);
+      return d;
+    })
+  );
 
-    const d = new Date();
-    d.setDate(d.getDate() + 12);
-    return d;
-  });
-
-  const [confirmedDueDate, setConfirmedDueDate] = useState(() => {
-    const saved = localStorage.getItem("dueDate");
-
-    if (saved) {
-      return new Date(saved);
-    }
-
-    const d = new Date();
-    d.setDate(d.getDate() + 12);
-    return d;
-  });
+  const [confirmedDueDate, setConfirmedDueDate] = useState(() =>
+    loadStoredDate("dueDate", () => {
+      const d = new Date();
+      d.setDate(d.getDate() + 12);
+      return d;
+    })
+  );
 
   // State for discount/penalty modal
   const [showAdjustmentModal, setShowAdjustmentModal] = useState(false);
@@ -66,7 +83,7 @@ function Sms() {
   // reading date
   const readingDate = confirmedDate;
 
-  // due date = reading date + 12 days
+  // due date
   const dueDate = confirmedDueDate;
 
   const formattedReadingDate = readingDate.toLocaleDateString("en-GB");
@@ -121,42 +138,59 @@ function Sms() {
   };
 
   // =========================================
-  // GENERATE DEFAULT SMS
+  // ADJUSTMENT (PENALTY / DISCOUNT) HELPERS
+  // These build the transparent breakdown lines
+  // shown on the SMS. We NEVER hide the math -
+  // Current Bill, Bal b/d, Penalty and Discount
+  // are all shown as their own figures, and the
+  // final "To Pay" is the number the customer
+  // actually owes once everything is applied.
   // =========================================
-  const generateMessage = (customer) => {
+  const buildAdjustmentLines = (c) => {
     let balanceLine = "";
     let adjustmentLine = "";
 
-    // Check for penalty or discount
-    const penalty = Number(customer.penalty || 0);
-    const discount = Number(customer.discount || 0);
+    const penalty = Number(c.penalty || 0);
+    const discount = Number(c.discount || 0);
 
-    if (Number(customer.b_cd) > 0) {
-      balanceLine = `Bal b/d:KES ${Number(customer.b_cd).toLocaleString()}\n`;
-    } else if (Number(customer.b_cd) < 0) {
-      balanceLine = `Bal b/d:KES (${Math.abs(Number(customer.b_cd)).toLocaleString()})\n`;
+    if (Number(c.b_cd) > 0) {
+      balanceLine = `Bal b/d:KES ${Number(c.b_cd).toLocaleString()}\n`;
+    } else if (Number(c.b_cd) < 0) {
+      balanceLine = `Bal b/d:KES (${Math.abs(Number(c.b_cd)).toLocaleString()})\n`;
     }
 
-    // Add penalty line if exists
     if (penalty > 0) {
       adjustmentLine += `Penalty: KES ${penalty.toLocaleString()}\n`;
     }
 
-    // Add discount line if exists
     if (discount > 0) {
       adjustmentLine += `Discount: KES ${discount.toLocaleString()}\n`;
     }
 
-    // Calculate final to pay
-    let finalToPay = Number(customer.bal || 0);
+    // Bal already represents (Current Bill + Bal b/d) from the backend.
+    // We only ever add the penalty / subtract the discount on top of it,
+    // so the customer can trace exactly how "To Pay" was reached from
+    // the figures shown above it.
+    let finalToPay = Number(c.bal || 0);
+
     if (penalty > 0) {
       finalToPay += penalty;
     }
+
     if (discount > 0) {
       finalToPay -= discount;
     }
 
     const toPayLine = `To Pay:KES ${finalToPay.toLocaleString()}\n`;
+
+    return { balanceLine, adjustmentLine, toPayLine, finalToPay, penalty, discount };
+  };
+
+  // =========================================
+  // GENERATE DEFAULT SMS
+  // =========================================
+  const generateMessage = (customer) => {
+    const { balanceLine, adjustmentLine, toPayLine } = buildAdjustmentLines(customer);
 
     return `
     Dear ${customer.sms_name},
@@ -204,35 +238,7 @@ Contact us on: 0741088799`.trim();
     if (isSingle) {
       const c = groupCustomers[0];
 
-      let balanceLine = "";
-      let adjustmentLine = "";
-
-      const penalty = Number(c.penalty || 0);
-      const discount = Number(c.discount || 0);
-
-      if (Number(c.b_cd) > 0) {
-        balanceLine = `Bal b/d:KES ${Number(c.b_cd).toLocaleString()}\n`;
-      } else if (Number(c.b_cd) < 0) {
-        balanceLine = `Bal b/d:KES (${Math.abs(Number(c.b_cd)).toLocaleString()})\n`;
-      }
-
-      if (penalty > 0) {
-        adjustmentLine += `Penalty: KES ${penalty.toLocaleString()}\n`;
-      }
-
-      if (discount > 0) {
-        adjustmentLine += `Discount: KES ${discount.toLocaleString()}\n`;
-      }
-
-      let finalToPay = Number(c.bal || 0);
-      if (penalty > 0) {
-        finalToPay += penalty;
-      }
-      if (discount > 0) {
-        finalToPay -= discount;
-      }
-
-      const toPayLine = `To Pay:KES ${finalToPay.toLocaleString()}\n`;
+      const { balanceLine, adjustmentLine, toPayLine } = buildAdjustmentLines(c);
 
       return `
 Dear ${c.sms_name},
@@ -264,46 +270,21 @@ Contact us on: 0741088799
     // =========================
     // MULTI USER FORMAT
     // =========================
-    let total = 0;
+    let totalBase = 0; // sum of each member's (bill + bal b/d)
     let totalPenalty = 0;
     let totalDiscount = 0;
 
     const breakdown = groupCustomers
       .map((c) => {
         const bill = Number(c.bill || 0);
-        const penalty = Number(c.penalty || 0);
-        const discount = Number(c.discount || 0);
 
-        total += bill;
+        const { balanceLine, adjustmentLine, penalty, discount } = buildAdjustmentLines(c);
+
+        // Base amount for this member BEFORE penalty/discount, i.e. bill + bal b/d.
+        // "bal" already represents (Current Bill + Bal b/d) from the backend.
+        totalBase += Number(c.bal || 0);
         totalPenalty += penalty;
         totalDiscount += discount;
-
-        let balanceLine = "";
-        let adjustmentLine = "";
-
-        if (Number(c.b_cd) > 0) {
-          balanceLine = `Bal b/d:KES ${Number(c.b_cd).toLocaleString()}\n`;
-        } else if (Number(c.b_cd) < 0) {
-          balanceLine = `Bal b/d:KES (${Math.abs(Number(c.b_cd)).toLocaleString()})\n`;
-        }
-
-        if (penalty > 0) {
-          adjustmentLine += `Penalty: KES ${penalty.toLocaleString()}\n`;
-        }
-
-        if (discount > 0) {
-          adjustmentLine += `Discount: KES ${discount.toLocaleString()}\n`;
-        }
-
-        let finalToPay = Number(c.bal || 0);
-        if (penalty > 0) {
-          finalToPay += penalty;
-        }
-        if (discount > 0) {
-          finalToPay -= discount;
-        }
-
-        const toPayLine = `To Pay:KES ${finalToPay.toLocaleString()}\n`;
 
         return `
 ${c.sms_name}
@@ -311,7 +292,7 @@ Prev Read:${c.prev_user}
 Curr Read:${c.cur_user}
 Usage:${c.units_used}
 Current Bill:KES ${bill.toLocaleString()}
-${balanceLine}${adjustmentLine}${toPayLine}
+${balanceLine}${adjustmentLine}
     `.trim();
       })
       .join("\n\n");
@@ -324,7 +305,10 @@ ${balanceLine}${adjustmentLine}${toPayLine}
       totalAdjustmentLine += `\nTotal Discount: KES ${totalDiscount.toLocaleString()}`;
     }
 
-    const finalTotal = total + totalPenalty - totalDiscount;
+    // Grand total to pay includes every member's own bill + bal b/d,
+    // plus the penalty, minus the discount - so nothing is hidden and
+    // every connection's adjustment is reflected in the final figure.
+    const finalTotal = totalBase + totalPenalty - totalDiscount;
 
     return `
 Dear ${sender.sms_name},
@@ -686,13 +670,62 @@ Contact us on: 0741088799
   };
 
   // =========================================
-  // HANDLE ADJUSTMENT (PENALTY/DISCOUNT)
+  // APPLY / REMOVE ADJUSTMENT (PENALTY/DISCOUNT)
+  // Single source of truth used by both the
+  // modal and the quick "remove" action in the
+  // table, so the SMS always regenerates using
+  // the freshest data - including for grouped
+  // (multi-connection) customers.
   // =========================================
+  const applyAdjustmentToCustomer = (customerId, updates) => {
+    const customer = customers.find((c) => c.id === customerId);
+
+    if (!customer) return null;
+
+    const updatedCustomer = { ...customer, ...updates };
+
+    // Build the group array but make sure the member being adjusted
+    // uses the freshly updated data, not the stale copy still sitting
+    // in `customers` state - this is what actually reflects the
+    // penalty/discount on the SMS preview.
+    const rawGroupCustomers = customer.grp
+      ? customers.filter((c) => c.grp === customer.grp)
+      : [customer];
+
+    const groupCustomers = rawGroupCustomers.map((c) =>
+      c.id === customerId ? updatedCustomer : c
+    );
+
+    const newMessage = generateGroupMessage({
+      ...updatedCustomer,
+      __groupCustomers: groupCustomers,
+    });
+
+    const finalUpdates = {
+      ...updates,
+      message: newMessage,
+      editStatus: "Edited",
+    };
+
+    return saveCustomerData(customerId, finalUpdates);
+  };
+
   const handleAdjustmentChange = (customer, type) => {
     setAdjustingCustomer(customer);
     setAdjustmentType(type);
-    setAdjustmentAmount("");
+
+    // Prefill with the existing amount if this type is already applied,
+    // so re-opening the modal lets the user see/edit/remove it.
+    const existing = type === "penalty" ? customer.penalty : customer.discount;
+    setAdjustmentAmount(existing > 0 ? String(existing) : "");
+
     setShowAdjustmentModal(true);
+  };
+
+  const closeAdjustmentModal = () => {
+    setShowAdjustmentModal(false);
+    setAdjustmentAmount("");
+    setAdjustingCustomer(null);
   };
 
   const saveAdjustment = () => {
@@ -702,55 +735,33 @@ Contact us on: 0741088799
     }
 
     const amount = Number(adjustmentAmount);
-    const customerId = adjustingCustomer.id;
 
-    // Get the current customer data
-    const customer = customers.find((c) => c.id === customerId);
+    const updates =
+      adjustmentType === "penalty"
+        ? { penalty: amount, discount: 0 } // mutually exclusive
+        : { discount: amount, penalty: 0 };
+
+    applyAdjustmentToCustomer(adjustingCustomer.id, updates);
+
+    toast.success(
+      `${adjustmentType.charAt(0).toUpperCase() + adjustmentType.slice(1)} applied successfully`
+    );
+
+    closeAdjustmentModal();
+  };
+
+  // Removes whatever adjustment (penalty or discount) is currently on
+  // the customer, regenerates the SMS back to its original figures,
+  // and saves it. Can be triggered from the modal or directly from the
+  // table row.
+  const removeAdjustment = (customer = adjustingCustomer) => {
     if (!customer) return;
 
-    // Update penalty or discount
-    const updates = {};
+    applyAdjustmentToCustomer(customer.id, { penalty: 0, discount: 0 });
 
-    if (adjustmentType === "penalty") {
-      updates.penalty = amount;
-      // Remove discount if exists (mutually exclusive)
-      updates.discount = 0;
-    } else if (adjustmentType === "discount") {
-      updates.discount = amount;
-      // Remove penalty if exists (mutually exclusive)
-      updates.penalty = 0;
-    }
+    toast.success("Adjustment removed");
 
-    // Get the group customers for this customer
-    const groupCustomers = customer.grp ? customers.filter((c) => c.grp === customer.grp) : [customer];
-
-    // Create updated customer object with the new penalty/discount
-    const updatedCustomer = {
-      ...customer,
-      ...updates,
-    };
-
-    // Generate the new message using the updated customer data
-    const newMessage = generateGroupMessage({
-      ...updatedCustomer,
-      __groupCustomers: groupCustomers,
-    });
-
-    updates.message = newMessage;
-    updates.editStatus = "Edited";
-
-    // Save the updated customer data - this will update customers state and editedMessages
-    const savedCustomer = saveCustomerData(customerId, updates);
-
-    // If the customer is currently selected in the modal, update the selected customer
-    if (selectedCustomer && selectedCustomer.id === customerId) {
-      setSelectedCustomer(savedCustomer || updatedCustomer);
-    }
-
-    toast.success(`${adjustmentType.charAt(0).toUpperCase() + adjustmentType.slice(1)} applied successfully`);
-    setShowAdjustmentModal(false);
-    setAdjustmentAmount("");
-    setAdjustingCustomer(null);
+    closeAdjustmentModal();
   };
 
   // =========================================
@@ -920,6 +931,10 @@ Contact us on: 0741088799
 
   // =========================================
   // CONFIRM DATE
+  // Only place these dates are ever written to
+  // localStorage / applied - so they stay as
+  // set until the user explicitly changes them
+  // again, no matter how much time passes.
   // =========================================
   const handleUseDate = () => {
     setConfirmedDate(selectedDate);
@@ -1202,8 +1217,18 @@ Contact us on: 0741088799
                       <option value="discount">Discount</option>
                     </select>
                     {(c.penalty > 0 || c.discount > 0) && (
-                      <span className={styles.adjustmentBadge}>
-                        {c.penalty > 0 ? `Penalty: ${c.penalty}` : `Discount: ${c.discount}`}
+                      <span className={styles.adjustmentBadgeWrapper}>
+                        <span className={styles.adjustmentBadge}>
+                          {c.penalty > 0 ? `Penalty: ${c.penalty}` : `Discount: ${c.discount}`}
+                        </span>
+                        <button
+                          type="button"
+                          className={styles.adjustmentRemoveInlineBtn}
+                          onClick={() => removeAdjustment(c)}
+                          title="Remove adjustment"
+                        >
+                          ✕
+                        </button>
                       </span>
                     )}
                   </td>
@@ -1308,7 +1333,7 @@ Contact us on: 0741088799
               <h3>
                 {adjustmentType.charAt(0).toUpperCase() + adjustmentType.slice(1)} for {adjustingCustomer.sms_name}
               </h3>
-              <button className={styles.adjustmentModalClose} onClick={() => setShowAdjustmentModal(false)}>
+              <button className={styles.adjustmentModalClose} onClick={closeAdjustmentModal}>
                 ✕
               </button>
             </div>
@@ -1335,9 +1360,20 @@ Contact us on: 0741088799
             </div>
 
             <div className={styles.adjustmentModalFooter}>
-              <button className={styles.adjustmentCancelBtn} onClick={() => setShowAdjustmentModal(false)}>
+              <button className={styles.adjustmentCancelBtn} onClick={closeAdjustmentModal}>
                 Cancel
               </button>
+
+              {((adjustmentType === "penalty" && adjustingCustomer.penalty > 0) ||
+                (adjustmentType === "discount" && adjustingCustomer.discount > 0)) && (
+                <button
+                  className={styles.adjustmentRemoveBtn}
+                  onClick={() => removeAdjustment(adjustingCustomer)}
+                >
+                  Remove {adjustmentType}
+                </button>
+              )}
+
               <button className={styles.adjustmentSaveBtn} onClick={saveAdjustment}>
                 Apply {adjustmentType.charAt(0).toUpperCase() + adjustmentType.slice(1)}
               </button>
