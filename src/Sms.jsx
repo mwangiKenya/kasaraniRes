@@ -65,12 +65,6 @@ function Sms() {
     })
   );
 
-  // State for discount/penalty modal
-  const [showAdjustmentModal, setShowAdjustmentModal] = useState(false);
-  const [adjustmentType, setAdjustmentType] = useState("");
-  const [adjustmentAmount, setAdjustmentAmount] = useState("");
-  const [adjustingCustomer, setAdjustingCustomer] = useState(null);
-
   // current billing cycle
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
@@ -138,20 +132,44 @@ function Sms() {
   };
 
   // =========================================
-  // ADJUSTMENT (PENALTY / DISCOUNT) HELPERS
-  // These build the transparent breakdown lines
-  // shown on the SMS. We NEVER hide the math -
-  // Current Bill, Bal b/d, Penalty and Discount
-  // are all shown as their own figures, and the
-  // final "To Pay" is the number the customer
-  // actually owes once everything is applied.
+  // PENALTY / DISCOUNT (READ-ONLY, FROM THE DATABASE)
+  // Penalty/discount are now managed entirely on the
+  // Billings page. The `bill` API already returns a
+  // single `penalty` field per customer:
+  //   - positive number  -> a penalty
+  //   - negative number  -> a discount
+  //   - 0 / null         -> nothing applied
+  // We never write this value from the SMS page anymore;
+  // we only read it to build the SMS text below.
+  // =========================================
+  const getPenaltyAndDiscount = (c) => {
+    const raw = Number(c.penalty || 0);
+    return {
+      penalty: raw > 0 ? raw : 0,
+      discount: raw < 0 ? Math.abs(raw) : 0,
+    };
+  };
+
+  // =========================================
+  // ADJUSTMENT (PENALTY / DISCOUNT / BAL B/D) HELPERS
+  // These build the transparent breakdown lines shown
+  // on the SMS. We NEVER hide the math - Current Bill,
+  // Bal b/d, Penalty and Discount are all shown as their
+  // own figures, and the final "To Pay" is the number
+  // the customer actually owes once everything is applied.
+  //
+  // IMPORTANT: `bal` coming from the backend is already
+  // the fully-calculated amount to pay:
+  //     bal = bill + b_cd + penalty - paid
+  // (where `penalty` is negative for a discount), so we
+  // use it directly as "To Pay" instead of recalculating
+  // it here.
   // =========================================
   const buildAdjustmentLines = (c) => {
     let balanceLine = "";
     let adjustmentLine = "";
 
-    const penalty = Number(c.penalty || 0);
-    const discount = Number(c.discount || 0);
+    const { penalty, discount } = getPenaltyAndDiscount(c);
 
     if (Number(c.b_cd) > 0) {
       balanceLine = `Bal b/d:KES ${Number(c.b_cd).toLocaleString()}\n`;
@@ -167,19 +185,10 @@ function Sms() {
       adjustmentLine += `Discount: KES ${discount.toLocaleString()}\n`;
     }
 
-    // Bal already represents (Current Bill + Bal b/d) from the backend.
-    // We only ever add the penalty / subtract the discount on top of it,
-    // so the customer can trace exactly how "To Pay" was reached from
-    // the figures shown above it.
-    let finalToPay = Number(c.bal || 0);
-
-    if (penalty > 0) {
-      finalToPay += penalty;
-    }
-
-    if (discount > 0) {
-      finalToPay -= discount;
-    }
+    // "bal" already represents the final, fully-calculated amount owed
+    // (Current Bill + Bal b/d + Penalty - Discount - Paid), straight from
+    // the Billings table - so it IS the "To Pay" figure, no extra math needed.
+    const finalToPay = Number(c.bal || 0);
 
     // If there's no carried-forward balance and no penalty/discount, the
     // amount to pay is identical to the Current Bill already shown above -
@@ -277,22 +286,22 @@ Contact us on: 0741088799
 
     // =========================
     // MULTI USER FORMAT
+    // Each member's own section shows their own Current Bill,
+    // and - only if they actually have one - their own Bal b/d
+    // / Penalty / Discount / To Pay lines. The grand total at
+    // the bottom is simply the SUM of every member's own final
+    // "To Pay" (which, for a member with no adjustments, is just
+    // their Current Bill - exactly like the single-user case).
     // =========================
-    let totalBase = 0; // sum of each member's (bill + bal b/d)
-    let totalPenalty = 0;
-    let totalDiscount = 0;
+    let totalFinal = 0;
 
     const breakdown = groupCustomers
       .map((c) => {
         const bill = Number(c.bill || 0);
 
-        const { balanceLine, adjustmentLine, penalty, discount } = buildAdjustmentLines(c);
+        const { balanceLine, adjustmentLine, toPayLine, finalToPay } = buildAdjustmentLines(c);
 
-        // Base amount for this member BEFORE penalty/discount, i.e. bill + bal b/d.
-        // "bal" already represents (Current Bill + Bal b/d) from the backend.
-        totalBase += Number(c.bal || 0);
-        totalPenalty += penalty;
-        totalDiscount += discount;
+        totalFinal += finalToPay;
 
         return `
 ${c.sms_name}
@@ -300,31 +309,18 @@ Prev Read:${c.prev_user}
 Curr Read:${c.cur_user}
 Usage:${c.units_used}
 Current Bill:KES ${bill.toLocaleString()}
-${balanceLine}${adjustmentLine}
+${balanceLine}${adjustmentLine}${toPayLine}
     `.trim();
       })
       .join("\n\n");
-
-    let totalAdjustmentLine = "";
-    if (totalPenalty > 0) {
-      totalAdjustmentLine += `\nTotal Penalty: KES ${totalPenalty.toLocaleString()}`;
-    }
-    if (totalDiscount > 0) {
-      totalAdjustmentLine += `\nTotal Discount: KES ${totalDiscount.toLocaleString()}`;
-    }
-
-    // Grand total to pay includes every member's own bill + bal b/d,
-    // plus the penalty, minus the discount - so nothing is hidden and
-    // every connection's adjustment is reflected in the final figure.
-    const finalTotal = totalBase + totalPenalty - totalDiscount;
 
     return `
 Dear ${sender.sms_name},
 Water Bill as at {{READING_DATE}}
 
 ${breakdown}
-${totalAdjustmentLine}
-To pay:KES ${finalTotal.toLocaleString()}
+
+To pay:KES ${totalFinal.toLocaleString()}
 
 Pay by {{DUE_DATE}}
 
@@ -384,7 +380,7 @@ Contact us on: 0741088799
 
         // unique billing signature
         // changes automatically whenever
-        // readings/bill changes
+        // readings/bill/penalty changes
         const billingSignature = `
           ${customer.prev_user}
           ${customer.cur_user}
@@ -392,6 +388,7 @@ Contact us on: 0741088799
           ${customer.bill}
           ${customer.b_cd}
           ${customer.bal}
+          ${customer.penalty}
         `;
 
         // local storage
@@ -405,6 +402,10 @@ Contact us on: 0741088799
 
         // ====================================
         // CHECK IF NEW BILLING EXISTS
+        // (this now also covers a penalty/discount
+        // being added, changed or removed on the
+        // Billings page, since that changes `bal`
+        // and/or `penalty` too)
         // ====================================
 
         const isNewBillingCycle =
@@ -432,10 +433,6 @@ Contact us on: 0741088799
             year: currentYear,
 
             billingSignature,
-
-            // Initialize penalty and discount
-            penalty: 0,
-            discount: 0,
           };
 
           // save fresh data
@@ -449,6 +446,9 @@ Contact us on: 0741088799
 
         // ====================================
         // KEEP OLD DATA IF SAME BILLING
+        // (penalty/discount always come straight from
+        // `customer`, i.e. the Billings table - never
+        // overwritten by anything saved locally)
         // ====================================
 
         let migratedMessage = smsData.message
@@ -459,8 +459,6 @@ Contact us on: 0741088799
           ...customer,
           ...smsData,
           message: migratedMessage,
-          penalty: smsData.penalty || 0,
-          discount: smsData.discount || 0,
         };
       }); // <-- CLOSE data.map() HERE
 
@@ -530,9 +528,6 @@ Contact us on: 0741088799
         year: currentYear,
 
         billingSignature: updatedCustomer.billingSignature,
-
-        penalty: updatedCustomer.penalty || 0,
-        discount: updatedCustomer.discount || 0,
       })
     );
 
@@ -680,22 +675,12 @@ Contact us on: 0741088799
     setShowModal(false);
   };
 
-  // =========================================
-  // APPLY / REMOVE ADJUSTMENT (PENALTY/DISCOUNT)
-  // Single source of truth used by both the
-  // modal and the quick "remove" action in the
-  // table, so the SMS always regenerates using
-  // the freshest data - including for grouped
-  // (multi-connection) customers.
-  // =========================================
   // Saves `message` to EVERY member of the customer's group (or just the
   // customer if they aren't in a group). This is what guarantees that
   // previewing or sending from ANY member - including the parent, who is
   // the one the bill actually goes to - always shows the same, up to date
-  // combined SMS. `extraUpdates` lets the specific customer that triggered
-  // the change (e.g. the one who got a penalty/discount) also persist
-  // their own field changes (penalty/discount) alongside the message.
-  const propagateMessageToGroup = (customer, message, extraUpdates = {}) => {
+  // combined SMS.
+  const propagateMessageToGroup = (customer, message) => {
     const groupCustomers = customer.grp
       ? customers.filter((c) => c.grp === customer.grp)
       : [customer];
@@ -703,12 +688,7 @@ Contact us on: 0741088799
     let lastSaved = null;
 
     groupCustomers.forEach((c) => {
-      const memberUpdates =
-        c.id === customer.id
-          ? { ...extraUpdates, message, editStatus: "Edited" }
-          : { message, editStatus: "Edited" };
-
-      const saved = saveCustomerData(c.id, memberUpdates);
+      const saved = saveCustomerData(c.id, { message, editStatus: "Edited" });
 
       if (c.id === customer.id) {
         lastSaved = saved;
@@ -716,91 +696,6 @@ Contact us on: 0741088799
     });
 
     return lastSaved;
-  };
-
-  const applyAdjustmentToCustomer = (customerId, updates) => {
-    const customer = customers.find((c) => c.id === customerId);
-
-    if (!customer) return null;
-
-    const updatedCustomer = { ...customer, ...updates };
-
-    // Build the group array but make sure the member being adjusted
-    // uses the freshly updated data, not the stale copy still sitting
-    // in `customers` state - this is what actually reflects the
-    // penalty/discount on the SMS preview.
-    const rawGroupCustomers = customer.grp
-      ? customers.filter((c) => c.grp === customer.grp)
-      : [customer];
-
-    const groupCustomers = rawGroupCustomers.map((c) =>
-      c.id === customerId ? updatedCustomer : c
-    );
-
-    const newMessage = generateGroupMessage({
-      ...updatedCustomer,
-      __groupCustomers: groupCustomers,
-    });
-
-    // Push the freshly generated message (with the adjustment baked in)
-    // out to EVERY member of the group, not just the one being adjusted -
-    // this is the fix that makes the penalty/discount visible no matter
-    // which member of the group you preview or send from.
-    return propagateMessageToGroup(customer, newMessage, updates);
-  };
-
-  const handleAdjustmentChange = (customer, type) => {
-    setAdjustingCustomer(customer);
-    setAdjustmentType(type);
-
-    // Prefill with the existing amount if this type is already applied,
-    // so re-opening the modal lets the user see/edit/remove it.
-    const existing = type === "penalty" ? customer.penalty : customer.discount;
-    setAdjustmentAmount(existing > 0 ? String(existing) : "");
-
-    setShowAdjustmentModal(true);
-  };
-
-  const closeAdjustmentModal = () => {
-    setShowAdjustmentModal(false);
-    setAdjustmentAmount("");
-    setAdjustingCustomer(null);
-  };
-
-  const saveAdjustment = () => {
-    if (!adjustmentAmount || isNaN(adjustmentAmount) || Number(adjustmentAmount) <= 0) {
-      toast.error("Please enter a valid amount");
-      return;
-    }
-
-    const amount = Number(adjustmentAmount);
-
-    const updates =
-      adjustmentType === "penalty"
-        ? { penalty: amount, discount: 0 } // mutually exclusive
-        : { discount: amount, penalty: 0 };
-
-    applyAdjustmentToCustomer(adjustingCustomer.id, updates);
-
-    toast.success(
-      `${adjustmentType.charAt(0).toUpperCase() + adjustmentType.slice(1)} applied successfully`
-    );
-
-    closeAdjustmentModal();
-  };
-
-  // Removes whatever adjustment (penalty or discount) is currently on
-  // the customer, regenerates the SMS back to its original figures,
-  // and saves it. Can be triggered from the modal or directly from the
-  // table row.
-  const removeAdjustment = (customer = adjustingCustomer) => {
-    if (!customer) return;
-
-    applyAdjustmentToCustomer(customer.id, { penalty: 0, discount: 0 });
-
-    toast.success("Adjustment removed");
-
-    closeAdjustmentModal();
   };
 
   // =========================================
@@ -1043,6 +938,8 @@ Contact us on: 0741088799
 
         const message = applyDates(getCustomerMessage(sender));
 
+        const { penalty, discount } = getPenaltyAndDiscount(sender);
+
         rows.push({
           Selected: false,
           ID: sender.user_id,
@@ -1055,8 +952,8 @@ Contact us on: 0741088799
           Units: sender.units_used,
           Bill: sender.bill,
           Balance: sender.bal,
-          Penalty: sender.penalty || 0,
-          Discount: sender.discount || 0,
+          Penalty: penalty,
+          Discount: discount,
           SMS: message,
           Status: sender.smsStatus,
         });
@@ -1181,7 +1078,7 @@ Contact us on: 0741088799
               <th>Send</th>
               <th>Group</th>
               <th>Parent</th>
-              <th>Adjustment</th>
+              <th>Penalty / Discount</th>
             </tr>
           </thead>
 
@@ -1195,84 +1092,73 @@ Contact us on: 0741088799
                 <td colSpan="12">No customers found</td>
               </tr>
             ) : (
-              customers.map((c) => (
-                <tr key={c.id} className={styles.tableRow}>
-                  <td>{c.user_id}</td>
+              customers.map((c) => {
+                const { penalty, discount } = getPenaltyAndDiscount(c);
 
-                  <td>{c.sms_name}</td>
+                return (
+                  <tr key={c.id} className={styles.tableRow}>
+                    <td>{c.user_id}</td>
 
-                  <td>{c.phone}</td>
+                    <td>{c.sms_name}</td>
 
-                  <td>
-                    <input type="checkbox" checked={isSelected(c)} onChange={() => handleSelect(c)} />
-                  </td>
+                    <td>{c.phone}</td>
 
-                  {/* SMS STATUS */}
-                  <td>
-                    <span className={c.smsStatus === "Sent" ? styles.sentBadge : styles.unsentBadge}>
-                      {c.smsStatus}
-                    </span>
-                  </td>
+                    <td>
+                      <input type="checkbox" checked={isSelected(c)} onChange={() => handleSelect(c)} />
+                    </td>
 
-                  {/* EDIT STATUS */}
-                  <td>
-                    <span className={c.editStatus === "Edited" ? styles.editedBadge : styles.defaultBadge}>
-                      {c.editStatus}
-                    </span>
-                  </td>
-
-                  {/* SENT DATE */}
-                  <td>{c.sentDate}</td>
-
-                  {/* PREVIEW */}
-                  <td>
-                    <button className={styles.previewBtn} onClick={() => openPreview(c)}>
-                      Preview
-                    </button>
-                  </td>
-
-                  {/* SEND */}
-                  <td>
-                    <button className={styles.singleSendBtn} onClick={() => sendSingleSMS(c)}>
-                      Send
-                    </button>
-                  </td>
-                  <td>{c.grp}</td>
-                  <td>{c.parent}</td>
-                  <td>
-                    <select
-                      className={styles.adjustmentSelect}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        if (value === "penalty" || value === "discount") {
-                          handleAdjustmentChange(c, value);
-                        }
-                        e.target.value = "";
-                      }}
-                      value=""
-                    >
-                      <option value="">Select</option>
-                      <option value="penalty">Penalty</option>
-                      <option value="discount">Discount</option>
-                    </select>
-                    {(c.penalty > 0 || c.discount > 0) && (
-                      <span className={styles.adjustmentBadgeWrapper}>
-                        <span className={styles.adjustmentBadge}>
-                          {c.penalty > 0 ? `Penalty: ${c.penalty}` : `Discount: ${c.discount}`}
-                        </span>
-                        <button
-                          type="button"
-                          className={styles.adjustmentRemoveInlineBtn}
-                          onClick={() => removeAdjustment(c)}
-                          title="Remove adjustment"
-                        >
-                          ✕
-                        </button>
+                    {/* SMS STATUS */}
+                    <td>
+                      <span className={c.smsStatus === "Sent" ? styles.sentBadge : styles.unsentBadge}>
+                        {c.smsStatus}
                       </span>
-                    )}
-                  </td>
-                </tr>
-              ))
+                    </td>
+
+                    {/* EDIT STATUS */}
+                    <td>
+                      <span className={c.editStatus === "Edited" ? styles.editedBadge : styles.defaultBadge}>
+                        {c.editStatus}
+                      </span>
+                    </td>
+
+                    {/* SENT DATE */}
+                    <td>{c.sentDate}</td>
+
+                    {/* PREVIEW */}
+                    <td>
+                      <button className={styles.previewBtn} onClick={() => openPreview(c)}>
+                        Preview
+                      </button>
+                    </td>
+
+                    {/* SEND */}
+                    <td>
+                      <button className={styles.singleSendBtn} onClick={() => sendSingleSMS(c)}>
+                        Send
+                      </button>
+                    </td>
+                    <td>{c.grp}</td>
+                    <td>{c.parent}</td>
+
+                    {/*
+                      Read-only: penalty/discount are now added, changed or
+                      removed from the Billings page. This just reflects
+                      whatever is currently saved in the database.
+                    */}
+                    <td>
+                      {penalty > 0 && (
+                        <span className={styles.adjustmentBadge}>Penalty: KES {penalty.toLocaleString()}</span>
+                      )}
+                      {discount > 0 && (
+                        <span className={styles.adjustmentBadge}>Discount: KES {discount.toLocaleString()}</span>
+                      )}
+                      {penalty === 0 && discount === 0 && (
+                        <span className={styles.defaultBadge}>None</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
@@ -1338,11 +1224,24 @@ Contact us on: 0741088799
               </div>
             </div>
 
+            {/* Read-only summary of whatever is currently in the Billings table */}
             <div style={{ marginBottom: "15px" }}>
-              <h4>Current Adjustments:</h4>
-              {selectedCustomer.penalty > 0 && <p>Penalty: KES {selectedCustomer.penalty.toLocaleString()}</p>}
-              {selectedCustomer.discount > 0 && <p>Discount: KES {selectedCustomer.discount.toLocaleString()}</p>}
-              {!selectedCustomer.penalty && !selectedCustomer.discount && <p>No adjustments applied</p>}
+              <h4>Current Adjustments (from Billings):</h4>
+              {(() => {
+                const { penalty, discount } = getPenaltyAndDiscount(selectedCustomer);
+                if (penalty === 0 && discount === 0) {
+                  return <p>No adjustments applied</p>;
+                }
+                return (
+                  <>
+                    {penalty > 0 && <p>Penalty: KES {penalty.toLocaleString()}</p>}
+                    {discount > 0 && <p>Discount: KES {discount.toLocaleString()}</p>}
+                  </>
+                );
+              })()}
+              <p style={{ fontSize: "12px", color: "#94a3b8" }}>
+                To add, change or remove a penalty/discount, use the Billings page.
+              </p>
             </div>
 
             <textarea
@@ -1358,63 +1257,6 @@ Contact us on: 0741088799
 
               <button className={styles.sendModalBtn} onClick={() => sendSingleSMS(selectedCustomer)}>
                 Send SMS
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Adjustment Modal */}
-      {showAdjustmentModal && adjustingCustomer && (
-        <div className={styles.adjustmentModalOverlay}>
-          <div className={styles.adjustmentModalBox}>
-            <div className={styles.adjustmentModalHeader}>
-              <h3>
-                {adjustmentType.charAt(0).toUpperCase() + adjustmentType.slice(1)} for {adjustingCustomer.sms_name}
-              </h3>
-              <button className={styles.adjustmentModalClose} onClick={closeAdjustmentModal}>
-                ✕
-              </button>
-            </div>
-
-            <div className={styles.adjustmentModalBody}>
-              <p>
-                Current Bill: KES {Number(adjustingCustomer.bal || 0).toLocaleString()}
-                {adjustingCustomer.penalty > 0 && `, Penalty: KES ${adjustingCustomer.penalty.toLocaleString()}`}
-                {adjustingCustomer.discount > 0 && `, Discount: KES ${adjustingCustomer.discount.toLocaleString()}`}
-              </p>
-
-              <label>
-                Enter {adjustmentType} amount:
-                <input
-                  type="number"
-                  className={styles.adjustmentInput}
-                  value={adjustmentAmount}
-                  onChange={(e) => setAdjustmentAmount(e.target.value)}
-                  placeholder={`Enter ${adjustmentType} amount`}
-                  min="0"
-                  step="1"
-                />
-              </label>
-            </div>
-
-            <div className={styles.adjustmentModalFooter}>
-              <button className={styles.adjustmentCancelBtn} onClick={closeAdjustmentModal}>
-                Cancel
-              </button>
-
-              {((adjustmentType === "penalty" && adjustingCustomer.penalty > 0) ||
-                (adjustmentType === "discount" && adjustingCustomer.discount > 0)) && (
-                <button
-                  className={styles.adjustmentRemoveBtn}
-                  onClick={() => removeAdjustment(adjustingCustomer)}
-                >
-                  Remove {adjustmentType}
-                </button>
-              )}
-
-              <button className={styles.adjustmentSaveBtn} onClick={saveAdjustment}>
-                Apply {adjustmentType.charAt(0).toUpperCase() + adjustmentType.slice(1)}
               </button>
             </div>
           </div>
