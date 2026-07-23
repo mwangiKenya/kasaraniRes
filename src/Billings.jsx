@@ -10,17 +10,20 @@ function Billings() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editedBillings, setEditedBillings] = useState({});
-  
-  // Modal state
-  const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState('penalty'); // 'penalty' or 'discount'
-  const [selectedBilling, setSelectedBilling] = useState(null);
-  const [amount, setAmount] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
+
+  // ---- Penalty / Discount modal state ----
+  const [adjustModal, setAdjustModal] = useState({
+    open: false,
+    billing: null,
+    type: "", // "penalty" | "discount"
+    amount: "",
+    saving: false,
+  });
 
   // Fetch all billings from backend
   useEffect(() => {
-    fetch("https://python-back-2.onrender.com/api/bill/")
+    //fetch("http://127.0.0.1:8000/api/bill/") // API endpoint
+    fetch("https://python-back-2.onrender.com/api/bill/") 
       .then((res) => {
         if (!res.ok) throw new Error("Network response was not ok");
         return res.json();
@@ -30,7 +33,7 @@ function Billings() {
         const billsWithPaid = data.map((b) => ({
           ...b,
           paidValue: b.paid || 0,
-          penaltyValue: b.penalty || 0,
+          penalty: b.penalty || 0,
         }));
         setBillings(billsWithPaid);
         setLoading(false);
@@ -43,60 +46,63 @@ function Billings() {
 
   // Update local paidValue state when user types
   const handlePaidChange = (id, value) => {
-    const numericValue = parseFloat(value) || 0;
+  const numericValue = parseFloat(value) || 0;
 
-    setBillings((prev) =>
-      prev.map((b) =>
-        b.id === id ? { ...b, paidValue: numericValue } : b
-      )
-    );
+  setBillings((prev) =>
+    prev.map((b) =>
+      b.id === id ? { ...b, paidValue: numericValue } : b
+    )
+  );
 
-    setEditedBillings((prev) => ({
-      ...prev,
-      [id]: {
-        id,
-        paid: numericValue,
-      },
-    }));
+  setEditedBillings((prev) => ({
+    ...prev,
+    [id]: {
+      id,
+      paid: numericValue,
+    },
+  }));
   };
 
   const handleSaveAll = async () => {
-    const updates = Object.values(editedBillings);
+  const updates = Object.values(editedBillings);
 
-    if (updates.length === 0) {
-      toast.info("No changes to save");
+  if (updates.length === 0) {
+    toast.info("No changes to save");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "https://python-back-2.onrender.com/api/update_paid/",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      toast.error(data.error || "Failed to update");
       return;
     }
 
-    try {
-      const response = await fetch(
-        "https://python-back-2.onrender.com/api/update_paid/",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updates),
-        }
-      );
+    toast.success("All payments updated!");
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        toast.error(data.error || "Failed to update");
-        return;
-      }
-
-      toast.success("All payments updated!");
-
-      setEditedBillings({});
-      window.location.reload();
-    } catch (err) {
-      toast.error("Network error: " + err.message);
-    }
+    // refresh data
+    setEditedBillings({});
+    window.location.reload(); // simple refresh (or refetch API)
+  } catch (err) {
+    toast.error("Network error: " + err.message);
+  }
   };
 
+  // Save updated paid to backend and immediately update row in table
   const handleSave = async (billing) => {
     try {
       const response = await fetch(
+        //`http://127.0.0.1:8000/api/update_paid/`,
         `https://python-back-2.onrender.com/api/update_paid/`,
         {
           method: "POST",
@@ -115,6 +121,7 @@ function Billings() {
       } else {
         toast.success("Saved successfully!");
 
+        // Update the row immediately using the returned updated data
         setBillings((prev) =>
           prev.map((b) =>
             b.id === data.id
@@ -133,30 +140,106 @@ function Billings() {
     }
   };
 
-  // Handle penalty/discount selection
-  const handlePenaltyDiscountSelect = (billing, type) => {
-    setSelectedBilling(billing);
-    setModalType(type);
-    setAmount('');
-    setShowModal(true);
+  // ---- Penalty / Discount handlers ----
+
+  // Triggered by the "Add Penalty / Discount" select in each row
+  const handleAdjustSelect = (billing, value) => {
+    if (!value) return; // placeholder option, do nothing
+
+    setAdjustModal({
+      open: true,
+      billing,
+      type: value, // "penalty" or "discount"
+      amount: "",
+      saving: false,
+    });
   };
 
-  // Handle remove penalty/discount
-  const handleRemovePenaltyDiscount = async (billing) => {
-    if (!window.confirm(`Remove penalty/discount for ${billing.name}?`)) {
+  const closeAdjustModal = () => {
+    setAdjustModal({
+      open: false,
+      billing: null,
+      type: "",
+      amount: "",
+      saving: false,
+    });
+  };
+
+  const applyServerResult = (data) => {
+    setBillings((prev) =>
+      prev.map((b) =>
+        b.id === data.id
+          ? {
+              ...b,
+              penalty: data.penalty,
+              bal: data.bal,
+              status: data.status,
+            }
+          : b
+      )
+    );
+  };
+
+  const handleSaveAdjustment = async () => {
+    const { billing, type, amount } = adjustModal;
+
+    const numericAmount = parseFloat(amount);
+    if (!numericAmount || numericAmount <= 0) {
+      toast.error("Please enter a valid amount greater than 0");
+      return;
+    }
+
+    setAdjustModal((prev) => ({ ...prev, saving: true }));
+
+    try {
+      const response = await fetch(
+        "https://python-back-2.onrender.com/api/update-billing-penalty/",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: billing.id,
+            type, // "penalty" or "discount"
+            amount: numericAmount,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast.error(data.error || "Failed to save");
+        setAdjustModal((prev) => ({ ...prev, saving: false }));
+        return;
+      }
+
+      toast.success(
+        type === "penalty" ? "Penalty added successfully!" : "Discount added successfully!"
+      );
+      applyServerResult(data);
+      closeAdjustModal();
+    } catch (err) {
+      toast.error("Network error: " + err.message);
+      setAdjustModal((prev) => ({ ...prev, saving: false }));
+    }
+  };
+
+  // Removes any penalty/discount and restores the original billing amount
+  const handleResetPenalty = async (billing) => {
+    if (!billing.penalty) {
+      toast.info("No penalty or discount to remove");
       return;
     }
 
     try {
       const response = await fetch(
-        "https://python-back-2.onrender.com/api/remove-penalty-discount/",
+        "https://python-back-2.onrender.com/api/update-billing-penalty/",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            billing_id: billing.id,
-            username: localStorage.getItem('username') || 'system',
-            role: localStorage.getItem('role') || 'system'
+            id: billing.id,
+            type: "reset",
           }),
         }
       );
@@ -168,139 +251,79 @@ function Billings() {
         return;
       }
 
-      toast.success("Penalty/Discount removed successfully!");
-
-      // Update the row
-      setBillings((prev) =>
-        prev.map((b) =>
-          b.id === data.data.id
-            ? {
-                ...b,
-                penalty: data.data.penalty,
-                penaltyValue: data.data.penalty,
-                bal: data.data.bal,
-                status: data.data.status,
-              }
-            : b
-        )
-      );
+      toast.success("Penalty/discount removed. Billing restored to original amount.");
+      applyServerResult(data);
     } catch (err) {
       toast.error("Network error: " + err.message);
-    }
-  };
-
-  // Handle modal save
-  const handleModalSave = async () => {
-    if (!amount || parseFloat(amount) <= 0) {
-      toast.error("Please enter a valid amount");
-      return;
-    }
-
-    setIsProcessing(true);
-
-    try {
-      const endpoint = modalType === 'penalty' 
-        ? "https://python-back-2.onrender.com/api/add-penalty/"
-        : "https://python-back-2.onrender.com/api/add-discount/";
-
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          billing_id: selectedBilling.id,
-          amount: parseFloat(amount),
-          username: localStorage.getItem('username') || 'system',
-          role: localStorage.getItem('role') || 'system'
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        toast.error(data.error || `Failed to add ${modalType}`);
-        return;
-      }
-
-      toast.success(`${modalType.charAt(0).toUpperCase() + modalType.slice(1)} added successfully!`);
-
-      // Update the row
-      setBillings((prev) =>
-        prev.map((b) =>
-          b.id === data.data.id
-            ? {
-                ...b,
-                penalty: data.data.penalty,
-                penaltyValue: data.data.penalty,
-                bal: data.data.bal,
-                status: data.data.status,
-              }
-            : b
-        )
-      );
-
-      setShowModal(false);
-      setSelectedBilling(null);
-      setAmount('');
-    } catch (err) {
-      toast.error("Network error: " + err.message);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  // Close modal
-  const handleModalClose = () => {
-    if (!isProcessing) {
-      setShowModal(false);
-      setSelectedBilling(null);
-      setAmount('');
-    }
-  };
-
-  const handleDownloadExcel = () => {
-    window.open(
-      "https://python-back-2.onrender.com/api/download-billings-template/",
-      "_blank"
-    );
-  };
-
-  const handleUploadExcel = async (e) => {
-    const file = e.target.files[0];
-
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await fetch(
-        "https://python-back-2.onrender.com/api/upload-billings-excel/",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        toast.error(data.error || "Upload failed");
-        return;
-      }
-
-      toast.success("Excel uploaded successfully!");
-      window.location.reload();
-    } catch (err) {
-      toast.error("Upload error: " + err.message);
     }
   };
 
   if (loading) return <div className={styles.mainDiv}>Loading...</div>;
   if (error) return <div className={styles.mainDiv}>Error: {error}</div>;
 
+  {/*
+  const sendSMS = async () => {
+    try {
+      const response = await axios.post(
+        "https://python-back-2.onrender.com/api/send_sms_api/",
+        {
+          phone: "0712345678",
+          message: "Your water bill is ready"
+        }
+      );
+
+      toast.success("SMS sent successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to send SMS");
+    }
+  };*/}
+
+  const handleDownloadExcel = () => {
+  window.open(
+    "https://python-back-2.onrender.com/api/download-billings-template/",
+    "_blank"
+  );
+  };
+
+  const handleUploadExcel = async (e) => {
+  const file = e.target.files[0];
+
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await fetch(
+      "https://python-back-2.onrender.com/api/upload-billings-excel/",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      toast.error(data.error || "Upload failed");
+      return;
+    }
+
+    toast.success("Excel uploaded successfully!");
+
+    // refresh table
+    window.location.reload();
+
+  } catch (err) {
+    toast.error("Upload error: " + err.message);
+  }
+  };
+
   return (
     <>
       <div className={styles.mainDiv}>
+        {/*<Sms />*/}
         <h1>Billings</h1>
         <div style={{ marginBottom: "15px" }}>
           <button onClick={handleDownloadExcel} className={styles.btnSave}>
@@ -324,92 +347,78 @@ function Billings() {
               <th>Rate</th>
               <th>Bill</th>
               <th>Prev Bal</th>
-              <th>Penalty/Discount</th>
-              <th>Total Due</th>
+              {/*<th>Total bill</th>*/}
+              <th>Penalty / Discount</th>
               <th>Paid</th>
-              <th>Bal</th>
+              <th>Bal (To Pay)</th>
               <th>Status</th>
-              <th>Actions</th>
+              <th>Action</th>
+              <th>Adjust</th>
             </tr>
           </thead>
           <tbody>
-            {billings.map((b) => {
-              const totalDue = (b.bill || 0) + (b.b_cd || 0) + (b.penalty || 0);
-              const hasPenalty = b.penalty !== 0 && b.penalty !== null;
-              
-              return (
-                <tr key={b.id}>
-                  <td>{b.user_id}</td>
-                  <td>{b.name}</td>
-                  <td>{b.phone}</td>
-                  <td>{b.units_used || 0}</td>
-                  <td>{b.rate || 0}</td>
-                  <td>{b.bill || 0}</td>
-                  <td>{b.b_cd || 0}</td>
-                  <td>
-                    <span style={{ 
-                      color: b.penalty < 0 ? 'green' : b.penalty > 0 ? 'red' : 'inherit',
-                      fontWeight: b.penalty !== 0 ? 'bold' : 'normal'
-                    }}>
-                      {b.penalty || 0}
-                      {hasPenalty && (
-                        <span style={{ marginLeft: '5px', fontSize: '0.8em' }}>
-                          ({b.penalty < 0 ? 'Discount' : 'Penalty'})
-                        </span>
-                      )}
+            {billings.map((b) => (
+              <tr key={b.id}>
+                <td>{b.user_id}</td>
+                <td>{b.name}</td>
+                <td>{b.phone}</td>
+                <td>{b.units_used || 0}</td>
+                <td>{b.rate || 0}</td>
+                <td>{b.bill || 0}</td>
+                <td>{b.b_cd || 0}</td>
+                {/*<td>{b.total || 0}</td>*/}
+                <td>
+                  {b.penalty > 0 && (
+                    <span className={`${styles.penaltyBadge} ${styles.penaltyPositive}`}>
+                      +{b.penalty} Penalty
                     </span>
-                  </td>
-                  <td>{totalDue.toFixed(2)}</td>
-                  <td>
-                    <input
-                      type="number"
-                      value={b.paidValue}
-                      onChange={(e) =>
-                        handlePaidChange(b.id, e.target.value)
-                      }
-                      className={styles.BillingsInput}
-                    />
-                  </td>
-                  <td>{b.bal != null ? b.bal.toFixed(2) : totalDue - b.paidValue}</td>
-                  <td>
-                    <span style={{
-                      color: b.status === 'Paid' ? 'green' : 
-                             b.status === 'Partially Paid' ? 'orange' : 'red'
-                    }}>
-                      {b.status || "Unpaid"}
+                  )}
+                  {b.penalty < 0 && (
+                    <span className={`${styles.penaltyBadge} ${styles.penaltyNegative}`}>
+                      {b.penalty} Discount
                     </span>
-                  </td>
-                  <td>
-                    <div className={styles.actionButtons}>
-                      <select 
-                        className={styles.actionSelect}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          if (value === 'penalty' || value === 'discount') {
-                            handlePenaltyDiscountSelect(b, value);
-                          } else if (value === 'remove') {
-                            handleRemovePenaltyDiscount(b);
-                          }
-                          e.target.value = ''; // Reset select
-                        }}
-                        value=""
-                      >
-                        <option value="">Add...</option>
-                        <option value="penalty">+ Penalty</option>
-                        <option value="discount">- Discount</option>
-                        {hasPenalty && <option value="remove">× Remove</option>}
-                      </select>
-                      <button 
-                        onClick={() => handleSave(b)} 
-                        className={styles.btnSave}
-                      >
-                        Save
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
+                  )}
+                  {(!b.penalty || b.penalty === 0) && (
+                    <span className={styles.penaltyNone}>None</span>
+                  )}
+                  {b.penalty !== 0 && (
+                    <button
+                      onClick={() => handleResetPenalty(b)}
+                      className={styles.btnResetPenalty}
+                      title="Remove penalty/discount and restore original billing"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    value={b.paidValue}
+                    onChange={(e) =>
+                      handlePaidChange(b.id, e.target.value)
+                    }
+                    className={styles.BillingsInput}
+                  />
+                </td>
+                <td>{b.bal != null ? b.bal : b.bill - b.paidValue}</td>
+                <td>{b.status || "Unpaid"}</td>
+                <td>
+                  <button onClick={() => handleSave(b)} className={styles.btnSave}>Save</button>
+                </td>
+                <td>
+                  <select
+                    className={styles.adjustSelect}
+                    value=""
+                    onChange={(e) => handleAdjustSelect(b, e.target.value)}
+                  >
+                    <option value="">-- Select --</option>
+                    <option value="penalty">Penalty</option>
+                    <option value="discount">Discount</option>
+                  </select>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
         <div style={{ marginBottom: "15px" }}>
@@ -417,77 +426,69 @@ function Billings() {
             Save All Changes
           </button>
         </div>
+        {/*
+        <button onClick={sendSMS}>
+          Send billing SMS
+        </button>*/}
       </div>
 
-      {/* Modal for Penalty/Discount */}
-      {showModal && (
-        <div className={styles.modalOverlay} onClick={handleModalClose}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2>
-                {modalType === 'penalty' ? 'Add Penalty' : 'Apply Discount'}
-              </h2>
-              <button 
-                className={styles.modalClose} 
-                onClick={handleModalClose}
-                disabled={isProcessing}
-              >
-                ×
-              </button>
-            </div>
-            <div className={styles.modalBody}>
-              <p>
-                {modalType === 'penalty' 
-                  ? `Add penalty for ${selectedBilling?.name}` 
-                  : `Apply discount for ${selectedBilling?.name}`}
-              </p>
-              <div className={styles.modalInputGroup}>
-                <label>
-                  {modalType === 'penalty' ? 'Penalty Amount (KES)' : 'Discount Amount (KES)'}
-                </label>
-                <input
-                  type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  placeholder="Enter amount"
-                  className={styles.modalInput}
-                  disabled={isProcessing}
-                  autoFocus
-                />
-              </div>
-              <div className={styles.modalInfo}>
-                <p>Current Balance: KES {selectedBilling?.bal?.toFixed(2) || 0}</p>
-                {amount && parseFloat(amount) > 0 && (
-                  <p style={{ color: modalType === 'penalty' ? 'red' : 'green' }}>
-                    New Balance: KES {(
-                      (selectedBilling?.bal || 0) + 
-                      (modalType === 'penalty' ? parseFloat(amount) : -parseFloat(amount))
-                    ).toFixed(2)}
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className={styles.modalFooter}>
-              <button 
-                className={styles.modalCancel} 
-                onClick={handleModalClose}
-                disabled={isProcessing}
+      {/* ================= Penalty / Discount Modal ================= */}
+      {adjustModal.open && (
+        <div className={styles.modalOverlay} onClick={closeAdjustModal}>
+          <div
+            className={styles.modalBox}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className={styles.modalTitle}>
+              {adjustModal.type === "penalty" ? "Add Penalty" : "Add Discount"}
+            </h2>
+
+            <p className={styles.modalSubtitle}>
+              Customer: <strong>{adjustModal.billing?.name}</strong>
+            </p>
+
+            <label className={styles.modalLabel}>
+              {adjustModal.type === "penalty" ? "Penalty Amount (KES)" : "Discount Amount (KES)"}
+            </label>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              autoFocus
+              placeholder="Enter amount"
+              value={adjustModal.amount}
+              onChange={(e) =>
+                setAdjustModal((prev) => ({ ...prev, amount: e.target.value }))
+              }
+              className={styles.modalInput}
+            />
+
+            <p className={styles.modalHint}>
+              {adjustModal.type === "penalty"
+                ? "This will be added on top of the bill and previous balance."
+                : "This will be subtracted from the bill and previous balance."}
+            </p>
+
+            <div className={styles.modalActions}>
+              <button
+                className={styles.btnCancel}
+                onClick={closeAdjustModal}
+                disabled={adjustModal.saving}
               >
                 Cancel
               </button>
-              <button 
-                className={styles.modalSave} 
-                onClick={handleModalSave}
-                disabled={isProcessing || !amount || parseFloat(amount) <= 0}
+              <button
+                className={styles.btnSave}
+                onClick={handleSaveAdjustment}
+                disabled={adjustModal.saving}
               >
-                {isProcessing ? 'Saving...' : 'Save'}
+                {adjustModal.saving ? "Saving..." : "Save"}
               </button>
             </div>
           </div>
         </div>
       )}
-
-      <Footer />
+      {/*<Footer />*/}
     </>
   );
 }
