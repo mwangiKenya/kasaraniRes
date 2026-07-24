@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import styles from "./Login.module.css";
 
 function Login() {
   const navigate = useNavigate();
@@ -73,7 +74,7 @@ function Login() {
         localStorage.setItem("token", data.token);
         navigate("/Dashboard");
       } else {
-        setError(data.error || "Invalid login credentials");xj
+        setError(data.error || "Invalid login credentials");
       }
     } catch (err) {
       setError("Failed to login. Please try again");
@@ -83,14 +84,15 @@ function Login() {
   };
 
   return (
-    <div className="login-container">
-      <form onSubmit={handleLogin} className="login-form">
-        <h2>Admin Login</h2>
+    <div className={styles.loginContainer}>
+      <form onSubmit={handleLogin} className={styles.loginForm}>
+        <h2 className={styles.title}>Admin Login</h2>
 
-        {error && <p className="error">{error}</p>}
+        {error && <p className={styles.error}>{error}</p>}
 
-        <label>Username</label>
+        <label className={styles.label}>Username</label>
         <input
+          className={styles.input}
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -98,8 +100,9 @@ function Login() {
           disabled={loading}
         />
 
-        <label>Password</label>
+        <label className={styles.label}>Password</label>
         <input
+          className={styles.input}
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -108,32 +111,22 @@ function Login() {
         />
 
         {/* ✅ CAPTCHA UI */}
-        <div className="captcha-box" style={{ marginTop: "15px" }}>
-        <p> Verify Login </p>
-          <p>Select all images with <strong>cars</strong></p>
+        <div className={styles.captchaBox}>
+          <p className={styles.captchaTitle}>Verify Login</p>
+          <p className={styles.captchaSubtitle}>
+            Select all images with <strong>cars</strong>
+          </p>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(2, 1fr)",
-              gap: "10px",
-            }}
-          >
+          <div className={styles.captchaGrid}>
             {captchaImages.map((img) => (
               <img
                 key={img.id}
                 src={img.src}
                 alt=""
                 onClick={() => toggleImage(img.id)}
-                style={{
-                  width: "100%",
-                  height: "100px",
-                  objectFit: "cover",
-                  border: selectedImages.includes(img.id)
-                    ? "3px solid green"
-                    : "2px solid #ccc",
-                  cursor: "pointer",
-                }}
+                className={`${styles.captchaImage} ${
+                  selectedImages.includes(img.id) ? styles.captchaImageSelected : ""
+                }`}
               />
             ))}
           </div>
@@ -141,23 +134,21 @@ function Login() {
           <button
             type="button"
             onClick={verifyCaptcha}
-            style={{ marginTop: "10px" }}
+            className={styles.verifyButton}
             disabled={loading}
           >
             Verify
           </button>
 
           {captchaVerified && (
-            <p style={{ color: "green", marginTop: "5px" }}>
-              ✔ Verified
-            </p>
+            <p className={styles.captchaVerified}>✔ Verified</p>
           )}
         </div>
 
-        <button type="submit" disabled={loading}>
+        <button type="submit" className={styles.submitButton} disabled={loading}>
           {loading ? (
             <>
-              <span className="spinner"></span> Logging in...
+              <span className={styles.spinner}></span> Logging in...
             </>
           ) : (
             "Login"
