@@ -304,7 +304,7 @@ function Users() {
                 <tr key={customer.id}>
                   <td>
                     <span className={styles.idBadge}>
-                      #{customer.id}
+                      {customer.id}
                     </span>
                   </td>
 
@@ -357,7 +357,7 @@ function Users() {
                       className={styles.updateButton}
                       onClick={() => openUpdateModal(customer)}
                     >
-                      <span>✎</span>
+                      
                       Update User
                     </button>
                   </td>
@@ -502,7 +502,7 @@ function Users() {
                       className={styles.readOnlyInput}
                     />
 
-                    <span className={styles.lockIcon}>🔒</span>
+                    <span className={styles.lockIcon}></span>
                   </div>
 
                   <small>Zone cannot be edited</small>
@@ -567,7 +567,7 @@ function Users() {
                   </>
                 ) : (
                   <>
-                    <span>🗑</span>
+                    
                     Delete
                   </>
                 )}
@@ -594,7 +594,6 @@ function Users() {
                     </>
                   ) : (
                     <>
-                      <span>✓</span>
                       Update User
                     </>
                   )}
