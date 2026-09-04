@@ -117,7 +117,7 @@ function Dashboard() {
                         Payments History
                     </button>
 
-                    <button
+                    {/*<button
                         className={`${styles.navItem} ${activeView === "regw" ? styles.active : ""}`}
                         onClick={() => setActiveView("regw")}
                     >
@@ -129,7 +129,7 @@ function Dashboard() {
                         onClick={() => setActiveView("emp")}
                     >
                         See employees
-                    </button>
+                    </button>*/}
                 </nav>
             </aside>
 
