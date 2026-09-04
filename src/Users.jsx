@@ -22,7 +22,7 @@ function Users() {
   };
 
   const deleteCustomer = async (id) => {
-  const confirmDelete = window.confirm("Are you sure you want to delete this user?");
+  const confirmDelete = window.confirm("Are you sure you want to delete this user? this action cannot be undone.");
   if (!confirmDelete) return;
 
   try {
