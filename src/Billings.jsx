@@ -119,7 +119,7 @@ function Billings() {
       if (!response.ok) {
         toast.error(`Error saving: ${data.error || "Unknown error"}`);
       } else {
-        toast.success("Saved successfully!");
+        toast.success("Payment saved successfully!");
 
         // Update the row immediately using the returned updated data
         setBillings((prev) =>
