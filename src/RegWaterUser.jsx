@@ -136,7 +136,7 @@ function RegWaterUser() {
                 />
                 <input
                     type="text"
-                    placeholder="SMS Name (Meter Number) *"
+                    placeholder="SMS Name*"
                     value={reg.metre_num}
                     name="metre_num"
                     onChange={handleChange}
@@ -163,7 +163,7 @@ function RegWaterUser() {
                 />
                 <input
                     type="text"
-                    placeholder="Group (Optional)"
+                    placeholder="Group"
                     value={reg.grp}
                     name="grp"
                     onChange={handleChange}
@@ -171,7 +171,7 @@ function RegWaterUser() {
                 />
                 <input
                     type="text"
-                    placeholder="Parent (Optional)"
+                    placeholder="Parent"
                     value={reg.parent}
                     name="parent"
                     onChange={handleChange}
