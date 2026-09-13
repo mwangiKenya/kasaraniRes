@@ -668,12 +668,12 @@ function Billings() {
             ))}
           </tbody>
         </table>
-        <div style={{ marginBottom: "15px" }}>
+        {/*<div style={{ marginBottom: "15px" }}>
           <button onClick={handleSaveAll} className={styles.btnSave} disabled={isReviewing}>
             Save All Changes
           </button>
         </div>
-        {/*
+        
         <button onClick={sendSMS}>
           Send billing SMS
         </button>*/}
