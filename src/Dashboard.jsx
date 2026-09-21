@@ -268,7 +268,7 @@ function Dashboard() {
                         }`}
                         onClick={() => setActiveView("regw")}
                     >
-                        Register employees
+                        Register System Users
                     </button>
 
                     <button
@@ -277,7 +277,7 @@ function Dashboard() {
                         }`}
                         onClick={() => setActiveView("emp")}
                     >
-                        See employees
+                        See System Users
                     </button>
 
                     {/* ====================================================
