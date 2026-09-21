@@ -170,7 +170,8 @@ function RegWaterUser() {
                     className={styles.RegWaterUserInput}
                 />
                 <select name="parent" value={reg.parent} onChange={handleChange}
-                className={styles.RegWaterUserInput}>
+                className={styles.RegWaterUserInput} required>
+                    <option value="">--Parent--</option>
                     <option value="yes">Yes</option>
                     <option value="no">No</option>
                 </select>
