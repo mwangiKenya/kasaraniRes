@@ -169,14 +169,12 @@ function RegWaterUser() {
                     onChange={handleChange}
                     className={styles.RegWaterUserInput}
                 />
-                <input
-                    type="text"
-                    placeholder="Parent"
-                    value={reg.parent}
-                    name="parent"
-                    onChange={handleChange}
-                    className={styles.RegWaterUserInput}
-                />
+                <select name="parent" value={reg.parent} onChange={handleChange}
+                className={styles.RegWaterUserInput}>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+                
                 <input
                     type="submit"
                     value="Register User"
