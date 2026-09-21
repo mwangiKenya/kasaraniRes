@@ -125,62 +125,12 @@ div > .saveButton {
 
 /* =======================
    Responsive Table
+   -----------------------
+   NOTE: the old phone table block that used to be here was replaced by
+   the MOBILE-ONLY block at the very bottom of this file (it depended on
+   data-label attributes that the page never sets, and its bare
+   thead / tr / td selectors leaked into other pages).
    ======================= */
-@media screen and (max-width: 768px) {
-  .tableContainer {
-    margin: 15px;
-    padding: 1rem;
-  }
-
-  .readingsTable {
-    display: block;
-    width: 100%;
-  }
-
-  thead {
-    display: none;
-  }
-
-  tr {
-    display: block;
-    margin-bottom: 15px;
-    background: #f9fafb;
-    border-radius: 8px;
-    padding: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  }
-
-  td {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 10px;
-    text-align: right;
-    border-bottom: 1px solid #e5e7eb;
-    width: 100%;
-  }
-
-  td::before {
-    content: attr(data-label);
-    font-weight: 600;
-    text-transform: capitalize;
-    color: #374151;
-  }
-
-  .wateruserInput {
-    width: 50px;
-  }
-
-  .readingsTable td:last-child > .saveButton {
-    width: 100%;
-    max-width: none;
-    margin-top: 5px;
-  }
-
-  div > .saveButton {
-    width: 100%;
-    max-width: none;
-  }
-}
 
 /* =======================
    Smooth transitions
@@ -430,5 +380,596 @@ div > .saveButton {
 
   .timerText {
     font-size: 20px;
+  }
+}
+
+
+/* ======================================================================
+   ======================================================================
+   MOBILE-ONLY STYLES  (phones and small tablets: max-width 768px)
+
+   Everything below lives inside media queries, so the desktop / laptop
+   layout above is untouched.
+
+   What changes on a phone:
+   1. The 13-column readings table becomes one CARD per customer:
+      name + ID + status on top, phone / meter / rate, then the
+      Previous, Mid-month and Current readings (User | Sup side by side),
+      and a full-width Save button. The Current inputs (the ones you
+      actually fill in) are highlighted.
+   2. The instructions, upload buttons and file picker become clean,
+      full-width, thumb-sized controls.
+   3. Billing Cycle Settings: month picker + Start button stacked, the
+      four duration inputs in a 2x2 grid, a compact countdown, and a
+      full-width Finish Month button.
+   4. "Save All Changes" becomes a sticky bar at the bottom of the screen.
+
+   NOTE: card labels come from the column ORDER (td:nth-child(n)). If you
+   add / remove / reorder columns in Readings.jsx, update the labels and
+   `order` values in "CARD LABELS" and "CARD LAYOUT" below.
+   ====================================================================== */
+
+@media (max-width: 768px) {
+
+  /* ---------------- Page shell ---------------- */
+  .tableContainer {
+    max-width: none;
+    box-sizing: border-box;
+    margin: 12px 10px 28px;
+    padding: 4px 0 0;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    overflow: visible;
+  }
+
+  .tableContainer:hover {
+    box-shadow: none;
+  }
+
+  .title {
+    margin: 6px 2px 10px;
+    text-align: left;
+    font-size: 1.5rem;
+    line-height: 1.2;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  /* "Total Customers Registered for billing: N" */
+  .tableContainer > p {
+    margin: 0 0 14px;
+    padding: 10px 14px;
+    background: #eff6ff;
+    color: #1e3a8a;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  /* ---------------- Instructions + upload cards ---------------- */
+  .dataUpload {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding: 14px;
+    background: #ffffff;
+    border: 1px solid #e8ecf1;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+  }
+
+  /* instructions list */
+  .dataUpload > ul {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .dataUpload > ul h3 {
+    margin: 12px 0 4px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .dataUpload > ul h3:first-child {
+    margin-top: 0;
+  }
+
+  .dataUpload > ul li {
+    position: relative;
+    padding: 4px 0 4px 18px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #334155;
+  }
+
+  .dataUpload > ul li::before {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 12px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #2563eb;
+  }
+
+  /* buttons in the upload card */
+  .dataUpload button {
+    width: 100%;
+    min-height: 48px;
+    justify-content: center;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.25;
+    text-align: center;
+    border-radius: 12px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .dataUpload button:active {
+    transform: scale(0.98);
+  }
+
+  /* 1) Download Excel Sheet = outlined, full width */
+  .dataUpload > button:nth-of-type(1),
+  .dataUpload > button:nth-of-type(1):hover {
+    grid-column: 1 / -1;
+    background: #ffffff;
+    color: #1d4ed8;
+    border: 1.5px solid #2563eb;
+    font-size: 15px;
+  }
+
+  .dataUpload > button:nth-of-type(1):active {
+    background: #eff6ff;
+  }
+
+  /* file picker sits between Download and Submit */
+  .dataUpload > input[type="file"] {
+    grid-column: 1 / -1;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 14px;
+    color: #475569;
+    background: #f8fafc;
+    border: 1.5px dashed #cbd5e1;
+    border-radius: 12px;
+  }
+
+  .dataUpload > input[type="file"]::file-selector-button {
+    margin-right: 12px;
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  /* 2) Submit Data File = main action, full width */
+  .dataUpload > button:nth-of-type(2),
+  .dataUpload > button:nth-of-type(2):hover {
+    grid-column: 1 / -1;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 15px;
+  }
+
+  /* 3) Reset Mid-Month Data = caution (half width) */
+  .dataUpload > button:nth-of-type(3),
+  .dataUpload > button:nth-of-type(3):hover {
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1.5px solid #fdba74;
+  }
+
+  /* 4) Restore System = warning (half width) */
+  .dataUpload > button:nth-of-type(4),
+  .dataUpload > button:nth-of-type(4):hover {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1.5px solid #fca5a5;
+  }
+
+  /* ---------------- Billing cycle settings card ---------------- */
+  .settingsContainer {
+    box-sizing: border-box;
+    margin: 0 0 14px;
+    padding: 16px;
+    gap: 16px;
+    background: #ffffff;
+    border: 1px solid #e8ecf1;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+  }
+
+  .settingsTitle {
+    margin: 0;
+    font-size: 1.15rem;
+  }
+
+  .settingsSubTitle {
+    margin: 0;
+    padding-top: 16px;
+    border-top: 1px dashed #e2e8f0;
+    font-size: 1rem;
+  }
+
+  /* a group is a 2-column grid: single controls span both columns,
+     the four Days/Hours/Minutes/Seconds boxes sit 2 x 2 */
+  .inputGroup {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .inputGroup > label,
+  .inputGroup > input,
+  .inputGroup > button {
+    grid-column: 1 / -1;
+  }
+
+  .inputGroup > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .inputGroup label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+  }
+
+  .timerInput,
+  .monthInput {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    padding: 10px 14px;
+    font-size: 16px; /* prevents iOS zoom on focus */
+    border-radius: 12px;
+  }
+
+  .timerButton,
+  .startButton,
+  .finishButton {
+    width: 100%;
+    min-height: 48px;
+    border-radius: 12px;
+    font-size: 15px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .timerButton:active,
+  .startButton:active,
+  .finishButton:active {
+    transform: scale(0.98);
+  }
+
+  /* countdown */
+  .timerDisplay {
+    padding: 16px 14px;
+    border-radius: 14px;
+  }
+
+  .timerDisplay h3 {
+    margin: 0 0 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #cbd5e1;
+  }
+
+  .timerText {
+    font-size: clamp(18px, 5.6vw, 24px);
+    letter-spacing: 0.5px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .actionButtons {
+    margin-top: 0;
+    gap: 10px;
+  }
+
+  /* ---------------- Readings table -> customer cards ---------------- */
+  .readingsTable {
+    display: block;
+    width: 100%;
+    font-size: 0.95rem;
+    border-collapse: separate;
+  }
+
+  /* header rows are replaced by the labels on each card
+     (kept in the DOM, just visually hidden, for screen readers) */
+  .readingsTable thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .readingsTable tbody {
+    display: block;
+  }
+
+  /* CARD */
+  .readingsTable tbody tr,
+  .readingsTable tbody tr:nth-child(even),
+  .readingsTable tbody tr:hover {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    align-items: start;
+    margin-bottom: 14px;
+    padding: 16px;
+    background: #ffffff;
+    border: 1px solid #e8ecf1;
+    border-radius: 18px;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+    cursor: default;
+  }
+
+  /* every cell: label above value, no table borders */
+  .readingsTable tbody td {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 0;
+    width: auto;
+    padding: 0;
+    border: 0;
+    font-size: 0.95rem;
+    text-align: left;
+    white-space: normal;
+    color: #0f172a;
+  }
+
+  /* beats the desktop ".readingsTable td:last-child" (fixed 120px, nowrap) */
+  .readingsTable tbody td:last-child {
+    width: auto;
+    text-align: left;
+    white-space: normal;
+  }
+
+  /* small muted field label (text comes from CARD LABELS below) */
+  .readingsTable tbody td::before {
+    content: "";
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: #64748b;
+  }
+
+  /* ---- CARD LABELS (column order in Readings.jsx) ---- */
+  .readingsTable tbody td:nth-child(1)::before  { content: "ID"; }
+  .readingsTable tbody td:nth-child(3)::before  { content: "Phone"; }
+  .readingsTable tbody td:nth-child(4)::before  { content: "Meter no."; }
+  .readingsTable tbody td:nth-child(5)::before  { content: "Previous user"; }
+  .readingsTable tbody td:nth-child(6)::before  { content: "Previous sup"; }
+  .readingsTable tbody td:nth-child(7)::before  { content: "Mid-month user"; }
+  .readingsTable tbody td:nth-child(8)::before  { content: "Mid-month sup"; }
+  .readingsTable tbody td:nth-child(9)::before  { content: "Current user"; }
+  .readingsTable tbody td:nth-child(10)::before { content: "Current sup"; }
+  .readingsTable tbody td:nth-child(11)::before { content: "Rate"; }
+
+  /* Name, Save and Status don't need a label */
+  .readingsTable tbody td:nth-child(2)::before,
+  .readingsTable tbody td:nth-child(12)::before,
+  .readingsTable tbody td:nth-child(13)::before {
+    display: none;
+  }
+
+  /* ---- CARD LAYOUT (order + width of each field) ----
+     ID | Status  /  Name  /  Phone  /  Meter | Rate  /
+     Prev user | Prev sup  /  Mid user | Mid sup  /
+     Current user | Current sup  /  Save                    */
+  .readingsTable tbody td:nth-child(1)  { order: 1; }
+  .readingsTable tbody td:nth-child(13) { order: 2; }
+  .readingsTable tbody td:nth-child(2)  { order: 3;  grid-column: 1 / -1; }
+  .readingsTable tbody td:nth-child(3)  { order: 4;  grid-column: 1 / -1; }
+  .readingsTable tbody td:nth-child(4)  { order: 5; }
+  .readingsTable tbody td:nth-child(11) { order: 6; }
+  .readingsTable tbody td:nth-child(5)  { order: 7; }
+  .readingsTable tbody td:nth-child(6)  { order: 8; }
+  .readingsTable tbody td:nth-child(7)  { order: 9; }
+  .readingsTable tbody td:nth-child(8)  { order: 10; }
+  .readingsTable tbody td:nth-child(9)  { order: 11; }
+  .readingsTable tbody td:nth-child(10) { order: 12; }
+  .readingsTable tbody td:nth-child(12) { order: 13; grid-column: 1 / -1; }
+
+  /* ID chip (top-left) */
+  .readingsTable tbody td:nth-child(1) {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    width: fit-content;
+    padding: 4px 12px;
+    background: #eef2f7;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #334155;
+  }
+
+  .readingsTable tbody td:nth-child(1)::before {
+    font-weight: 500;
+  }
+
+  /* Status chip (top-right): No Reading / Invalid / Good / Leakage */
+  .readingsTable tbody td:nth-child(13) {
+    flex-direction: row;
+    align-items: center;
+    justify-self: end;
+    width: fit-content;
+    padding: 4px 12px;
+    background: #eef2f7;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #334155;
+  }
+
+  /* Name = card title */
+  .readingsTable tbody td:nth-child(2) {
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: #0f172a;
+  }
+
+  /* Phone on one line: "Phone  0712 345 678" */
+  .readingsTable tbody td:nth-child(3) {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    margin-top: -6px;
+    color: #334155;
+  }
+
+  /* Meter no. + Rate as small tiles */
+  .readingsTable tbody td:nth-child(4),
+  .readingsTable tbody td:nth-child(11) {
+    padding: 10px 12px;
+    background: #f8fafc;
+    border: 1px solid #eef2f7;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  /* ---- reading inputs: big, readable, no iOS zoom (16px) ---- */
+  .readingsTable tbody td .wateruserInput {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    min-height: 48px;
+    padding: 10px 12px;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: left;
+    color: #0f172a;
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 12px;
+    box-sizing: border-box;
+  }
+
+  .readingsTable tbody td .wateruserInput:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+  }
+
+  /* Previous readings: not editable -> muted */
+  .readingsTable tbody td:nth-child(5) .wateruserInput,
+  .readingsTable tbody td:nth-child(6) .wateruserInput {
+    background: #f1f5f9;
+    color: #64748b;
+    border-color: #e2e8f0;
+  }
+
+  /* Current readings: the ones you fill in -> highlighted */
+  .readingsTable tbody td:nth-child(9) .wateruserInput,
+  .readingsTable tbody td:nth-child(10) .wateruserInput {
+    background: #eff6ff;
+    border-color: #93c5fd;
+  }
+
+  .readingsTable tbody td:nth-child(9)::before,
+  .readingsTable tbody td:nth-child(10)::before {
+    color: #1d4ed8;
+  }
+
+  /* ---- per-row Save button ---- */
+  .readingsTable tbody td:nth-child(12) {
+    align-items: stretch;
+  }
+
+  .readingsTable tbody td:nth-child(12) .saveButton {
+    width: 100%;
+    max-width: none;
+    min-height: 48px;
+    padding: 10px 14px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 12px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .readingsTable tbody td:nth-child(12) .saveButton:hover {
+    transform: none;
+  }
+
+  .readingsTable tbody td:nth-child(12) .saveButton:active {
+    transform: scale(0.98);
+  }
+
+  /* ---- "Save All Changes": sticky bar at the bottom of the screen ---- */
+  .tableContainer > div:last-child {
+    position: sticky;
+    bottom: 0;
+    z-index: 30;
+    margin-top: 4px !important; /* overrides the inline margin */
+    padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px));
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.08);
+  }
+
+  .tableContainer > div:last-child > .saveButton {
+    width: 100%;
+    max-width: none;
+    margin-top: 0;
+    min-height: 50px;
+    padding: 12px 18px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 12px;
+  }
+
+  .tableContainer > div:last-child > .saveButton:hover {
+    transform: none;
+  }
+
+  .tableContainer > div:last-child > .saveButton:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+  .tableContainer {
+    margin: 8px 8px 24px;
+  }
+
+  .title {
+    font-size: 1.35rem;
+  }
+
+  .dataUpload,
+  .settingsContainer {
+    padding: 12px;
+  }
+
+  .readingsTable tbody tr,
+  .readingsTable tbody tr:nth-child(even),
+  .readingsTable tbody tr:hover {
+    gap: 10px;
+    padding: 14px;
   }
 }
