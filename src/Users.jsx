@@ -541,14 +541,11 @@ function Users() {
                 <div className={styles.formGroup}>
                   <label htmlFor="parent">Parent</label>
 
-                  <input
-                    id="parent"
-                    name="parent"
-                    type="text"
-                    value={selectedUser.parent || ""}
-                    onChange={handleInputChange}
-                    placeholder="Enter parent"
-                  />
+                  <select value={selectedUser.parent || ""}
+                  onChange={handleInputChange} name="parent" id="parent">
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
                 </div>
               </div>
             </div>
