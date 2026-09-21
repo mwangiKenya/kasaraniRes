@@ -33,7 +33,7 @@ function Workers() {
         const routes = {
           reader: "/ReaderDashboard",
           billing: "/BillingDashboard",
-          //admin: "/AdminDashboard"
+          admin: "/Dashboard"
         };
 
         navigate(routes[data.role] || "/");
