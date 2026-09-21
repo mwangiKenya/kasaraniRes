@@ -355,3 +355,227 @@
     padding: 1rem;
   }
 }
+
+/* ============================================================
+   CHANGE PASSWORD MODAL
+============================================================ */
+
+.passwordModalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 9999;
+
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+
+/* Modal */
+
+.passwordModal {
+    width: 100%;
+    max-width: 430px;
+
+    background: #ffffff;
+    border-radius: 12px;
+
+    padding: 25px;
+
+    box-sizing: border-box;
+
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+
+    animation: passwordModalAppear 0.2s ease;
+}
+
+
+@keyframes passwordModalAppear {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* Header */
+
+.passwordModalHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 10px;
+}
+
+
+.passwordModalHeader h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+
+/* Close button */
+
+.closeModalButton {
+    border: none;
+    background: transparent;
+
+    font-size: 28px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    padding: 2px 7px;
+}
+
+
+.closeModalButton:hover {
+    opacity: 0.7;
+}
+
+
+/* Description */
+
+.passwordModalDescription {
+    margin: 0 0 22px 0;
+
+    color: #666;
+    font-size: 14px;
+}
+
+
+/* Form */
+
+.passwordForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+.passwordForm label {
+    font-size: 14px;
+    font-weight: 600;
+
+    margin-top: 5px;
+}
+
+
+.passwordForm input {
+    width: 100%;
+
+    padding: 11px 12px;
+
+    border: 1px solid #ccc;
+    border-radius: 7px;
+
+    font-size: 15px;
+
+    box-sizing: border-box;
+
+    outline: none;
+}
+
+
+.passwordForm input:focus {
+    border-color: #333;
+}
+
+
+.passwordForm input:disabled {
+    background: #f2f2f2;
+    cursor: not-allowed;
+}
+
+
+/* Modal buttons */
+
+.passwordModalActions {
+    display: flex;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 20px;
+}
+
+
+.cancelPasswordButton,
+.changePasswordButton {
+    border: none;
+    border-radius: 7px;
+
+    padding: 10px 17px;
+
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+
+.cancelPasswordButton {
+    background: #e5e5e5;
+    color: #333;
+}
+
+
+.cancelPasswordButton:hover {
+    background: #d7d7d7;
+}
+
+
+.changePasswordButton {
+    background: #222;
+    color: white;
+}
+
+
+.changePasswordButton:hover {
+    opacity: 0.9;
+}
+
+
+.cancelPasswordButton:disabled,
+.changePasswordButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media (max-width: 500px) {
+
+    .passwordModalOverlay {
+        padding: 15px;
+    }
+
+    .passwordModal {
+        padding: 20px;
+    }
+
+    .passwordModalActions {
+        flex-direction: column;
+    }
+
+    .cancelPasswordButton,
+    .changePasswordButton {
+        width: 100%;
+    }
+}
