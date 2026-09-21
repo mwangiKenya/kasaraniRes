@@ -71,6 +71,7 @@ function RegWorker() {
           onChange={(e) => setRole(e.target.value)}
           className={styles.select}
         >
+          <option value="">--Select Role--</option>
           <option value="admin">admin</option>
           <option value="reader">reader</option>
           <option value="billing">billing</option>
