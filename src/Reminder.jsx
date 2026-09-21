@@ -14,6 +14,38 @@ const SMS_TYPE_LABELS = {
   DISCONNECTION_NOTICE: "Disconnection Notice",
 };
 
+// =========================================
+// DATES ARE OWNED BY THE SMS PAGE
+// The SMS page saves these two keys when the user clicks "Apply Dates":
+//   localStorage "billingDate" -> Reading date
+//   localStorage "dueDate"     -> Pay By date
+// This page only READS them. It never writes or resets them.
+// Fallbacks match the SMS page (only used if nothing has ever been saved).
+// =========================================
+const loadStoredDate = (key, fallbackFn) => {
+  try {
+    const saved = localStorage.getItem(key);
+    if (saved) {
+      const parsed = new Date(saved);
+      if (!isNaN(parsed.getTime())) return parsed;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+  return fallbackFn();
+};
+
+const defaultReadingDate = () => new Date();
+
+const defaultDueDate = () => {
+  const d = new Date();
+  d.setDate(d.getDate() + 12);
+  return d;
+};
+
+const loadReadingDate = () => loadStoredDate("billingDate", defaultReadingDate);
+const loadDueDate = () => loadStoredDate("dueDate", defaultDueDate);
+
 function Reminder() {
   const [customers, setCustomers] = useState([]);
   const [selectedCustomers, setSelectedCustomers] = useState([]);
@@ -27,33 +59,48 @@ function Reminder() {
   const [filterOverdue, setFilterOverdue] = useState(false);
   const [globalSmsType, setGlobalSmsType] = useState(SMS_TYPES.REMINDER);
 
-  const [selectedDueDate, setSelectedDueDate] = useState(() => {
-    const d = new Date();
-    d.setDate(d.getDate() + 7);
-    return d;
-  });
-  const [confirmedDueDate, setConfirmedDueDate] = useState(() => {
-    const d = new Date();
-    d.setDate(d.getDate() + 7);
-    return d;
-  });
+  // Read-only dates, taken from the SMS page
+  const [readingDate, setReadingDate] = useState(loadReadingDate);
+  const [dueDate, setDueDate] = useState(loadDueDate);
 
-  const [selectedReadingDate, setSelectedReadingDate] = useState(() => {
-    const d = new Date();
-    return d;
-  });
-
-  const [confirmedReadingDate, setConfirmedReadingDate] = useState(() => {
-    const d = new Date();
-    return d;
-  });
-
-  const formattedReadingDate = confirmedReadingDate.toLocaleDateString("en-GB");
+  const formattedReadingDate = readingDate.toLocaleDateString("en-GB");
+  const formattedDueDate = dueDate.toLocaleDateString("en-GB");
 
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
 
-  const formattedDueDate = confirmedDueDate.toLocaleDateString("en-GB");
+  // =========================================
+  // KEEP DATES IN SYNC WITH THE SMS PAGE
+  // Re-reads when the page mounts, when the tab regains focus,
+  // and when the SMS page changes them in another tab.
+  // =========================================
+  useEffect(() => {
+    const syncDates = () => {
+      const newReading = loadReadingDate();
+      const newDue = loadDueDate();
+      setReadingDate((prev) =>
+        prev.getTime() === newReading.getTime() ? prev : newReading
+      );
+      setDueDate((prev) =>
+        prev.getTime() === newDue.getTime() ? prev : newDue
+      );
+    };
+
+    const onStorage = (e) => {
+      if (e.key === null || e.key === "billingDate" || e.key === "dueDate") {
+        syncDates();
+      }
+    };
+
+    syncDates();
+    window.addEventListener("storage", onStorage);
+    window.addEventListener("focus", syncDates);
+
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("focus", syncDates);
+    };
+  }, []);
 
   // =========================================
   // APPLY DATE PLACEHOLDERS
@@ -81,18 +128,23 @@ function Reminder() {
   };
 
   // =========================================
-  // HELPER: GET AMOUNT
+  // HELPER: AMOUNTS
   // =========================================
+  const getAmountValue = (customer) => {
+    const bal = Number(customer.bal);
+    const bill = Number(customer.bill);
+    if (bal > 0) return bal;
+    return Number.isFinite(bill) ? bill : 0;
+  };
+
   const getAmount = (customer) => {
-    return Number(customer.bal) > 0
-      ? `KES ${Number(customer.bal).toLocaleString()}`
-      : `KES ${Number(customer.bill).toLocaleString()}`;
+    return `KES ${getAmountValue(customer).toLocaleString()}`;
   };
 
   const getGroupTotal = (groupCustomers) => {
     let total = 0;
     groupCustomers.forEach((c) => {
-      total += Number(c.bal) > 0 ? Number(c.bal) : Number(c.bill || 0);
+      total += getAmountValue(c);
     });
     return total;
   };
@@ -101,23 +153,19 @@ function Reminder() {
   // PHONE MANAGEMENT
   // =========================================
   const getCustomerPhones = (customer) => {
-  const saved =
-    extraPhones[customer.id] || [];
+    const saved = extraPhones[customer.id] || [];
 
-  const extrasOnly =
-    saved.filter(
-      (p) => !p.primary
-    );
+    const extrasOnly = saved.filter((p) => !p.primary);
 
-  return [
-    {
-      number: customer.phone,
-      primary: true,
-      selected: true,
-    },
-    ...extrasOnly,
-  ];
-};
+    return [
+      {
+        number: customer.phone,
+        primary: true,
+        selected: true,
+      },
+      ...extrasOnly,
+    ];
+  };
 
   const savePhones = (customerId, phones) => {
     localStorage.setItem(`phones_${customerId}`, JSON.stringify(phones));
@@ -158,8 +206,6 @@ function Reminder() {
   const generateReminderMessage = (customer) => {
     const groupCustomers = getGroupCustomers(customer);
     const isSingle = groupCustomers.length === 1;
-    const parentCustomer = groupCustomers.find(isParent);
-    const sender = parentCustomer || customer;
 
     if (isSingle) {
       const c = groupCustomers[0];
@@ -192,12 +238,7 @@ Thank you
 Contact us on: 0741088799`.trim();
     }
 
-    let total = 0;
-    const breakdown = groupCustomers.map((c) => {
-      const amount = Number(c.bal) > 0 ? Number(c.bal) : Number(c.bill || 0);
-      total += amount;
-      return `${c.sms_name}: KES ${amount.toLocaleString()}`;
-    }).join("\n");
+    const total = getGroupTotal(groupCustomers);
 
     return `
 BILL PAST DUE DATE
@@ -230,8 +271,6 @@ Contact us on: 0741088799`.trim();
   const generateDisconnectionDueMessage = (customer) => {
     const groupCustomers = getGroupCustomers(customer);
     const isSingle = groupCustomers.length === 1;
-    const parentCustomer = groupCustomers.find(isParent);
-    const sender = parentCustomer || customer;
 
     if (isSingle) {
       const c = groupCustomers[0];
@@ -262,12 +301,7 @@ Equity, Garden city Branch
 Contact us on: 0741088799`.trim();
     }
 
-    let total = 0;
-    const breakdown = groupCustomers.map((c) => {
-      const amount = Number(c.bal) > 0 ? Number(c.bal) : Number(c.bill || 0);
-      total += amount;
-      return `${c.sms_name}: KES ${amount.toLocaleString()}`;
-    }).join("\n");
+    const total = getGroupTotal(groupCustomers);
 
     return `
 DUE FOR DISCONNECTION
@@ -297,19 +331,12 @@ Contact us on: 0741088799`.trim();
 
   const generateDisconnectionNoticeMessage = (customer) => {
     const groupCustomers = getGroupCustomers(customer);
-    const parentCustomer = groupCustomers.find(isParent);
-    const sender = parentCustomer || customer;
-
     const isSingle = groupCustomers.length === 1;
 
     if (isSingle) {
       const c = groupCustomers[0];
-      const amount =
-        Number(c.bal) > 0
-          ? Number(c.bal)
-          : Number(c.bill);
+      const toPay = getAmountValue(c) + 500;
 
-      const toPay = amount + 500;
       return `DISCONNECTION NOTICE
 
 Kindly note that your water is
@@ -326,25 +353,21 @@ Thank you.
 Contact us on: 0741088799`.trim();
     }
 
-    let total = 0;
-    const breakdown = groupCustomers.map((c) => {
-      const amount = Number(c.bal) > 0 ? Number(c.bal) : Number(c.bill || 0);
-      total += amount;
-      return `${c.sms_name}: KES ${amount.toLocaleString()}`;
-    }).join("\n");
+    const toPay = getGroupTotal(groupCustomers) + 500;
 
-      const toPay = total + 500;
-
+    // FIX: this used toPay.toLocaleDateString() which does not exist on a
+    // number and threw a TypeError for every grouped customer, crashing the
+    // whole page (white screen). It must be toLocaleString().
     return `
 DISCONNECTION NOTICE
 
 Kindly note that your water is
-diconnected due to non payment.
+disconnected due to non payment.
 The account will be reconnected
 on full payment. An additional
 reconnection fee of Ksh 500 has
 been charged on your account as per
-agreement. Kindly pay Ksh ${toPay.toLocaleDateString()}
+agreement. Kindly pay Ksh ${toPay.toLocaleString()}
 for reconnection.
 
 Thank you
@@ -421,7 +444,7 @@ Contact us on: 0741088799`.trim();
           return { ...customer, ...fresh };
         }
 
-        let migratedMessage = reminderData.message
+        let migratedMessage = String(reminderData.message ?? "")
           .replace(/due by .*/g, "due by {{DUE_DATE}}")
           .replace(/Pay by .*/g, "Pay by {{DUE_DATE}}");
         migratedMessage = migratedMessage.replace(
@@ -436,11 +459,7 @@ Contact us on: 0741088799`.trim();
 
       const phoneData = {};
       preparedData.forEach((c) => {
-        const saved = JSON.parse(
-          localStorage.getItem(
-            `phones_${c.id}`
-          ) || "[]"
-        );
+        const saved = JSON.parse(localStorage.getItem(`phones_${c.id}`) || "[]");
 
         const cleaned = [
           {
@@ -448,15 +467,10 @@ Contact us on: 0741088799`.trim();
             primary: true,
             selected: true,
           },
-          ...saved.filter(
-            (p) => !p.primary
-          ),
+          ...saved.filter((p) => !p.primary),
         ];
 
-        localStorage.setItem(
-          `phones_${c.id}`,
-          JSON.stringify(cleaned)
-        );
+        localStorage.setItem(`phones_${c.id}`, JSON.stringify(cleaned));
 
         phoneData[c.id] = cleaned;
       });
@@ -505,13 +519,25 @@ Contact us on: 0741088799`.trim();
 
   // =========================================
   // GLOBAL SMS TYPE CHANGE
+  // All messages are generated OUTSIDE the state updater (an error thrown
+  // inside a setState updater blanks the whole page), and wrapped in
+  // try/catch so a bad record can never take the page down again.
   // =========================================
   const handleGlobalSmsTypeChange = (newType) => {
-    setGlobalSmsType(newType);
-    setCustomers((prev) =>
-      prev.map((c) => {
+    try {
+      const newMessages = {};
+
+      const updatedCustomers = customers.map((c) => {
         const newMessage = generateMessageByType(c, newType);
-        const updated = { ...c, smsType: newType, message: newMessage, editStatus: "Default" };
+        newMessages[c.id] = newMessage;
+
+        const updated = {
+          ...c,
+          smsType: newType,
+          message: newMessage,
+          editStatus: "Default",
+        };
+
         localStorage.setItem(
           `reminder_${c.id}`,
           JSON.stringify({
@@ -525,27 +551,37 @@ Contact us on: 0741088799`.trim();
             smsType: newType,
           })
         );
+
         return updated;
-      })
-    );
-    setEditedMessages((prev) => {
-      const updated = { ...prev };
-      customers.forEach((c) => {
-        updated[c.id] = generateMessageByType(c, newType);
       });
-      return updated;
-    });
+
+      setGlobalSmsType(newType);
+      setCustomers(updatedCustomers);
+      setEditedMessages((prev) => ({ ...prev, ...newMessages }));
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to change SMS type");
+    }
   };
 
   // =========================================
   // PER-CUSTOMER SMS TYPE CHANGE
   // =========================================
   const handleCustomerSmsTypeChange = (customerId, newType) => {
-    const customer = customers.find((c) => c.id === customerId);
-    if (!customer) return;
-    const newMessage = generateMessageByType(customer, newType);
-    saveCustomerData(customerId, { smsType: newType, message: newMessage, editStatus: "Default" });
-    setEditedMessages((prev) => ({ ...prev, [customerId]: newMessage }));
+    try {
+      const customer = customers.find((c) => c.id === customerId);
+      if (!customer) return;
+      const newMessage = generateMessageByType(customer, newType);
+      saveCustomerData(customerId, {
+        smsType: newType,
+        message: newMessage,
+        editStatus: "Default",
+      });
+      setEditedMessages((prev) => ({ ...prev, [customerId]: newMessage }));
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to change SMS type");
+    }
   };
 
   // =========================================
@@ -563,8 +599,7 @@ Contact us on: 0741088799`.trim();
     selectedCustomers.some((c) => c.id === customer.id);
 
   const allSelected =
-    customers.length > 0 &&
-    selectedCustomers.length === customers.length;
+    customers.length > 0 && selectedCustomers.length === customers.length;
 
   const handleSelectAll = () => {
     if (allSelected) setSelectedCustomers([]);
@@ -582,11 +617,16 @@ Contact us on: 0741088799`.trim();
   // OPEN PREVIEW MODAL
   // =========================================
   const openPreview = (customer) => {
-    const smsType = customer.smsType || SMS_TYPES.REMINDER;
-    const msg = generateMessageByType(customer, smsType);
-    setEditedMessages((prev) => ({ ...prev, [customer.id]: msg }));
-    setSelectedCustomer(customer);
-    setShowModal(true);
+    try {
+      const smsType = customer.smsType || SMS_TYPES.REMINDER;
+      const msg = generateMessageByType(customer, smsType);
+      setEditedMessages((prev) => ({ ...prev, [customer.id]: msg }));
+      setSelectedCustomer(customer);
+      setShowModal(true);
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to open preview");
+    }
   };
 
   // =========================================
@@ -604,11 +644,6 @@ Contact us on: 0741088799`.trim();
     }));
   };
 
-  const handleUseReadingDate = () => {
-    setConfirmedReadingDate(selectedReadingDate);
-    toast.success("Reading date updated");
-  };
-
   // =========================================
   // SAVE MESSAGE
   // =========================================
@@ -619,14 +654,6 @@ Contact us on: 0741088799`.trim();
     });
     toast.success("Reminder updated successfully");
     setShowModal(false);
-  };
-
-  // =========================================
-  // APPLY DATE BUTTON
-  // =========================================
-  const handleUseDate = () => {
-    setConfirmedDueDate(selectedDueDate);
-    toast.success("Due date updated");
   };
 
   // =========================================
@@ -775,39 +802,24 @@ Contact us on: 0741088799`.trim();
           {sending ? "Sending..." : "Send Selected Reminders"}
         </button>
 
-        {/* DATE + FILTER CONTROLS */}
+        {/* DATES (READ-ONLY) + SMS TYPE + FILTER CONTROLS */}
         <div className={styles.controls}>
           <div className={styles.dateSection}>
             <div>
-              <label>Pay By Date</label>
-              <input
-                type="date"
-                value={selectedDueDate.toISOString().split("T")[0]}
-                onChange={(e) => setSelectedDueDate(new Date(e.target.value))}
-              />
+              <label>Reading Date (set on SMS page)</label>
+              <div>
+                <strong>{formattedReadingDate}</strong>
+              </div>
             </div>
-            <button className={styles.useDateBtn} onClick={handleUseDate}>
-              Apply Date
-            </button>
           </div>
 
           <div className={styles.dateSection}>
             <div>
-              <label>Reading Date</label>
-              <input
-                type="date"
-                value={selectedReadingDate.toISOString().split("T")[0]}
-                onChange={(e) =>
-                  setSelectedReadingDate(new Date(e.target.value))
-                }
-              />
+              <label>Pay By Date (set on SMS page)</label>
+              <div>
+                <strong>{formattedDueDate}</strong>
+              </div>
             </div>
-            <button
-              className={styles.useDateBtn}
-              onClick={handleUseReadingDate}
-            >
-              Apply Reading Date
-            </button>
           </div>
 
           {/* GLOBAL SMS TYPE SELECTOR */}

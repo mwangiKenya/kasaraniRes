@@ -28,7 +28,7 @@ function App() {
   const plot = {
     name: "Kamengo Agencies",
     location: "Kasarani",
-    slogan: "Your Number One residence",
+    //slogan: "Your Number One residence",
     service: "Water supply services"
   };
 
