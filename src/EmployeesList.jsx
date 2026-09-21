@@ -27,7 +27,7 @@ function EmployeesList() {
     }
   };
 
-  // ✅ DELETE
+  // DELETE
   const deleteEmployee = async (id) => {
     if (!window.confirm("Delete this employee?")) return;
 
@@ -42,18 +42,18 @@ function EmployeesList() {
     }
   };
 
-  // ✅ START EDIT
+  //  START EDIT
   const startEdit = (emp) => {
     setEditingId(emp.id);
     setEditData({ username: emp.username, role: emp.role });
   };
 
-  // ✅ HANDLE CHANGE
+  //  HANDLE CHANGE
   const handleChange = (e) => {
     setEditData({ ...editData, [e.target.name]: e.target.value });
   };
 
-  // ✅ SAVE UPDATE
+  //  SAVE UPDATE
   const saveUpdate = async (id) => {
     try {
       await axios.put(`${BACKEND_URL}/update_employee/${id}/`, editData);
@@ -74,7 +74,7 @@ function EmployeesList() {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>All Employees</h2>
+      <h2 className={styles.title}>All System Users</h2>
 
       {loading ? (
         <p>Loading...</p>
@@ -143,7 +143,7 @@ function EmployeesList() {
             <h3> Access granted </h3>
             <div className={styles.SubAccessControl}>
               <div className={styles.ActualRoleHolder}>
-                <h3>Billing officer</h3>
+                <h3>Billing Account</h3>
                 <ol>
                   <li>Water readings table </li>
                   <li>Billings page</li>
@@ -152,7 +152,7 @@ function EmployeesList() {
                 </ol>
               </div>
               <div>
-                <h3>Metre reader</h3>
+                <h3>Readings Account</h3>
                 <ol>
                   <li>Water readings table</li>
                   <li>Customer registration page</li>
