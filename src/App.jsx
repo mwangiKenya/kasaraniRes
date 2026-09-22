@@ -66,8 +66,8 @@ function App() {
           {/* 👉 MAIN NAVIGATION */}
           <nav className={`Navigation ${menuOpen ? "ShowMenu" : ""}`}>
             <Link to="/" className="MyNavLinks" onClick={() => setMenuOpen(false)}>Home</Link>
-            <Link to = "/Login" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Admin </Link>
-            <Link to = "/Workers" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Users </Link>
+           {/* <Link to = "/Login" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Admin </Link>*/}
+            <Link to = "/Workers" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Login to Continue </Link>
             {/*<Link to = "/Sms" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Sms </Link>*/}
           </nav>
 
