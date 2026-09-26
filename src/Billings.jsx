@@ -579,7 +579,7 @@ function Billings() {
             <tr>
               <th>ID</th>
               <th>Name</th>
-              <th>Phone</th>
+              {/*<th>Phone</th>*/}
               <th>Units Used</th>
               <th>Rate</th>
               <th>Bill</th>
@@ -590,7 +590,7 @@ function Billings() {
               <th>Bal (To Pay)</th>
               <th>Status</th>
               <th>Action</th>
-              <th>Adjust</th>
+              <th>Add Pen/Disc</th>
             </tr>
           </thead>
           <tbody>
@@ -598,7 +598,7 @@ function Billings() {
               <tr key={b.id}>
                 <td>{b.user_id}</td>
                 <td>{b.sms_name}</td>
-                <td>{b.phone}</td>
+                {/*<td>{b.phone}</td>*/}
                 <td>{b.units_used || 0}</td>
                 <td>{b.rate || 0}</td>
                 <td>{b.bill || 0}</td>
