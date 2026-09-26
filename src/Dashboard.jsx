@@ -210,24 +210,6 @@ function Dashboard() {
 
                     <button
                         className={`${styles.navItem} ${
-                            activeView === "register" ? styles.active : ""
-                        }`}
-                        onClick={() => setActiveView("register")}
-                    >
-                        Register New Customer
-                    </button>
-
-                    <button
-                        className={`${styles.navItem} ${
-                            activeView === "users" ? styles.active : ""
-                        }`}
-                        onClick={() => setActiveView("users")}
-                    >
-                        Registered Customers
-                    </button>
-
-                    <button
-                        className={`${styles.navItem} ${
                             activeView === "sms" ? styles.active : ""
                         }`}
                         onClick={() => setActiveView("sms")}
@@ -242,6 +224,24 @@ function Dashboard() {
                         onClick={() => setActiveView("reminder")}
                     >
                         Reminder SMS
+                    </button>
+
+                    <button
+                        className={`${styles.navItem} ${
+                            activeView === "register" ? styles.active : ""
+                        }`}
+                        onClick={() => setActiveView("register")}
+                    >
+                        Register New Customer
+                    </button>
+
+                    <button
+                        className={`${styles.navItem} ${
+                            activeView === "users" ? styles.active : ""
+                        }`}
+                        onClick={() => setActiveView("users")}
+                    >
+                        Registered Customers
                     </button>
 
                     <button
