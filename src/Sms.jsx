@@ -1041,14 +1041,14 @@ Contact us on: 0741088799
                 Update All Phones
               </button>
               {/*DOWNLOAD THE SMS EXCEL*/}
-              <button
+              {/*<button
                 variant="contained"
                 color="success"
                 onClick={downloadSMSExcel}
                 className={styles.downloadSheetBtn}
               >
                 Download SMS Excel sheet
-              </button>
+              </button>*/}
             </div>
           </div>
         </div>
@@ -1199,7 +1199,7 @@ Contact us on: 0741088799
                     />
                     {p.number}
 
-                    {p.primary && " (Primary)"}
+                    {p.primary && " (Primary number)"}
                   </label>
 
                   {!p.primary && (

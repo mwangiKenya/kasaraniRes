@@ -1022,7 +1022,7 @@ Contact us on: 0741088799`.trim();
                       }
                     />
                     {p.number}
-                    {p.primary && " (Primary)"}
+                    {p.primary && " (Primary number)"}
                   </label>
                   {!p.primary && (
                     <button
