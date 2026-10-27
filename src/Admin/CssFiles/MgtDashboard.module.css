@@ -1,0 +1,164 @@
+.dashboard {
+    display: grid;
+    grid-template-columns: 20% 80%;
+    width: 100%;
+    min-height: 100vh;
+    margin-top: 100px;
+    background: #1151d2;
+    color: #1e293b;
+}
+.sidebar {
+    position: relative;
+    top: auto;
+    left: auto;
+    bottom: auto;
+    width: 100%;
+    min-width: 0;
+    min-height: calc(100vh - 100px);
+    background: #0f172a;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+    transition: transform 0.3s ease;
+    margin-top: 15px;
+    padding-top: 0;
+    box-sizing: border-box;
+}
+.AdminmainContent {
+    min-width: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: rgb(240, 244, 240);
+    box-sizing: border-box;
+}
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 0 14px;
+}
+.navItem {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    width: 100%;
+    padding: 13px 15px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+.navItem:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+}
+.navItem.active {
+    background: #2563eb;
+    color: #fff;
+    box-shadow: 0 5px 15px rgba(37, 99, 235, 0.25);
+}
+.logoutButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: calc(100% - 28px);
+    margin: 12px 14px 0;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 9px;
+    background: transparent;
+    color: #cbd5e1;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+.logoutButton:hover {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.35);
+    color: #fca5a5;
+}
+.sidebarBottom {
+    margin-top: auto;
+    padding-bottom: 20px;
+}
+.pageContent {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 32px;
+    box-sizing: border-box;
+}
+.menuButton {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #e2e8f0;
+    border-radius: 9px;
+    background: #fff;
+    color: #334155;
+    font-size: 23px;
+    cursor: pointer;
+}
+.closeButton {
+    display: none;
+}
+.overlay {
+    display: none;
+}
+.navItem:focus-visible,
+.logoutButton:focus-visible,
+.menuButton:focus-visible {
+    outline: 3px solid #93c5fd;
+    outline-offset: 3px;
+}
+@media (max-width: 768px) {
+    .dashboard {
+        display: block;
+        margin-top: 70px;
+    }
+    .sidebar {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        bottom: 0;
+        width: 280px;
+        min-height: 0;
+        margin-top: 0;
+        transform: translateX(-100%);
+        z-index: 1000;
+    }
+    .sidebar.sidebarOpen {
+        transform: translateX(0);
+    }
+    .AdminmainContent {
+        width: 100%;
+    }
+    .pageContent {
+        padding: 20px 16px;
+    }
+    .menuButton {
+        display: flex;
+    }
+    .closeButton {
+        display: flex;
+    }
+    .overlay {
+        display: block;
+        position: fixed;
+        inset: 70px 0 0;
+        z-index: 999;
+        background: rgba(15, 23, 42, 0.55);
+    }
+}

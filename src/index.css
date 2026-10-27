@@ -21,14 +21,14 @@ body {
   color: var(--text-main);
   line-height: 1.5;
   /* Dynamic spacing for fixed header */
-  padding-top: 130px; 
+  padding-top: 130px;
 }
 
-/* ------------------ HEADER & NAVIGATION ------------------ */
 .MainDivHolder {
   position: fixed;
   width: 100%;
   top: 0;
+  left: 0;
   z-index: 1000;
   background: var(--white);
   box-shadow: var(--shadow-sm);
@@ -39,8 +39,18 @@ body {
   justify-content: space-between;
   align-items: center;
   background-color: var(--primary);
-  padding: 12px 5%;
+  padding: 0px 4%; 
   color: var(--white);
+}
+
+.AppTopDiv h1 {
+  margin: 0;
+  font-size: 1.4rem; 
+}
+
+.AppTopDiv p {
+  margin: 0;
+  font-size: 0.85rem;
 }
 
 .MyLogo {
