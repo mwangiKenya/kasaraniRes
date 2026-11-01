@@ -1,23 +1,17 @@
 import styles from "../CssFiles/Analytics.module.css";
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import mainUrl from "../../api";
+import { authFetch } from "../../api";
 import {
   FaUsers, FaWater, FaMoneyBillWave, FaChartLine, FaWallet, FaPercentage,
-  FaExclamationTriangle, FaCheckCircle, FaClock, FaDownload, FaSync,
+  FaExclamationTriangle, FaCheckCircle, FaClock, FaSync,
   FaArrowUp, FaArrowDown, FaGavel, FaBalanceScale,
 } from "react-icons/fa";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   Cell, ComposedChart, Line, Area, AreaChart, PieChart, Pie,
 } from "recharts";
-
-/* ------------------------------------------------------------ constants */
 const C = { blue: "#2563EB", purple: "#7C3AED", green: "#059669", amber: "#D97706", red: "#DC2626", cyan: "#0891B2", grey: "#94A3B8" };
-
-// existing endpoints (unchanged)
-const LEGACY = ["total_units/", "total_bal/", "total_bill/", "total_paid", "total_cust/", "avg_units"];
-
-// new endpoints
+const LEGACY = ["total_units/", "total_bal/", "total_bill/", "total_paid/", "total_cust/", "avg_units/"];
 const NEW = {
   summary: () => "analytics_summary/",
   trend: (m) => `analytics_monthly_trend/?months=${m}`,
@@ -31,13 +25,11 @@ const NEW = {
   consumers: () => "analytics_top_consumers/?limit=10",
   anomalies: () => "analytics_reading_anomalies/",
 };
-
 const get = async (path) => {
-  const res = await fetch(`${mainUrl}${path}`);
+  const res = await authFetch(path);
   if (!res.ok) throw new Error(`Failed to fetch ${path}`);
   return res.json();
 };
-
 const kes = (n) => new Intl.NumberFormat("en-KE", { style: "currency", currency: "KES", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Number(n) || 0);
 const num = (n) => new Intl.NumberFormat("en-KE").format(Number(n) || 0);
 const short = (n) => {
@@ -47,8 +39,6 @@ const short = (n) => {
 const mLabel = (s) => (s ? new Date(`${s}-01`).toLocaleDateString("en-GB", { month: "short", year: "2-digit" }) : "");
 const change = (cur, prev) => (prev ? ((cur - prev) / Math.abs(prev)) * 100 : null);
 const rateTone = (r) => (r >= 80 ? "good" : r >= 60 ? "warn" : "bad");
-
-/* ------------------------------------------------------------ small parts */
 function Delta({ v, invert }) {
   if (v == null || !isFinite(v)) return null;
   const up = v >= 0;
@@ -59,7 +49,6 @@ function Delta({ v, invert }) {
     </span>
   );
 }
-
 function Kpi({ icon, label, value, sub, tone = "blue", delta, invert, spark, sparkKey }) {
   return (
     <div className={`${styles.kpi} ${styles[tone]}`}>
@@ -84,7 +73,6 @@ function Kpi({ icon, label, value, sub, tone = "blue", delta, invert, spark, spa
     </div>
   );
 }
-
 const Card = ({ title, sub, children, wide }) => (
   <section className={`${styles.card} ${wide ? styles.wide : ""}`}>
     <header className={styles.cardHead}>
@@ -94,21 +82,14 @@ const Card = ({ title, sub, children, wide }) => (
     {children}
   </section>
 );
-
 const Empty = ({ text = "No data available for this section yet." }) => <div className={styles.empty}>{text}</div>;
-
 const RateBar = ({ value }) => (
   <div className={styles.rateCell}>
     <div className={styles.bar}><div className={`${styles.barFill} ${styles[rateTone(value)]}`} style={{ width: `${Math.min(100, value)}%` }} /></div>
     <span>{value}%</span>
   </div>
 );
-
-const moneyTip = (v, n) => [typeof v === "number" && /rate|%/i.test(n) ? `${v}%` : kes(v), n];
-
-/* ------------------------------------------------------------ page */
 function Analytics() {
-  // legacy state (kept)
   const [units_used, setUnitsUsed] = useState(0);
   const [bills, setBills] = useState(0);
   const [customers, setCustomers] = useState(0);
@@ -118,11 +99,9 @@ function Analytics() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
-  // new state
   const [months, setMonths] = useState(12);
   const [d, setD] = useState({});
   const [failed, setFailed] = useState([]);
-
   const fetchAllData = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -146,17 +125,13 @@ function Analytics() {
     setLastUpdated(new Date());
     setLoading(false);
   }, [months]);
-
   useEffect(() => { fetchAllData(); }, [fetchAllData]);
-
-  /* ---------- derived metrics (same formulas as before) ---------- */
   const total = Number(bills) + Number(bal);
   const balance = total - paid;
   const efficiency = total > 0 ? +((paid / total) * 100).toFixed(1) : 0;
   const avgBillPerCustomer = customers > 0 ? bills / customers : 0;
   const avgPaidPerCustomer = customers > 0 ? paid / customers : 0;
   const level = efficiency >= 80 ? "Excellent" : efficiency >= 60 ? "Good" : "Needs improvement";
-
   const trend = d.trend?.data || [];
   const last = trend[trend.length - 1], prev = trend[trend.length - 2];
   const s = d.summary;
@@ -164,7 +139,6 @@ function Analytics() {
   const zones = d.zones?.data || [];
   const readingPct = s?.reading_completion;
   const health = Math.round(readingPct != null ? efficiency * 0.7 + readingPct * 0.3 : efficiency);
-
   const metricsData = [
     { name: "Total Customers", value: customers, formatted: num(customers), color: C.blue },
     { name: "Previous Balance", value: bal, formatted: kes(bal), color: C.purple },
@@ -174,8 +148,6 @@ function Analytics() {
     { name: "Outstanding Balance", value: balance, formatted: kes(balance), color: C.red },
     { name: "Units Consumed", value: units_used, formatted: `${num(units_used)} m³`, color: C.cyan },
   ];
-
-  /* ---------- auto-generated insights ---------- */
   const insights = useMemo(() => {
     const out = [];
     const add = (tone, text, action) => out.push({ tone, text, action });
@@ -196,18 +168,6 @@ function Analytics() {
     if (s?.penalties_cycle > 0) add("warn", `${kes(s.penalties_cycle)} in penalties were charged this cycle.`, null);
     return out;
   }, [balance, total, efficiency, last, prev, zones, d.debtors, d.anomalies, s]);
-
-  /* ---------- export ---------- */
-  const exportCSV = () => {
-    const rows = [["Metric", "Value"], ["Customers", customers], ["Previous balance", bal], ["Current revenue", bills], ["Total revenue", total], ["Paid", paid], ["Outstanding", balance], ["Collection %", efficiency], ["Units (m3)", units_used], [], ["Month", "Billed", "Prev balance", "Due", "Paid", "Outstanding", "Collection %", "Units"],
-      ...trend.map((t) => [t.month, t.billed, t.prev, t.due, t.paid, t.outstanding, t.collection_rate, t.units])];
-    const blob = new Blob([rows.map((r) => r.join(",")).join("\n")], { type: "text/csv" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `water-analytics-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-  };
-
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -216,16 +176,13 @@ function Analytics() {
       </div>
     );
   }
-
   const mix = s ? [
     { name: "Fully paid", value: s.payment_mix.fully_paid, color: C.green },
     { name: "Partly paid", value: s.payment_mix.partial, color: C.amber },
     { name: "Unpaid", value: s.payment_mix.unpaid, color: C.red },
   ] : [];
-
   return (
     <div className={styles.container}>
-      {/* ---------------- header ---------------- */}
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Water billing analytics</h1>
@@ -239,23 +196,20 @@ function Analytics() {
             {[3, 6, 12, 24].map((m) => <option key={m} value={m}>Last {m} months</option>)}
           </select>
           <button onClick={fetchAllData} className={styles.btn}><FaSync /> Refresh</button>
-          {/*<button onClick={exportCSV} className={`${styles.btn} ${styles.btnPrimary}`}><FaDownload /> Export CSV</button>*/}
         </div>
       </div>
-
-      {error && (
+      {/*{error && (
         <div className={styles.errorBanner}>
           <FaExclamationTriangle /> <span>{error}</span>
           <button onClick={fetchAllData}>Retry</button>
         </div>
       )}
+      
       {failed.length > 0 && (
         <div className={styles.warnBanner}>
           <FaExclamationTriangle /> <span>Some sections could not load ({failed.join(", ")}). Check that the new analytics URLs are registered.</span>
         </div>
-      )}
-
-      {/* ---------------- executive summary ---------------- */}
+      )}*/}
       <div className={styles.hero}>
         <div className={styles.score} style={{ "--p": `${health}%`, "--c": health >= 75 ? C.green : health >= 55 ? C.amber : C.red }}>
           <div><strong>{health}</strong><span>/100</span></div>
@@ -272,8 +226,6 @@ function Analytics() {
           {insights.slice(0, 3).map((i, k) => <li key={k} className={styles[i.tone]}>{i.text}</li>)}
         </ul>
       </div>
-
-      {/* ---------------- KPIs ---------------- */}
       <div className={styles.kpiGrid}>
         <Kpi icon={<FaUsers />} label="Total customers" value={num(customers)} sub={d.growth?.data?.length ? `${d.growth.data.slice(-1)[0].new} new last month` : "Active accounts"} tone="blue" spark={d.growth?.data} sparkKey="total" />
         <Kpi icon={<FaBalanceScale />} label="Previous balance" value={kes(bal)} sub="Carried down" tone="purple" />
@@ -284,7 +236,6 @@ function Analytics() {
         <Kpi icon={<FaWater />} label="Units consumed" value={`${num(units_used)} m³`} sub={`Avg ${units} m³ per bill`} tone="cyan" delta={last && prev ? change(last.units, prev.units) : null} spark={trend} sparkKey="units" />
         <Kpi icon={<FaPercentage />} label="Revenue per m³" value={cs ? kes(cs.yield_per_unit) : "-"} sub="Cash collected per unit, latest cycle" tone="green" />
       </div>
-
       <div className={styles.secondaryGrid}>
         <div className={styles.mini}><span>Collection efficiency</span><strong>{efficiency}%</strong>
           <div className={styles.bar}><div className={`${styles.barFill} ${styles[rateTone(efficiency)]}`} style={{ width: `${efficiency}%` }} /></div></div>
@@ -295,8 +246,6 @@ function Analytics() {
           <div className={styles.bar}><div className={`${styles.barFill} ${styles[rateTone(readingPct || 0)]}`} style={{ width: `${readingPct || 0}%` }} /></div></div>
         <div className={styles.mini}><span>Customers owing (latest cycle)</span><strong>{num(d.debtors?.debtor_count)}</strong></div>
       </div>
-
-      {/* ---------------- insights ---------------- */}
       <Card title="What needs your attention" sub="Generated automatically from the numbers on this page" wide>
         <ul className={styles.insights}>
           {insights.map((i, k) => (
@@ -307,8 +256,6 @@ function Analytics() {
           ))}
         </ul>
       </Card>
-
-      {/* ---------------- trends ---------------- */}
       <div className={styles.grid2}>
         <Card title="Billing versus collections" sub={`Monthly billed, paid and collection rate (last ${months} months)`}>
           {trend.length ? (
@@ -327,7 +274,6 @@ function Analytics() {
             </ResponsiveContainer>
           ) : <Empty />}
         </Card>
-
         <Card title="Water consumption" sub="Total units billed per month (m³)">
           {trend.length ? (
             <ResponsiveContainer width="100%" height={320}>
@@ -341,7 +287,6 @@ function Analytics() {
             </ResponsiveContainer>
           ) : <Empty />}
         </Card>
-
         <Card title="Outstanding balance over time" sub="Unpaid amount at the end of each month">
           {trend.length ? (
             <ResponsiveContainer width="100%" height={280}>
@@ -357,7 +302,6 @@ function Analytics() {
             </ResponsiveContainer>
           ) : <Empty />}
         </Card>
-
         <Card title="Customer growth" sub="New connections per month and total customers">
           {d.growth?.data?.length ? (
             <ResponsiveContainer width="100%" height={280}>
@@ -375,8 +319,6 @@ function Analytics() {
           ) : <Empty />}
         </Card>
       </div>
-
-      {/* ---------------- where is the money ---------------- */}
       <div className={styles.grid2}>
         <Card title="Payment behaviour" sub={`Customers by payment status, ${s?.cycle || "latest cycle"}`}>
           {s && mix.some((m) => m.value) ? (
@@ -390,7 +332,6 @@ function Analytics() {
             </ResponsiveContainer>
           ) : <Empty />}
         </Card>
-
         <Card title="Consumption bands" sub={`How many customers use how much water (m³), ${d.bands?.cycle || "latest cycle"}`}>
           {d.bands?.data?.length ? (
             <ResponsiveContainer width="100%" height={280}>
@@ -404,7 +345,6 @@ function Analytics() {
             </ResponsiveContainer>
           ) : <Empty />}
         </Card>
-
         <Card title="Zone performance" sub="Paid versus unpaid, ranked by outstanding balance" wide>
           {zones.length ? (
             <div className={styles.zoneWrap}>
@@ -432,7 +372,6 @@ function Analytics() {
             </div>
           ) : <Empty />}
         </Card>
-
         <Card title="Customer groups" sub="Latest cycle by group">
           {d.groups?.data?.length ? (
             <div className={styles.tableScroll}>
@@ -443,7 +382,6 @@ function Analytics() {
             </div>
           ) : <Empty />}
         </Card>
-
         <Card title="Tariff rates" sub="Revenue and volume by rate per m³">
           {d.tariffs?.data?.length ? (
             <div className={styles.tableScroll}>
@@ -455,8 +393,6 @@ function Analytics() {
           ) : <Empty />}
         </Card>
       </div>
-
-      {/* ---------------- who to act on ---------------- */}
       <div className={styles.grid2}>
         <Card title={<><FaGavel /> Top debtors</>} sub={d.debtors ? `Top 10 hold ${d.debtors.top_share}% of ${kes(d.debtors.total_outstanding)} owed` : ""}>
           {d.debtors?.data?.length ? (
@@ -468,7 +404,6 @@ function Analytics() {
             </div>
           ) : <Empty text="No customers owe money in the latest cycle." />}
         </Card>
-
         <Card title="Top consumers" sub={d.consumers ? `Top 10 use ${d.consumers.top_share}% of ${num(d.consumers.total_units)} m³` : ""}>
           {d.consumers?.data?.length ? (
             <div className={styles.tableScroll}>
@@ -479,7 +414,6 @@ function Analytics() {
             </div>
           ) : <Empty />}
         </Card>
-
         <Card title="Meter reading quality" sub={d.anomalies ? `Flag threshold: above ${d.anomalies.threshold} m³ (3× the ${d.anomalies.average_units} m³ average)` : ""} wide>
           {d.anomalies ? (
             <>
@@ -502,8 +436,6 @@ function Analytics() {
           ) : <Empty />}
         </Card>
       </div>
-
-      {/* ---------------- original overview chart (kept) ---------------- */}
       <Card title="Key metrics overview" sub="All-time totals at a glance" wide>
         <ResponsiveContainer width="100%" height={360}>
           <BarChart data={metricsData} layout="vertical" margin={{ top: 10, right: 30, left: 100, bottom: 5 }}>
@@ -515,8 +447,6 @@ function Analytics() {
           </BarChart>
         </ResponsiveContainer>
       </Card>
-
-      {/* ---------------- system health ---------------- */}
       <div className={styles.grid2}>
         <Card title="System health">
           <div className={styles.statusIndicator}>
@@ -545,7 +475,6 @@ function Analytics() {
           ) : <Empty />}
         </Card>
       </div>
-
       <div className={styles.footer}>
         <p>&copy; 2026 Water Billing System. All rights reserved.</p>
         <span>v3.0.0</span>
@@ -553,5 +482,4 @@ function Analytics() {
     </div>
   );
 }
-
 export default Analytics;

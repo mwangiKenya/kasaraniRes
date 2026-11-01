@@ -13,6 +13,7 @@ import Reminder from "../../Billings/JsxFiles/Reminder";
 import Payments from "../../Billings/JsxFiles/Payments";
 import ReadingsHistory from "../../Readings/JsxFiles/ReadingsHistory";
 import { toast } from "react-toastify";
+import PayOpitions from "../../Billings/JsxFiles/PayOptions";
 import mainUrl from "../../api";
 
 const BACKEND_URL = mainUrl;
@@ -29,6 +30,7 @@ function Dashboard() {
 
     const [changingPassword, setChangingPassword] = useState(false);
 
+    const agency = localStorage.getItem("agency")
 
     const renderContent = () => {
         switch (activeView) {
@@ -64,6 +66,9 @@ function Dashboard() {
 
             case "payments":
                 return <Payments />;
+            
+            case "payoptions":
+                return <PayOpitions/>
 
             default:
                 return <Analytics />;
@@ -224,6 +229,15 @@ function Dashboard() {
                         onClick={() => setActiveView("reminder")}
                     >
                         Reminder SMS
+                    </button>
+
+                    <button
+                        className={`${styles.navItem} ${
+                            activeView === "payoptions" ? styles.active : ""
+                        }`}
+                        onClick={() => setActiveView("payoptions")}
+                    >
+                        Payment details
                     </button>
 
                     <button

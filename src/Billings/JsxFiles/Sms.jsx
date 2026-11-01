@@ -1,10 +1,37 @@
 import styles from "../CssFiles/Sms.module.css";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import mainUrl from "../../api";
-const PAYMENT = "Or: M-PESA Buy Goods:\nKamengo Agencies\nTill No 544783\n\nOr: Kamengo Agencies\nA/C No 01192576824400\nCoop Bank\n\nA/C No 1750278558907\nEquity Bank\n\nContact us on: 0741088799";
-const api = (path, method = "GET", body) =>
-  fetch(`${mainUrl}${path}`, { method, headers: { "Content-Type": "application/json" }, body: body && JSON.stringify(body) });
+import { authFetch } from "../../api";
+
+let PAYMENT = "";
+const formatPayment = (list) => {
+    const activePayments = list.filter(p => p.is_active);
+
+    return activePayments.map((p) => {
+        switch (p.method_type) {
+          case "Send Money":
+                return `Send Money:${p.acc_num}`;
+           
+            case "Till number":
+                return `Or: M-PESA Buy Goods:
+${p.acc_name}
+Till No ${p.acc_num}`;
+
+            case "Deposit":
+                return `Or: ${p.acc_name}
+A/C No ${p.acc_num}
+${p.provider}`;
+
+            case "Bank":
+                return `A/C No ${p.acc_num}
+${p.provider}`;
+
+            default:
+                return "";
+        }
+    }).filter(Boolean).join("\n\n") + "\n\nContact us on: 0741088799";
+};
+const api = (path, method = "GET", body) => authFetch(path, { method, body: body && JSON.stringify(body) });
 const load = (key, fallback) => {
   try {
     return JSON.parse(localStorage.getItem(key)) ?? fallback;
@@ -30,10 +57,10 @@ const readings = (c) =>
 const buildMessage = (group) => {
   const sender = group.find(isParent) || group[0];
   if (group.length === 1)
-    return `Dear ${sender.sms_name},\nWater Bill as at {{READING_DATE}}\n${readings(sender)}\nPay by {{DUE_DATE}}\n\nSend Money: 0723311564\n\n${PAYMENT}`.trim();
+    return `Dear ${sender.sms_name},\nWater Bill as at {{READING_DATE}}\n${readings(sender)}\nPay by {{DUE_DATE}}\n\n${PAYMENT}`.trim();
   const breakdown = group.map((c) => `${c.sms_name}\n${readings(c)}`.trim()).join("\n\n");
   const total = group.reduce((sum, c) => sum + adjustments(c).toPay, 0);
-  return `Dear ${sender.gen_name},\nWater Bill as at {{READING_DATE}}\n\n${breakdown}\n\nTo pay:KES ${total.toLocaleString()}\n\nPay by {{DUE_DATE}}\n\nSend Money:0723311564\n\n${PAYMENT}`.trim();
+  return `Dear ${sender.gen_name},\nWater Bill as at {{READING_DATE}}\n\n${breakdown}\n\nTo pay:KES ${total.toLocaleString()}\n\nPay by {{DUE_DATE}}\n\n${PAYMENT}`.trim();
 };
 function Sms() {
   const [customers, setCustomers] = useState([]);
@@ -107,7 +134,13 @@ function Sms() {
     }
   };
   useEffect(() => {
-    fetchCustomers();
+    api("pay-details/active/")
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((list) => {
+        PAYMENT = formatPayment(list);
+      })
+      .catch(() => toast.error("Failed to load payment details"))
+      .finally(fetchCustomers);
     api("bill_dates/")
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((d) => {

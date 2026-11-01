@@ -1,10 +1,9 @@
 import styles from "../CssFiles/Reminder.module.css";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import mainUrl from "../../api";
+import { authFetch } from "../../api";
 const TYPES = { REMINDER: "Reminder", DUE_FOR_DISCONNECTION: "Due For Disconnection", DISCONNECTION_NOTICE: "Disconnection Notice" };
-const api = (path, method = "GET", body) =>
-  fetch(`${mainUrl}${path}`, { method, headers: { "Content-Type": "application/json" }, body: body && JSON.stringify(body) });
+const api = (path, method = "GET", body) => authFetch(path, { method, body: body && JSON.stringify(body) });
 const load = (key, fallback) => {
   try {
     return JSON.parse(localStorage.getItem(key)) ?? fallback;
@@ -115,7 +114,7 @@ function Reminder() {
   const month = new Date().getMonth();
   const year = new Date().getFullYear();
   const selectedCustomer = customers.find((c) => c.id === previewId);
-  const displayed = filterOverdue ? customers.filter((c) => Number(c.bal) > 0 || Number(c.bill) > 0) : customers;
+  const displayed = filterOverdue ? customers.filter((c) => Number(c.bal) > 0) : customers;
   const parents = displayed.filter(isParent);
   const allSelected = parents.length > 0 && parents.every((c) => selected.includes(c.id));
   const applyDates = (m) =>

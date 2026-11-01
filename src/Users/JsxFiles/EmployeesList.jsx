@@ -1,82 +1,58 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import styles from "../CssFiles/EmployeesList.module.css";
 import { toast } from "react-toastify";
-import mainUrl from '../../api'
-
-const BACKEND_URL = mainUrl;
-
+import { authFetch } from "../../api";
 function EmployeesList() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState(null);
   const [editData, setEditData] = useState({ username: "", role: "" });
-
   useEffect(() => {
     fetchEmployees();
   }, []);
-
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}list_employees/`);
-      setEmployees(response.data);
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
+      const response = await authFetch("list_employees/");
+      if (!response.ok) throw new Error();
+      setEmployees(await response.json());
+    } catch {
       toast.error("Failed to fetch employees");
+    } finally {
       setLoading(false);
     }
   };
-
-  // DELETE
   const deleteEmployee = async (id) => {
     if (!window.confirm("Delete this employee?")) return;
-
     try {
-      await axios.delete(`${BACKEND_URL}delete_employee/${id}/`);
-
+      const response = await authFetch(`delete_employee/${id}/`, { method: "DELETE" });
+      if (!response.ok) throw new Error();
       setEmployees(employees.filter((emp) => emp.id !== id));
       toast.success("Employee deleted");
-    } catch (error) {
-      console.error(error);
+    } catch {
       toast.error("Delete failed");
     }
   };
-
-  //  START EDIT
   const startEdit = (emp) => {
     setEditingId(emp.id);
     setEditData({ username: emp.username, role: emp.role });
   };
-
-  //  HANDLE CHANGE
   const handleChange = (e) => {
     setEditData({ ...editData, [e.target.name]: e.target.value });
   };
-
-  //  SAVE UPDATE
   const saveUpdate = async (id) => {
     try {
-      await axios.put(`${BACKEND_URL}update_employee/${id}/`, editData);
-
-      setEmployees(
-        employees.map((emp) =>
-          emp.id === id ? { ...emp, ...editData } : emp
-        )
-      );
-
+      const response = await authFetch(`update_employee/${id}/`, { method: "PUT", body: JSON.stringify(editData) });
+      if (!response.ok) throw new Error();
+      setEmployees(employees.map((emp) => (emp.id === id ? { ...emp, ...editData } : emp)));
       setEditingId(null);
       toast.success("Employee updated");
-    } catch (error) {
-      console.error(error);
+    } catch {
       toast.error("Update failed");
     }
   };
-
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>All System Users</h2>
-
       {loading ? (
         <p>Loading...</p>
       ) : (
@@ -87,39 +63,21 @@ function EmployeesList() {
                 <th>ID</th>
                 <th>Username</th>
                 <th>Role</th>
+                <th>Registration date</th>
+                <th>Contact</th>
+                <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
-
             <tbody>
               {employees.map((emp) => (
                 <tr key={emp.id}>
                   <td>{emp.id}</td>
-
-                  <td>
-                    {editingId === emp.id ? (
-                      <input
-                        name="username"
-                        value={editData.username}
-                        onChange={handleChange}
-                      />
-                    ) : (
-                      emp.username
-                    )}
-                  </td>
-
-                  <td>
-                    {editingId === emp.id ? (
-                      <input
-                        name="role"
-                        value={editData.role}
-                        onChange={handleChange}
-                      />
-                    ) : (
-                      emp.role
-                    )}
-                  </td>
-
+                  <td>{editingId === emp.id ? <input name="username" value={editData.username} onChange={handleChange} /> : emp.username}</td>
+                  <td>{editingId === emp.id ? <input name="role" value={editData.role} onChange={handleChange} /> : emp.role}</td>
+                  <td>{emp.reg_on}</td>
+                  <td>{emp.phone}</td>
+                  <td>{emp.status}</td>
                   <td>
                     {editingId === emp.id ? (
                       <>
@@ -129,16 +87,13 @@ function EmployeesList() {
                     ) : (
                       <>
                         <button onClick={() => startEdit(emp)}>Edit</button>
-                        <button onClick={() => deleteEmployee(emp.id)}>
-                          Delete
-                        </button>
+                        <button onClick={() => deleteEmployee(emp.id)}>Delete</button>
                       </>
                     )}
                   </td>
                 </tr>
               ))}
             </tbody>
-
           </table>
           <div className={styles.AccessControl}>
             <h3> Access granted </h3>
@@ -184,5 +139,4 @@ function EmployeesList() {
     </div>
   );
 }
-
 export default EmployeesList;

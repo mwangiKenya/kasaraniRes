@@ -4,6 +4,14 @@ import { toast } from "react-toastify";
 import mainUrl from "../../api";
 
 function RegWaterUser() {
+    useEffect(() => {
+    const myagency = localStorage.getItem("agency");
+
+    setReg(prev => ({
+        ...prev,
+        agency: myagency || ""
+    }));
+    }, []);
     const [reg, setReg] = useState({
         fname: "",
         phone: "",
@@ -15,6 +23,9 @@ function RegWaterUser() {
         username: "",
         role: "",
         gen_name: "",
+        email: "",
+        password: "",
+        agency: "",
     });
 
     // Get logged-in user info from localStorage or context
@@ -73,7 +84,10 @@ function RegWaterUser() {
             parent: reg.parent || "", // Optional
             username: reg.username || "admin",
             role: reg.role || "admin",
-            gen_name: reg.gen_name || ""
+            gen_name: reg.gen_name || "",
+            email: reg.email || "",
+            password: reg.password || "",
+            agency: reg.agency ? Number(reg.agency) : null
         };
 
         console.log("Submitting data:", submitData); // For debugging
@@ -101,9 +115,12 @@ function RegWaterUser() {
                     rate: "",
                     grp: "",
                     parent: "",
-                    username: reg.username, // Keep username
-                    role: reg.role, // Keep role
-                    gen_name: ""
+                    username: reg.username,
+                    role: reg.role,
+                    gen_name: "",
+                    email: "",
+                    password: "",
+                    agency: ""
                 });
             } else {
                 // Check for error message in different formats
@@ -116,6 +133,7 @@ function RegWaterUser() {
         }
     };
 
+    const agency = reg.agency;
     return (
         <div className={styles.RegWaterUserDiv}>
             <h2>New User Registration</h2>
@@ -187,6 +205,31 @@ function RegWaterUser() {
                     <option value="yes">Yes</option>
                     <option value="no">No</option>
                 </select>
+                <input
+                    type="email"
+                    placeholder="Email"
+                    value={reg.email}
+                    name="email"
+                    onChange={handleChange}
+                    className={styles.RegWaterUserInput}
+                />
+                <input
+                    type="password"
+                    placeholder="Password"
+                    value={reg.password}
+                    name="password"
+                    onChange={handleChange}
+                    className={styles.RegWaterUserInput}
+                />
+                <input style={{display:'none'}}
+                    type="number"
+                    placeholder="Agency"
+                    value={reg.agency}
+                    name="agency"
+                    onChange={handleChange}
+                    className={styles.RegWaterUserInput}
+                    readOnly
+                />
                 
                 <input
                     type="submit"
