@@ -4,14 +4,6 @@ import { toast } from "react-toastify";
 import mainUrl from "../../api";
 
 function RegWaterUser() {
-    useEffect(() => {
-    const myagency = localStorage.getItem("agency");
-
-    setReg(prev => ({
-        ...prev,
-        agency: myagency || ""
-    }));
-    }, []);
     const [reg, setReg] = useState({
         fname: "",
         phone: "",
@@ -28,10 +20,16 @@ function RegWaterUser() {
         agency: "",
     });
 
-    // Get logged-in user info from localStorage or context
     useEffect(() => {
-        // Assuming you store user data in localStorage after login
-        const userData = localStorage.getItem('user');
+        const myagency = localStorage.getItem("agency");
+        setReg(prev => ({
+            ...prev,
+            agency: myagency || ""
+        }));
+    }, []);
+
+    useEffect(() => {
+        const userData = localStorage.getItem("user");
         if (userData) {
             try {
                 const user = JSON.parse(userData);
@@ -41,7 +39,6 @@ function RegWaterUser() {
                     role: user.role || "admin"
                 }));
             } catch (e) {
-                // Fallback defaults
                 setReg(prev => ({
                     ...prev,
                     username: "admin",
@@ -49,7 +46,6 @@ function RegWaterUser() {
                 }));
             }
         } else {
-            // Fallback defaults if no user is logged in
             setReg(prev => ({
                 ...prev,
                 username: "admin",
@@ -58,30 +54,33 @@ function RegWaterUser() {
         }
     }, []);
 
-    // Handle input changes
     const handleChange = (e) => {
         setReg({ ...reg, [e.target.name]: e.target.value });
     };
 
-    // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Simple validation - all fields except grp and parent are required
         if (!reg.fname || !reg.phone || !reg.metre_num || !reg.zone || !reg.rate) {
             toast.error("Please fill all the required details to register user.");
             return;
         }
 
-        // Prepare data for submission
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            toast.error("Your session has expired. Please log in again.");
+            return;
+        }
+
         const submitData = {
             fname: reg.fname,
             phone: reg.phone,
             metre_num: reg.metre_num,
             zone: reg.zone,
             rate: reg.rate,
-            grp: reg.grp || "", // Optional
-            parent: reg.parent || "", // Optional
+            grp: reg.grp || "",
+            parent: reg.parent || "",
             username: reg.username || "admin",
             role: reg.role || "admin",
             gen_name: reg.gen_name || "",
@@ -90,23 +89,21 @@ function RegWaterUser() {
             agency: reg.agency ? Number(reg.agency) : null
         };
 
-        console.log("Submitting data:", submitData); // For debugging
-
         try {
             const res = await fetch(`${mainUrl}new_user/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Token ${token}`,
                 },
                 body: JSON.stringify(submitData),
             });
 
             const data = await res.json();
-            console.log("Response:", data); // For debugging
 
             if (res.ok) {
                 toast.success(`${reg.fname} has been registered successfully.`);
-                // Reset form
+
                 setReg({
                     fname: "",
                     phone: "",
@@ -120,10 +117,9 @@ function RegWaterUser() {
                     gen_name: "",
                     email: "",
                     password: "",
-                    agency: ""
+                    agency: reg.agency
                 });
             } else {
-                // Check for error message in different formats
                 const errorMsg = data.error || data.detail || data.message || "Registration failed. Please check user details and try again.";
                 toast.error(errorMsg);
             }
@@ -134,6 +130,7 @@ function RegWaterUser() {
     };
 
     const agency = reg.agency;
+
     return (
         <div className={styles.RegWaterUserDiv}>
             <h2>New User Registration</h2>
@@ -182,9 +179,9 @@ function RegWaterUser() {
                     className={styles.RegWaterUserInput}
                     required
                 />
-                <input 
-                    type="number" 
-                    placeholder="Billing rate *" 
+                <input
+                    type="number"
+                    placeholder="Billing rate *"
                     value={reg.rate}
                     name="rate"
                     onChange={handleChange}
@@ -199,8 +196,13 @@ function RegWaterUser() {
                     onChange={handleChange}
                     className={styles.RegWaterUserInput}
                 />
-                <select name="parent" value={reg.parent} onChange={handleChange}
-                className={styles.RegWaterUserInput} required>
+                <select
+                    name="parent"
+                    value={reg.parent}
+                    onChange={handleChange}
+                    className={styles.RegWaterUserInput}
+                    required
+                >
                     <option value="">--Parent--</option>
                     <option value="yes">Yes</option>
                     <option value="no">No</option>
@@ -221,7 +223,8 @@ function RegWaterUser() {
                     onChange={handleChange}
                     className={styles.RegWaterUserInput}
                 />
-                <input style={{display:'none'}}
+                <input
+                    style={{ display: "none" }}
                     type="number"
                     placeholder="Agency"
                     value={reg.agency}
@@ -230,7 +233,6 @@ function RegWaterUser() {
                     className={styles.RegWaterUserInput}
                     readOnly
                 />
-                
                 <input
                     type="submit"
                     value="Register User"
