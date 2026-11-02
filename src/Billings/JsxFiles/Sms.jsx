@@ -10,7 +10,7 @@ const formatPayment = (list) => {
     return activePayments.map((p) => {
         switch (p.method_type) {
           case "Send Money":
-                return `Send Money:${p.acc_num}`;
+                return `Send Money: ${p.acc_num}`;
            
             case "Till number":
                 return `Or: M-PESA Buy Goods:
