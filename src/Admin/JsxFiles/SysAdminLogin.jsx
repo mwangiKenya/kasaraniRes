@@ -48,7 +48,7 @@ function SysAdminLogin() {
 
             if (response.ok && data.token) {
                 localStorage.setItem('token', data.token);
-                navigate('/Dashboard');
+                navigate('/MgtDashboard');
             } else {
                 setError(
                     data.error ||
