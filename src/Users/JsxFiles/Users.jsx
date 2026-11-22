@@ -247,6 +247,10 @@ function Users() {
                     <option value="no">No</option>
                   </select>
                 </div>
+                <div>
+                  <label htmlFor="email">Email</label>
+                  <input type="email" name="email" id="email" placeholder="Email" onChange={handleInputChange} value={selectedUser.email || ""}/>
+                </div>
                 <div className={styles.formGroup}>
                   <label htmlFor="password">Password</label>
                   <input type="password" name="password" value={selectedUser.password || ""} id="password" placeholder="Password" onChange={handleInputChange}/>
