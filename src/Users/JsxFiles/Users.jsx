@@ -205,11 +205,6 @@ function Users() {
             <div className={styles.modalBody}>
               <div className={styles.formGrid}>
                 <div className={styles.formGroup}>
-                  <label>User ID</label>
-                  <input type="text" value={selectedUser.id || ""} readOnly className={styles.readOnlyInput} />
-                  <small>System-generated user ID</small>
-                </div>
-                <div className={styles.formGroup}>
                   <label htmlFor="fname">
                     Name <span>*</span>
                   </label>
