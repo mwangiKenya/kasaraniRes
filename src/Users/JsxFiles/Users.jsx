@@ -129,7 +129,6 @@ function Users() {
         <table className={styles.userTable}>
           <thead>
             <tr>
-              <th>ID</th>
               <th>Name</th>
               <th>Phone</th>
               <th>SMS Name</th>
@@ -144,9 +143,6 @@ function Users() {
             {customers.length > 0 ? (
               customers.map((customer) => (
                 <tr key={customer.id}>
-                  <td>
-                    <span className={styles.idBadge}>{customer.id}</span>
-                  </td>
                   <td>
                     <div className={styles.nameCell}>
                       <div className={styles.avatar}>{initial(customer.fname)}</div>
