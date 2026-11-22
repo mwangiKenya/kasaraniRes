@@ -247,7 +247,7 @@ function Users() {
                     <option value="no">No</option>
                   </select>
                 </div>
-                <div>
+                <div className={styles.formGroup}>
                   <label htmlFor="email">Email</label>
                   <input type="email" name="email" id="email" placeholder="Email" onChange={handleInputChange} value={selectedUser.email || ""}/>
                 </div>
