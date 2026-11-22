@@ -18,12 +18,34 @@ const amount = (c) => {
   const bill = Number(c.bill);
   return bal > 0 ? bal : Number.isFinite(bill) ? bill : 0;
 };
-const build = (type, group) => {
+const formatPayment = (type, list, dot) => {
+  const activePayments = (list || []).filter((p) => p.is_active);
+  return activePayments
+    .map((p) => {
+      switch (p.method_type) {
+        case "Send Money":
+          return `Mpesa Send money ${p.acc_num}`;
+        case "Till number":
+          return type === "REMINDER"
+            ? `Or buy goods name, ${p.acc_name}\nTill Number ${p.acc_num}.`
+            : `Or buy goods, ${p.acc_name}\nTill No. ${p.acc_num}${dot}`;
+        case "Deposit":
+        case "Bank":
+          return `Or deposit to: ${p.acc_name}\na/c No. ${p.acc_num}\n${p.provider}`;
+        default:
+          return "";
+      }
+    })
+    .filter(Boolean)
+    .join("\n\n");
+};
+const build = (type, group, payments) => {
   const one = group.length === 1;
   const total = group.reduce((sum, c) => sum + amount(c), 0);
   const cur = one ? "KES" : "Ksh";
   const sp = one ? " " : "";
   const dot = one ? "." : "";
+  const pay = formatPayment(type, payments, dot);
   const bodies = {
     REMINDER: `BILL PAST DUE DATE
 
@@ -32,20 +54,7 @@ date:{{READING_DATE}} KES ${total.toLocaleString()} was due
 on {{DUE_DATE}}. It is now past due
 date.
 
-Mpesa Send money 0723311564
-
-Or buy goods name, Kamengo
-Agencies Till Number 544783.
-
-Or deposit to: Kamengo Agencies
-a/c No. 01192576824400
-Coop Bank
-TRM Branch
-
-Or deposit to: Kamengo Agencies
-a/c No. 1750278558907
-Equity Bank
-Garden city Branch
+${pay}
 
 Thank you
 
@@ -59,18 +68,7 @@ due for disconnection. Note that${sp}
 once disconnected, a reconnection${sp}
 charge of ${cur} 500 applies.
 
-Mpesa Send money 0723311564
-
-Or buy goods, Kamengo Agencies
-Till No. 544783${dot}
-
-Or deposit to: Kamengo Agencies
-a/c No. 01192576824400
-Coop, TRM Branch
-
-Or deposit to: Kamengo Agencies
-a/c No. 1750278558907
-Equity, Garden city Branch
+${pay}
 
 Contact us on: 0741088799`,
     DISCONNECTION_NOTICE: `DISCONNECTION NOTICE
@@ -111,6 +109,7 @@ function Reminder() {
   const [filterOverdue, setFilterOverdue] = useState(false);
   const [globalType, setGlobalType] = useState("REMINDER");
   const [dates, setDates] = useState(null);
+  const [payments, setPayments] = useState(null);
   const month = new Date().getMonth();
   const year = new Date().getFullYear();
   const selectedCustomer = customers.find((c) => c.id === previewId);
@@ -122,7 +121,7 @@ function Reminder() {
   const toTemplate = (v) =>
     dates ? v.replaceAll(fmt(dates.billing), "{{READING_DATE}}").replaceAll(fmt(dates.due), "{{DUE_DATE}}") : v;
   const getGroup = (c, list = customers) => (c.grp ? list.filter((x) => x.grp === c.grp) : [c]);
-  const getMessage = (c) => (c.editStatus === "Edited" ? c.message : build(c.smsType, getGroup(c)));
+  const getMessage = (c) => (c.editStatus === "Edited" ? c.message : build(c.smsType, getGroup(c), payments));
   const getCustomerPhones = (c) => [
     { number: c.phone, primary: true, selected: true },
     ...(extraPhones[c.id] || []).filter((p) => !p.primary),
@@ -190,9 +189,15 @@ function Reminder() {
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then(setDates)
       .catch(() => toast.error("Failed to load billing dates", { toastId: "dates" }));
+  const loadPayments = () =>
+    api("pay-details/active/")
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then(setPayments)
+      .catch(() => toast.error("Failed to load payment details", { toastId: "payments" }));
   useEffect(() => {
     fetchCustomers();
     loadDates();
+    loadPayments();
     window.addEventListener("focus", loadDates);
     return () => window.removeEventListener("focus", loadDates);
   }, []);
@@ -215,6 +220,10 @@ function Reminder() {
     }
     if (!dates) {
       toast.error("Billing dates are not loaded yet");
+      return false;
+    }
+    if (!payments) {
+      toast.error("Payment details are not loaded yet");
       return false;
     }
     const seen = new Set();

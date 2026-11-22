@@ -1,0 +1,111 @@
+/* --- Typography & Global Refinements --- */
+.AgenciesH1 {
+    color: #1e4620;
+    text-align: center;
+    font-size: 2.25rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 1.5rem;
+}
+
+.SubDivHead {
+    color: #2e6f40;
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 1.5rem 2% 0.5rem 3%;
+}
+
+/* --- Layout Containers --- */
+.StatisticsMainDiv {
+    display: block;
+    background-color: #f8fafc; 
+    border: 1px solid #e2e8f0; 
+    border-radius: 12px;
+    margin: 2% 3%;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.CardsHolder {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap; 
+    padding: 1rem 0;
+}
+
+/* --- Interactive Cards --- */
+.TheCard {
+    margin: 0; 
+    background-color: #ffffff;
+    border: 1px solid #edf2f7;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.3s ease;
+    width: calc(33.333% - 16px); 
+    min-width: 280px; 
+    box-sizing: border-box;
+}
+
+.TheCard:hover {
+    transform: translateY(-5px); 
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border-color: #38a169; 
+}
+
+/* --- Shared Button Base Structuring --- */
+.AddBtn, .UpdateBtn, .DeleteBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0.5rem;
+    padding: 0.75rem 1.5rem; 
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Primary / Add Action --- */
+.AddBtn {
+    background-color: #2f855a;
+    color: #ffffff;
+    border: 2px solid #2f855a;
+}
+
+.AddBtn:hover {
+    background-color: #22543d;
+    border-color: #22543d;
+    box-shadow: 0 4px 12px rgba(47, 133, 90, 0.2);
+}
+
+/* --- Secondary / Update Action --- */
+.UpdateBtn {
+    background-color: #0284c7;
+    color: #ffffff;
+    border: 2px solid #0284c7;
+}
+
+.UpdateBtn:hover {
+    background-color: #0369a1;
+    border-color: #0369a1;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
+}
+
+/* --- Danger / Delete Action --- */
+.DeleteBtn {
+    background-color: #dc2626;
+    color: #ffffff;
+    border: 2px solid #dc2626;
+}
+
+.DeleteBtn:hover {
+    background-color: #991b1b;
+    border-color: #991b1b;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+}

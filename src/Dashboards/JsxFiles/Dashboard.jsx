@@ -15,124 +15,88 @@ import ReadingsHistory from "../../Readings/JsxFiles/ReadingsHistory";
 import { toast } from "react-toastify";
 import PayOpitions from "../../Billings/JsxFiles/PayOptions";
 import mainUrl from "../../api";
-
 const BACKEND_URL = mainUrl;
-
 function Dashboard() {
     const [activeView, setActiveView] = useState("analytics");
     const [sidebarOpen, setSidebarOpen] = useState(true);
-
     // Change password modal
     const [showPasswordModal, setShowPasswordModal] = useState(false);
-
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
-
     const [changingPassword, setChangingPassword] = useState(false);
-
     const agency = localStorage.getItem("agency")
-
     const renderContent = () => {
         switch (activeView) {
             case "analytics":
                 return <Analytics />;
-
             case "readings":
                 return <Readings />;
-
             case "billings":
                 return <Billings />;
-
             case "register":
                 return <RegWaterUser />;
-
             case "users":
                 return <Users />;
-
             case "reminder":
                 return <Reminder />;
-
             case "regw":
                 return <RegWorker />;
-
             case "emp":
                 return <EmployeesList />;
-
             case "hist":
                 return <ReadingsHistory />;
-
             case "sms":
                 return <Sms />;
-
             case "payments":
                 return <Payments />;
-            
             case "payoptions":
                 return <PayOpitions/>
-
             default:
                 return <Analytics />;
         }
     };
-
-
     // ============================================================
     // OPEN CHANGE PASSWORD MODAL
     // ============================================================
-
     const openPasswordModal = () => {
         setCurrentPassword("");
         setNewPassword("");
         setShowPasswordModal(true);
     };
-
-
     // ============================================================
     // CLOSE CHANGE PASSWORD MODAL
     // ============================================================
-
     const closePasswordModal = () => {
         if (changingPassword) return;
-
         setShowPasswordModal(false);
         setCurrentPassword("");
         setNewPassword("");
     };
-
-
     // ============================================================
     // CHANGE PASSWORD
     // ============================================================
-
     const handleChangePassword = async (e) => {
         e.preventDefault();
-
         if (!currentPassword || !newPassword) {
             toast.info("Please enter your current password and new password.");
             return;
         }
-
         if (newPassword.length < 6) {
             toast.info("New password must be at least 6 characters.");
             return;
         }
-
         if (currentPassword === newPassword) {
             toast.info("New password must be different from your current password.");
             return;
         }
-
         // Get logged-in username
         const username = localStorage.getItem("username");
-
         if (!username) {
             toast.error("User session not found. Please login again.");
             return;
         }
-
         try {
             setChangingPassword(true);
-
             const response = await axios.post(
                 `${BACKEND_URL}change_password/`,
                 {
@@ -141,7 +105,6 @@ function Dashboard() {
                     new_password: newPassword,
                 }
             );
-
             if (response.status === 200) {
                 toast.success("Password changed successfully!");
 
@@ -149,10 +112,8 @@ function Dashboard() {
                 setNewPassword("");
                 setShowPasswordModal(false);
             }
-
         } catch (error) {
             console.error("Password change error:", error);
-
             if (error.response) {
                 toast.error(
                     error.response.data?.error ||
@@ -163,29 +124,22 @@ function Dashboard() {
                     "Unable to connect to the server. Please try again."
                 );
             }
-
         } finally {
             setChangingPassword(false);
         }
     };
-
-
     return (
         <div className={styles.dashboard}>
-
             {/* ============================================================
                 SIDEBAR
             ============================================================ */}
-
             <aside
                 className={`${styles.sidebar} ${
                     sidebarOpen ? "" : styles.sidebarCollapsed
                 }`}
             >
                 <h2 className={styles.logo}>Admin Dashboard</h2>
-
                 <nav className={styles.nav}>
-
                     <button
                         className={`${styles.navItem} ${
                             activeView === "analytics" ? styles.active : ""
@@ -194,7 +148,6 @@ function Dashboard() {
                     >
                         Analytics
                     </button>
-
                     <button
                         className={`${styles.navItem} ${
                             activeView === "readings" ? styles.active : ""
@@ -203,7 +156,6 @@ function Dashboard() {
                     >
                         Readings
                     </button>
-
                     <button
                         className={`${styles.navItem} ${
                             activeView === "billings" ? styles.active : ""
@@ -212,7 +164,6 @@ function Dashboard() {
                     >
                         Billings
                     </button>
-
                     <button
                         className={`${styles.navItem} ${
                             activeView === "sms" ? styles.active : ""
@@ -221,7 +172,6 @@ function Dashboard() {
                     >
                         Send Billing sms
                     </button>
-
                     <button
                         className={`${styles.navItem} ${
                             activeView === "reminder" ? styles.active : ""
@@ -230,7 +180,6 @@ function Dashboard() {
                     >
                         Reminder SMS
                     </button>
-
                     <button
                         className={`${styles.navItem} ${
                             activeView === "payoptions" ? styles.active : ""
@@ -239,7 +188,6 @@ function Dashboard() {
                     >
                         Payment details
                     </button>
-
                     <button
                         className={`${styles.navItem} ${
                             activeView === "register" ? styles.active : ""
@@ -248,7 +196,6 @@ function Dashboard() {
                     >
                         Register New Customer
                     </button>
-
                     <button
                         className={`${styles.navItem} ${
                             activeView === "users" ? styles.active : ""
@@ -257,25 +204,6 @@ function Dashboard() {
                     >
                         Registered Customers
                     </button>
-
-                    {/*<button
-                        className={`${styles.navItem} ${
-                            activeView === "hist" ? styles.active : ""
-                        }`}
-                        onClick={() => setActiveView("hist")}
-                    >
-                        Readings History
-                    </button>
-
-                    <button
-                        className={`${styles.navItem} ${
-                            activeView === "payments" ? styles.active : ""
-                        }`}
-                        onClick={() => setActiveView("payments")}
-                    >
-                        Payments History
-                    </button>*/}
-
                     <button
                         className={`${styles.navItem} ${
                             activeView === "regw" ? styles.active : ""
@@ -284,7 +212,6 @@ function Dashboard() {
                     >
                         Register System Users
                     </button>
-
                     <button
                         className={`${styles.navItem} ${
                             activeView === "emp" ? styles.active : ""
@@ -293,26 +220,20 @@ function Dashboard() {
                     >
                         See System Users
                     </button>
-
                     {/* ====================================================
                         CHANGE PASSWORD
                     ==================================================== */}
-
                     <button
                         className={styles.navItem}
                         onClick={openPasswordModal}
                     >
                         Change Password
                     </button>
-
                 </nav>
             </aside>
-
-
             {/* ============================================================
                 TOGGLE BUTTON
             ============================================================ */}
-
             <button
                 className={`${styles.toggleBtn} ${
                     sidebarOpen ? "" : styles.toggleBtnCollapsed
@@ -326,12 +247,9 @@ function Dashboard() {
             >
                 {sidebarOpen ? "‹" : "›"}
             </button>
-
-
             {/* ============================================================
                 MAIN CONTENT
             ============================================================ */}
-
             <main
                 className={`${styles.content} ${
                     sidebarOpen ? "" : styles.contentExpanded
@@ -339,12 +257,9 @@ function Dashboard() {
             >
                 {renderContent()}
             </main>
-
-
             {/* ============================================================
                 CHANGE PASSWORD MODAL
             ============================================================ */}
-
             {showPasswordModal && (
                 <div
                     className={styles.passwordModalOverlay}
@@ -354,10 +269,8 @@ function Dashboard() {
                         className={styles.passwordModal}
                         onClick={(e) => e.stopPropagation()}
                     >
-
                         <div className={styles.passwordModalHeader}>
                             <h2>Change Password</h2>
-
                             <button
                                 type="button"
                                 className={styles.closeModalButton}
@@ -367,24 +280,17 @@ function Dashboard() {
                                 ×
                             </button>
                         </div>
-
-
                         <p className={styles.passwordModalDescription}>
                             Enter your current password and choose a new password.
                         </p>
-
-
                         <form
                             onSubmit={handleChangePassword}
                             className={styles.passwordForm}
                         >
-
                             {/* Current password */}
-
                             <label>
                                 Current Password
                             </label>
-
                             <input
                                 type="password"
                                 value={currentPassword}
@@ -395,14 +301,10 @@ function Dashboard() {
                                 disabled={changingPassword}
                                 autoComplete="current-password"
                             />
-
-
                             {/* New password */}
-
                             <label>
                                 New Password
                             </label>
-
                             <input
                                 type="password"
                                 value={newPassword}
@@ -413,12 +315,8 @@ function Dashboard() {
                                 disabled={changingPassword}
                                 autoComplete="new-password"
                             />
-
-
                             {/* Buttons */}
-
                             <div className={styles.passwordModalActions}>
-
                                 <button
                                     type="button"
                                     className={styles.cancelPasswordButton}
@@ -427,7 +325,6 @@ function Dashboard() {
                                 >
                                     Cancel
                                 </button>
-
                                 <button
                                     type="submit"
                                     className={styles.changePasswordButton}
@@ -437,17 +334,12 @@ function Dashboard() {
                                         ? "Changing..."
                                         : "Change Password"}
                                 </button>
-
                             </div>
-
                         </form>
-
                     </div>
                 </div>
             )}
-
         </div>
     );
 }
-
 export default Dashboard;
