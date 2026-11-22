@@ -25,6 +25,8 @@ import SysAdminLogin from "./Admin/JsxFiles/SysAdminLogin";
 import MgtDashboard from "./Admin/JsxFiles/MgtDashboard";
 import Subscriptions from "./Admin/JsxFiles/Subscription";
 import Agencies from "./Admin/JsxFiles/Agencies";
+import CustLogin from "./Users/JsxFiles/CustLogin";
+import Portal from "./Users/JsxFiles/Portal";
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -72,6 +74,7 @@ function App() {
             {/*<Link to = "/SysAdminLogin" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Admin </Link>*/}
             <Link to = "/Workers" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Login to Continue </Link>
             {/*<Link to = "/Sms" className="MyNavLinks" onClick={() => setMenuOpen(false)}> Sms </Link>*/}
+            <Link to = "/CustLogin" className="MyNavLinks" onClick={() => setMenuOpen(false)}>User</Link>
           </nav>
 
           {/*<hr />*/}
@@ -101,6 +104,8 @@ function App() {
           <Route path="/MgtDashboard" element = {<MgtDashboard/>}/>
           <Route path="/Subscriptions" element = {<Subscriptions/>}/>
           <Route path="/Agencies" element = {<Agencies/>}/>
+          <Route path="/CustLogin" element = {<CustLogin/>}/>
+          <Route path="/Portal" element = {<Portal/>}/>
         </Routes>
       </HashRouter>
 

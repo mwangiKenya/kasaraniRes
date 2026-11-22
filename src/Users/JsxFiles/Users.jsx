@@ -247,6 +247,10 @@ function Users() {
                     <option value="no">No</option>
                   </select>
                 </div>
+                <div className={styles.formGroup}>
+                  <label htmlFor="password">Password</label>
+                  <input type="password" name="password" value={selectedUser.password || ""} id="password" placeholder="Password" onChange={handleInputChange}/>
+                </div>
               </div>
             </div>
             <div className={styles.modalFooter}>
