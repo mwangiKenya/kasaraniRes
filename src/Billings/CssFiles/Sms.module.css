@@ -134,12 +134,17 @@
   letter-spacing: 0.2px;
 }
 
-/* send button: top-right */
-.sendBtn {
+.sendActions {
   grid-column: 3;
   grid-row: 1;
   align-self: start;
-  padding: 11px 24px;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+}
+.sendBtn {
+  flex: 0 0 auto;
+  padding: 11px 18px;
   background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dim) 100%);
   color: var(--navy-deep);
   border: none;

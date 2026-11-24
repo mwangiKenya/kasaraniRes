@@ -34,23 +34,30 @@ function Dashboard() {
             case "billings":
                 return <Billings />;
             case "register":
-                return <RegWaterUser />;
+                return <RegWaterUser activeView={activeView}
+                setActiveView={setActiveView}/>;
             case "users":
-                return <Users />;
+                return <Users activeView={activeView}
+                setActiveView={setActiveView}/>;
             case "reminder":
-                return <Reminder />;
+                return <Reminder activeView={activeView}
+                setActiveView={setActiveView}/>;
             case "regw":
-                return <RegWorker />;
+                return <RegWorker activeView={activeView}
+                setActiveView={setActiveView}/>;
             case "emp":
-                return <EmployeesList />;
+                return <EmployeesList activeView={activeView}
+                setActiveView={setActiveView}/>;
             case "hist":
                 return <ReadingsHistory />;
             case "sms":
-                return <Sms />;
+                return <Sms activeView={activeView}
+                setActiveView={setActiveView}/>;
             case "payments":
                 return <Payments />;
             case "payoptions":
-                return <PayOpitions/>
+                return <PayOpitions activeView={activeView}
+                setActiveView={setActiveView}/>
             default:
                 return <Analytics />;
         }
@@ -162,7 +169,7 @@ function Dashboard() {
                         }`}
                         onClick={() => setActiveView("billings")}
                     >
-                        Billings
+                        Payments
                     </button>
                     <button
                         className={`${styles.navItem} ${
@@ -170,9 +177,9 @@ function Dashboard() {
                         }`}
                         onClick={() => setActiveView("sms")}
                     >
-                        Send Billing sms
+                        Send Bills
                     </button>
-                    <button
+                    {/*<button
                         className={`${styles.navItem} ${
                             activeView === "reminder" ? styles.active : ""
                         }`}
@@ -195,7 +202,7 @@ function Dashboard() {
                         onClick={() => setActiveView("register")}
                     >
                         Register New Customer
-                    </button>
+                    </button>*/}
                     <button
                         className={`${styles.navItem} ${
                             activeView === "users" ? styles.active : ""
@@ -204,21 +211,21 @@ function Dashboard() {
                     >
                         Registered Customers
                     </button>
-                    <button
+                    {/*<button
                         className={`${styles.navItem} ${
                             activeView === "regw" ? styles.active : ""
                         }`}
                         onClick={() => setActiveView("regw")}
                     >
                         Register System Users
-                    </button>
+                    </button>*/}
                     <button
                         className={`${styles.navItem} ${
                             activeView === "emp" ? styles.active : ""
                         }`}
                         onClick={() => setActiveView("emp")}
                     >
-                        See System Users
+                        System Users
                     </button>
                     {/* ====================================================
                         CHANGE PASSWORD

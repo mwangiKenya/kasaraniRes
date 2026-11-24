@@ -97,13 +97,12 @@ const TypeSelect = ({ value, onChange }) => (
     ))}
   </select>
 );
-function Reminder() {
+function Reminder(props) {
   const [customers, setCustomers] = useState([]);
   const [selected, setSelected] = useState([]);
   const [previewId, setPreviewId] = useState(null);
   const [draft, setDraft] = useState("");
   const [extraPhones, setExtraPhones] = useState({});
-  const [newPhone, setNewPhone] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [filterOverdue, setFilterOverdue] = useState(false);
@@ -122,15 +121,22 @@ function Reminder() {
     dates ? v.replaceAll(fmt(dates.billing), "{{READING_DATE}}").replaceAll(fmt(dates.due), "{{DUE_DATE}}") : v;
   const getGroup = (c, list = customers) => (c.grp ? list.filter((x) => x.grp === c.grp) : [c]);
   const getMessage = (c) => (c.editStatus === "Edited" ? c.message : build(c.smsType, getGroup(c), payments));
-  const getCustomerPhones = (c) => [
-    { number: c.phone, primary: true, selected: true },
-    ...(extraPhones[c.id] || []).filter((p) => !p.primary),
-  ];
-  const editPhones = (fn) => {
-    const phones = fn(getCustomerPhones(selectedCustomer));
-    localStorage.setItem(`phones_${selectedCustomer.id}`, JSON.stringify(phones));
-    setExtraPhones((prev) => ({ ...prev, [selectedCustomer.id]: phones }));
+  const getCustomerPhones = (c) => [{ number: c.phone, primary: true, selected: true }, ...(extraPhones[c.id] || [])];
+  const loadPhones = async (list) => {
+    try {
+      const res = await api("phones/");
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      setExtraPhones((prev) => ({ ...prev, ...Object.fromEntries(list.map((c) => [c.id, data[c.user_id] || []])) }));
+    } catch {
+      toast.error("Failed to load phone numbers");
+    }
   };
+  const toggleExtra = (id) =>
+    setExtraPhones((prev) => ({
+      ...prev,
+      [selectedCustomer.id]: (prev[selectedCustomer.id] || []).map((x) => (x.id === id ? { ...x, selected: !x.selected } : x)),
+    }));
   const store = (c) =>
     localStorage.setItem(
       `reminder_${c.id}`,
@@ -177,7 +183,7 @@ function Reminder() {
       if (!res.ok) throw new Error();
       const list = (await res.json()).map(prepare);
       setCustomers(list);
-      setExtraPhones(Object.fromEntries(list.map((c) => [c.id, load(`phones_${c.id}`, [])])));
+      await loadPhones(list);
     } catch {
       toast.error("Failed to load customers");
     } finally {
@@ -206,6 +212,7 @@ function Reminder() {
   const openPreview = (c) => {
     setDraft(getMessage(c));
     setPreviewId(c.id);
+    loadPhones([c]);
   };
   const saveMessage = () => {
     update(getGroup(selectedCustomer).map((c) => c.id), { message: draft, editStatus: "Edited" });
@@ -273,6 +280,8 @@ function Reminder() {
         <button className={styles.sendBtn} onClick={sendSelected} disabled={sending || !dates}>
           {sending ? "Sending..." : `Send Selected Reminders (${selected.length})`}
         </button>
+        <button className={styles.sendBtn}
+        onClick={() => props.setActiveView("sms")}>Send Bills</button>
         <div className={styles.controls}>
           <div className={styles.dateSection}>
             <div>
@@ -404,35 +413,14 @@ function Reminder() {
             <div className={styles.phoneSection}>
               <h4>SMS Recipients</h4>
               {getCustomerPhones(selectedCustomer).map((p) => (
-                <div key={p.number} className={styles.phoneRow}>
+                <div key={p.id ?? p.number} className={styles.phoneRow}>
                   <label>
-                    <input
-                      type="checkbox"
-                      checked={p.selected}
-                      onChange={() => editPhones((list) => list.map((x) => (x.number === p.number ? { ...x, selected: !x.selected } : x)))}
-                    />
+                    <input type="checkbox" checked={p.selected} disabled={p.primary} onChange={() => toggleExtra(p.id)} />
                     {p.number}
                     {p.primary && " (Primary number)"}
                   </label>
-                  {!p.primary && (
-                    <button className={styles.deletePhoneBtn} onClick={() => editPhones((list) => list.filter((x) => x.number !== p.number))}>
-                      Delete
-                    </button>
-                  )}
                 </div>
               ))}
-              <div className={styles.addPhone}>
-                <input type="text" placeholder="Add phone number" value={newPhone} onChange={(e) => setNewPhone(e.target.value)} />
-                <button
-                  onClick={() => {
-                    if (!newPhone.trim()) return;
-                    editPhones((list) => [...list, { number: newPhone.trim(), selected: true }]);
-                    setNewPhone("");
-                  }}
-                >
-                  Add
-                </button>
-              </div>
             </div>
             <textarea className={styles.smsTextarea} value={applyDates(draft)} onChange={(e) => setDraft(toTemplate(e.target.value))} />
             <div className={styles.modalActions}>

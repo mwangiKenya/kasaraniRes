@@ -5,7 +5,7 @@ import { authFetch } from "../../api";
 const ok = (m) => toast.success(m, { position: "top-right", autoClose: 3000 });
 const fail = (m) => toast.error(m, { position: "top-right", autoClose: 4000 });
 const initial = (name) => (name ? name.charAt(0).toUpperCase() : "?");
-function Users() {
+function Users(props) {
   const [customers, setCustomers] = useState([]);
   const [error, setError] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -105,6 +105,8 @@ function Users() {
             <span>✓</span>
             Save All Changes
           </button>
+          <button className={styles.actionButton}
+          onClick={() => props.setActiveView("register")}>Register new user</button>
         </div>
       </div>
       {error && (

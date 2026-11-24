@@ -3,7 +3,7 @@ import styles from "../CssFiles/WaterUser.module.css";
 import { toast } from "react-toastify";
 import mainUrl from "../../api";
 
-function RegWaterUser() {
+function RegWaterUser(props) {
     const [reg, setReg] = useState({
         fname: "",
         phone: "",
@@ -239,6 +239,8 @@ function RegWaterUser() {
                     className={styles.RegWaterUserAction}
                 />
             </form>
+            <button className={styles.RegWaterUserAction}
+            onClick={() => props.setActiveView("users")}>See Users</button>
         </div>
     );
 }

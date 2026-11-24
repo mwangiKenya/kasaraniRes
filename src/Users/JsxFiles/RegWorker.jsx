@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styles from "../CssFiles/RegWorker.module.css";
 import { toast } from "react-toastify";
 import { authFetch } from "../../api";
-function RegWorker() {
+function RegWorker(props) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
@@ -19,7 +19,7 @@ function RegWorker() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!username || !password || !role) {
+    if (!username || !password || !role || !phone || !reg_on || !status) {
       toast.info("All fields are required");
       return;
     }
@@ -66,8 +66,10 @@ function RegWorker() {
           <option value="blocked">blocked</option>
         </select>
         <button type="submit" className={styles.button}>
-          Register
+          Register User
         </button>
+        <button className={styles.button}
+        onClick={() => props.setActiveView("emp")}>See Syatem users</button>
       </form>
     </div>
   );

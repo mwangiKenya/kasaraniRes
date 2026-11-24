@@ -4,7 +4,7 @@ import { authFetch } from "../../api";
 import { toast } from "react-toastify";
 const API = "pay-details/";
 const empty = { method_type: "", provider: "", acc_num: "", acc_name: "", is_active: true };
-function PayOptions() {
+function PayOptions(props) {
     const [payments, setPayments] = useState([]);
     const [form, setForm] = useState(empty);
     const [editing, setEditing] = useState(null);
@@ -65,6 +65,8 @@ function PayOptions() {
     };
     return <main className={styles.page}>
         <header className={styles.header}><div><span className={styles.eyebrow}>PAYMENT SETTINGS</span><h1>Payment details</h1><p>Manage the payment options displayed on your customer bills.</p></div><span className={styles.count}>{payments.length} options</span></header>
+        <button className={styles.backtoSms}
+        onClick={() => props.setActiveView("sms")}>SMS Page</button>
         <section className={styles.panel}>
             <h2>{editing ? "Update payment option" : "Add payment option"}</h2>
             <form onSubmit={submit} className={styles.form}>

@@ -2,30 +2,24 @@ import styles from "../CssFiles/Sms.module.css";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { authFetch } from "../../api";
-
 let PAYMENT = "";
 const formatPayment = (list) => {
     const activePayments = list.filter(p => p.is_active);
-
     return activePayments.map((p) => {
         switch (p.method_type) {
           case "Send Money":
                 return `Send Money: ${p.acc_num}`;
-           
             case "Till number":
                 return `Or: M-PESA Buy Goods:
 ${p.acc_name}
 Till No ${p.acc_num}`;
-
             case "Deposit":
                 return `Or: ${p.acc_name}
 A/C No ${p.acc_num}
 ${p.provider}`;
-
             case "Bank":
                 return `A/C No ${p.acc_num}
 ${p.provider}`;
-
             default:
                 return "";
         }
@@ -62,7 +56,7 @@ const buildMessage = (group) => {
   const total = group.reduce((sum, c) => sum + adjustments(c).toPay, 0);
   return `Dear ${sender.gen_name},\nWater Bill as at {{READING_DATE}}\n\n${breakdown}\n\nTo pay:KES ${total.toLocaleString()}\n\nPay by {{DUE_DATE}}\n\n${PAYMENT}`.trim();
 };
-function Sms() {
+function Sms(props) {
   const [customers, setCustomers] = useState([]);
   const [selected, setSelected] = useState([]);
   const [previewId, setPreviewId] = useState(null);
@@ -86,14 +80,27 @@ function Sms() {
     dates ? v.replaceAll(fmt(dates.billing), "{{READING_DATE}}").replaceAll(fmt(dates.due), "{{DUE_DATE}}") : v;
   const getGroup = (c, list = customers) => (c.grp ? list.filter((x) => x.grp === c.grp) : [c]);
   const getCustomerMessage = (c) => editedMessages[c.id] || c.message || buildMessage(getGroup(c));
-  const getCustomerPhones = (c) => [
-    { number: c.phone, primary: true, selected: true },
-    ...(extraPhones[c.id] || []).filter((p) => !p.primary),
-  ];
-  const editPhones = (fn) => {
-    const phones = fn(getCustomerPhones(selectedCustomer));
-    localStorage.setItem(`phones_${selectedCustomer.id}`, JSON.stringify(phones));
-    setExtraPhones((prev) => ({ ...prev, [selectedCustomer.id]: phones }));
+  const getCustomerPhones = (c) => [{ number: c.phone, primary: true, selected: true }, ...(extraPhones[c.id] || [])];
+  const loadPhones = async (list) => {
+    try {
+      const res = await api("phones/");
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      setExtraPhones(Object.fromEntries(list.map((c) => [c.id, data[c.user_id] || []])));
+    } catch {
+      toast.error("Failed to load phone numbers");
+    }
+  };
+  const showPreview = (id) => {
+    setPreviewId(id);
+    loadPhones(customers);
+  };
+  const editExtras = (fn) => setExtraPhones((prev) => ({ ...prev, [selectedCustomer.id]: fn(prev[selectedCustomer.id] || []) }));
+  const patchExtra = (i, patch) => editExtras((list) => list.map((x, j) => (j === i ? { ...x, ...patch } : x)));
+  const addPhone = () => {
+    if (!newPhone.trim()) return toast.error("Please enter a phone number");
+    editExtras((list) => [...list, { id: null, number: newPhone.trim(), selected: true }]);
+    setNewPhone("");
   };
   const prepare = (c) => {
     const billingSignature = `
@@ -123,7 +130,7 @@ function Sms() {
       if (!res.ok) throw new Error();
       const prepared = (await res.json()).map(prepare);
       setCustomers(prepared);
-      setExtraPhones(Object.fromEntries(prepared.map((c) => [c.id, load(`phones_${c.id}`, [])])));
+      await loadPhones(prepared);
       setEditedMessages(
         Object.fromEntries(prepared.map((c) => [c.id, c.editStatus === "Edited" ? c.message : buildMessage(getGroup(c, prepared))]))
       );
@@ -169,7 +176,15 @@ function Sms() {
     setCustomers((prev) => prev.map((x) => (x.id === id ? u : x)));
     if (updates.message !== undefined) setEditedMessages((prev) => ({ ...prev, [id]: updates.message }));
   };
-  const saveMessage = () => {
+  const saveMessage = async () => {
+    try {
+      const res = await api("phones/sync/", "POST", { user_id: selectedCustomer.user_id, phones: extraPhones[selectedCustomer.id] || [] });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to save phone numbers");
+      setExtraPhones((prev) => ({ ...prev, [selectedCustomer.id]: data.phones }));
+    } catch (err) {
+      return toast.error(err.message);
+    }
     getGroup(selectedCustomer).forEach((c) =>
       saveCustomerData(c.id, { message: editedMessages[selectedCustomer.id], editStatus: "Edited" })
     );
@@ -236,17 +251,37 @@ function Sms() {
       toast.error(err.message);
     }
   };
+
+  const [smsBalance, setSmsBalance] = useState(null);
+
+    useEffect(() => {
+        const getSmsBalance = async () => {
+            try {
+                const res = await api('sms_balance/');
+                const data = await res.json();
+                if (data.success) setSmsBalance(data.credit);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        getSmsBalance();
+    }, []);
   const adjustment = selectedCustomer ? Number(selectedCustomer.penalty || 0) : 0;
   return (
     <div className={styles.container}>
       <div className={styles.headerSection}>
-        <div>
-          <h1 className={styles.header1}>SMS Dashboard</h1>
-          <p className={styles.subtitle}>Manage, edit and send billing SMS</p>
-        </div>
-        <button className={styles.sendBtn} onClick={sendSelected} disabled={sending || !dates}>
+        <h4>SMS Balance: {smsBalance !== null ? `${smsBalance} Units` : 'Loading...'}</h4>
+
+        <div className={styles.sendActions}>
+          <button className={styles.sendBtn} onClick={sendSelected} disabled={sending || !dates}>
           {sending ? "Sending..." : `Send Selected SMS (${selected.length})`}
-        </button>
+          </button>
+          <button className={styles.sendBtn}
+          onClick={() => props.setActiveView("reminder")}>Send Reminder SMS</button>
+          <button className={styles.sendBtn}
+          onClick={() => props.setActiveView("payoptions")}>Payment Details</button>
+        </div>
+
         <div className={styles.dateSection}>
           <div>
             <label>Billing Date</label>
@@ -323,7 +358,7 @@ function Sms() {
                   </td>
                   <td>{c.sentDate}</td>
                   <td>
-                    <button className={styles.previewBtn} onClick={() => setPreviewId(c.id)}>
+                    <button className={styles.previewBtn} onClick={() => showPreview(c.id)}>
                       Preview
                     </button>
                   </td>
@@ -350,37 +385,29 @@ function Sms() {
                   Managing SMS for <strong>{selectedCustomer.name}</strong>
                 </p>
               </div>
-              <button className={styles.modalClose} onClick={() => setPreviewId(null)}>
+              <button className={styles.modalClose} onClick={() => showPreview(null)}>
                 ✕
               </button>
             </div>
             <div style={{ marginBottom: "15px" }}>
               <h4>SMS Recipients</h4>
-              {getCustomerPhones(selectedCustomer).map((p) => (
-                <div key={p.number}>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={p.selected}
-                      onChange={() => editPhones((list) => list.map((x) => (x.number === p.number ? { ...x, selected: !x.selected } : x)))}
-                    />
-                    {p.number}
-                    {p.primary && " (Primary number)"}
-                  </label>
-                  {!p.primary && <button onClick={() => editPhones((list) => list.filter((x) => x.number !== p.number))}>Delete</button>}
+              <div>
+                <label>
+                  <input type="checkbox" checked disabled />
+                  {selectedCustomer.phone} (Primary number)
+                </label>
+              </div>
+              {(extraPhones[selectedCustomer.id] || []).map((p, i) => (
+                <div key={p.id ?? `new-${i}`}>
+                  <input type="checkbox" checked={p.selected} onChange={() => patchExtra(i, { selected: !p.selected })} />
+                  <input type="text" value={p.number} onChange={(e) => patchExtra(i, { number: e.target.value })} />
+                  <button onClick={() => editExtras((list) => list.filter((_, j) => j !== i))}>Delete</button>
                 </div>
               ))}
+              <p>Click <strong>Save Changes</strong> at the bottom to save the phone.</p>
               <div style={{ marginTop: "10px" }}>
                 <input type="text" placeholder="Add phone number" value={newPhone} onChange={(e) => setNewPhone(e.target.value)} />
-                <button
-                  onClick={() => {
-                    if (!newPhone.trim()) return;
-                    editPhones((list) => [...list, { number: newPhone.trim(), selected: true }]);
-                    setNewPhone("");
-                  }}
-                >
-                  Add
-                </button>
+                <button onClick={addPhone}>Add</button>
               </div>
             </div>
             <div style={{ marginBottom: "15px" }}>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../CssFiles/EmployeesList.module.css";
 import { toast } from "react-toastify";
 import { authFetch } from "../../api";
-function EmployeesList() {
+function EmployeesList(props) {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState(null);
@@ -53,6 +53,7 @@ function EmployeesList() {
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>All System Users</h2>
+      <button onClick={() => props.setActiveView("regw")}>Add new user</button>
       {loading ? (
         <p>Loading...</p>
       ) : (
